@@ -597,7 +597,7 @@ async function runAnalysis() {
     const key = getKey();
     if(!key) throw new Error('no-key');
     const body = {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-4-6',
       max_tokens: 1500,
       system: 'You are a certified PSA card grading expert. Analyze Pokémon cards strictly by PSA 2025 grading standards. Final grade = LOWEST sub-score. Return ONLY valid JSON. No markdown. No backticks. No extra text.',
       messages: [{
