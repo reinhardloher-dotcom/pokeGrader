@@ -8,6 +8,10 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <meta name="apple-mobile-web-app-title" content="PokéGrader">
 <meta name="theme-color" content="#0a0f1e">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./icons/icon-180.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./icons/icon-512.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
 <title>PokéGrader PSA</title>
 <style>
 :root{
@@ -975,12 +979,20 @@ function updateKey(){const k=document.getElementById('settings-key').value.trim(
 // ═══════════ TOAST ═══════════
 function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
 
-// ═══════════ PWA MANIFEST ═══════════
-const manifest={name:'PokéGrader PSA',short_name:'PokéGrader',start_url:'./',display:'standalone',background_color:'#0a0f1e',theme_color:'#0a0f1e',orientation:'portrait',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230a0f1e"/><text y="46" x="10" font-size="40">🃏</text></svg>',sizes:'any',type:'image/svg+xml'}]};
-const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
-const mUrl=URL.createObjectURL(mBlob);
-const mLink=document.createElement('link');mLink.rel='manifest';mLink.href=mUrl;
-document.head.appendChild(mLink);
+
+
+// ═══════════ SERVICE WORKER ═══════════
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{
+    navigator.serviceWorker.register('./sw.js')
+      .then(r=>console.log('SW ok',r.scope))
+      .catch(e=>console.warn('SW fail',e));
+  });
+}
+// Handle URL shortcuts
+const _usp=new URLSearchParams(window.location.search);
+if(_usp.get('action')==='history'){openDB().then(()=>renderHistory())}
+else if(_usp.get('action')==='new'){if(getKey())startNew()}
 
 // ═══════════ INIT ═══════════
 openDB().catch(console.error);
