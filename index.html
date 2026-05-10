@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="apple-mobile-web-app-title" content="PokéGrader">
+<meta name="theme-color" content="#0a0f1e">
+<title>PokéGrader PSA</title>
+<style>
+:root{
+  --bg:#0a0f1e;--surf:#151d30;--surf2:#1e2d47;--surf3:#243550;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --text:#e8edf5;--muted:#7a8fa8;--hint:#4a5e73;
+  --green:#22c55e;--green-bg:rgba(34,197,94,0.12);--green-dim:rgba(34,197,94,0.25);
+  --blue:#3b82f6;--blue-bg:rgba(59,130,246,0.12);
+  --amber:#f59e0b;--amber-bg:rgba(245,158,11,0.12);
+  --red:#ef4444;--red-bg:rgba(239,68,68,0.12);
+  --purple:#a855f7;--purple-bg:rgba(168,85,247,0.12);
+  --r:12px;--rs:8px;--rx:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;overflow-x:hidden}
+.screen{display:none;min-height:100vh}
+.screen.active{display:block}
+.page{padding:0 16px 32px;max-width:500px;margin:0 auto}
+.hdr{display:flex;align-items:center;gap:12px;padding:14px 16px 14px;padding-top:calc(14px + env(safe-area-inset-top));border-bottom:1px solid var(--border);background:var(--bg);position:sticky;top:0;z-index:20}
+.hdr-title{font-size:16px;font-weight:600;flex:1}
+.btn-icon{width:38px;height:38px;border-radius:50%;background:var(--surf2);border:none;color:var(--text);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:17px;flex-shrink:0}
+.card{background:var(--surf);border-radius:var(--r);border:1px solid var(--border);padding:16px;margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:13px;border-radius:var(--rs);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:opacity .15s,transform .1s}
+.btn:active{transform:scale(.98);opacity:.85}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-p{background:var(--green);color:#000}
+.btn-s{background:var(--surf2);color:var(--text);border:1px solid var(--border2)}
+.btn-o{background:transparent;color:var(--text);border:1px solid var(--border2)}
+.btn-r{background:var(--red-bg);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+.row{display:flex;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:5px;font-size:11px;font-weight:600;letter-spacing:.03em}
+/* steps */
+.steps{display:flex;align-items:center;justify-content:center;gap:6px;padding:14px 0 6px}
+.sd{width:8px;height:8px;border-radius:50%;background:var(--surf3);transition:all .25s}
+.sd.a{background:var(--green);width:22px;border-radius:4px}
+.sd.d{background:var(--green);opacity:.5}
+/* upload */
+.uz{border:1.5px dashed var(--border2);border-radius:var(--r);min-height:190px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:24px;transition:border-color .2s}
+.uz:active{border-color:var(--green);background:var(--green-bg)}
+.prev-wrap{position:relative}
+.prev-img{width:100%;border-radius:var(--rs);display:block;max-height:300px;object-fit:contain;background:var(--surf2)}
+.retake{position:absolute;top:8px;right:8px;background:rgba(10,15,30,.8);border:1px solid var(--border2);color:var(--text);padding:6px 12px;border-radius:6px;font-size:12px;cursor:pointer}
+/* loader */
+.loader{width:46px;height:46px;border-radius:50%;border:3px solid var(--surf3);border-top-color:var(--green);animation:spin .85s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* score bar */
+.sb{margin-bottom:9px}
+.sb-hd{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
+.sb-lbl{color:var(--muted)}
+.sb-track{height:5px;background:var(--surf2);border-radius:3px;overflow:hidden}
+.sb-fill{height:100%;border-radius:3px}
+/* grade badge */
+.gbadge{width:70px;height:70px;border-radius:var(--r);display:flex;flex-direction:column;align-items:center;justify-content:center;flex-shrink:0}
+.gnum{font-size:28px;font-weight:800;line-height:1}
+.gpsa{font-size:8px;opacity:.65;letter-spacing:.12em;text-transform:uppercase;margin-top:1px}
+/* accordion */
+.acc-hdr{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--border)}
+.acc-hdr:last-of-type{border-bottom:none}
+.acc-arrow{margin-left:auto;font-size:12px;color:var(--muted);transition:transform .2s}
+.acc-hdr.open .acc-arrow{transform:rotate(180deg)}
+.acc-body{padding:12px 16px 16px;border-bottom:1px solid var(--border)}
+/* history */
+.hi{display:flex;align-items:center;gap:12px;background:var(--surf);border-radius:var(--r);border:1px solid var(--border);padding:12px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+.hi:active{border-color:var(--border2)}
+.hthumb{width:54px;height:54px;border-radius:7px;object-fit:cover;background:var(--surf2);flex-shrink:0}
+/* corner grid */
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.cgrid-c{background:var(--surf2);border-radius:var(--rs);padding:8px 10px}
+.cgrid-l{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
+/* canvas annotation wrapper */
+.ann-wrap{position:relative;margin-bottom:8px;background:var(--surf2);border-radius:var(--rs);overflow:hidden}
+.ann-canvas{width:100%;display:block;border-radius:var(--rs)}
+.marker-tooltip{position:absolute;background:rgba(10,15,30,.95);border:1px solid var(--border2);border-radius:6px;padding:6px 10px;font-size:12px;color:var(--text);pointer-events:none;white-space:nowrap;z-index:10;display:none;max-width:200px;white-space:normal;line-height:1.4}
+/* centering diagram */
+.cnt-wrap{background:var(--surf2);border-radius:var(--rs);padding:12px;margin-bottom:8px}
+.cnt-canvas{width:100%;border-radius:4px;display:block}
+/* empty */
+.empty{text-align:center;padding:48px 16px;color:var(--muted)}
+.cam-outer{position:relative;background:#000;border-radius:var(--r);overflow:hidden;margin-bottom:10px}
+/* toast */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--surf3);color:var(--text);padding:10px 20px;border-radius:24px;font-size:13px;z-index:100;opacity:0;transition:opacity .25s;pointer-events:none;border:1px solid var(--border2);white-space:nowrap}
+.toast.show{opacity:1}
+/* marker legend */
+.mlegend{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.mleg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--muted);background:var(--surf2);padding:4px 8px;border-radius:5px}
+.mleg-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div id="s-home" class="screen active">
+<div class="page" style="padding-top:calc(28px + env(safe-area-inset-top))">
+  <div style="display:flex;align-items:center;gap:14px;margin-bottom:22px">
+    <div style="width:52px;height:52px;border-radius:14px;background:var(--green-bg);border:1px solid var(--green-dim);display:flex;align-items:center;justify-content:center;font-size:26px">🃏</div>
+    <div style="flex:1">
+      <div style="font-size:22px;font-weight:800;letter-spacing:-.3px">PokéGrader</div>
+      <div style="font-size:12px;color:var(--muted)">PSA Pre-Grading · KI-gestützt · 2025</div>
+    </div>
+    <button class="btn-icon" onclick="showScreen('s-history')" title="Verlauf">📂</button>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+      <div style="background:var(--surf2);border-radius:var(--rs);padding:11px">
+        <div style="font-size:18px;margin-bottom:5px">⚖️</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:2px">Zentrierung</div>
+        <div style="font-size:11px;color:var(--muted)">Diagramm + Maße</div>
+      </div>
+      <div style="background:var(--surf2);border-radius:var(--rs);padding:11px">
+        <div style="font-size:18px;margin-bottom:5px">🔍</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:2px">Ecken</div>
+        <div style="font-size:11px;color:var(--muted)">Markiert auf Karte</div>
+      </div>
+      <div style="background:var(--surf2);border-radius:var(--rs);padding:11px">
+        <div style="font-size:18px;margin-bottom:5px">📐</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:2px">Ränder</div>
+        <div style="font-size:11px;color:var(--muted)">Markiert auf Karte</div>
+      </div>
+      <div style="background:var(--surf2);border-radius:var(--rs);padding:11px">
+        <div style="font-size:18px;margin-bottom:5px">✨</div>
+        <div style="font-size:12px;font-weight:600;margin-bottom:2px">Oberfläche</div>
+        <div style="font-size:11px;color:var(--muted)">Scratches & Holo</div>
+      </div>
+    </div>
+    <button class="btn btn-p" onclick="startNew()">📷 Neue Analyse starten</button>
+  </div>
+  <div id="home-recent"></div>
+  <div style="text-align:center;font-size:11px;color:var(--hint);padding:8px 0">Kein offizielles PSA-Ergebnis · nur Orientierungshilfe</div>
+</div>
+</div>
+
+<!-- ══════════════ CAPTURE ══════════════ -->
+<div id="s-capture" class="screen">
+<div class="hdr">
+  <button class="btn-icon" onclick="captureBack()">‹</button>
+  <div class="hdr-title" id="cap-title">Vorderseite</div>
+</div>
+<div class="page" style="padding-top:12px">
+  <div class="steps">
+    <div class="sd" id="dot1"></div>
+    <div class="sd" id="dot2"></div>
+  </div>
+  <div class="card">
+    <p id="cap-hint" style="font-size:13px;color:var(--muted);margin-bottom:14px;line-height:1.5"></p>
+    <input type="file" id="file-input" accept="image/*" capture="environment" style="display:none" onchange="handleFile(event)">
+    <div id="uz" class="uz" onclick="document.getElementById('file-input').click()">
+      <div style="font-size:42px">📸</div>
+      <div style="font-size:14px;font-weight:500">Kamera öffnen</div>
+      <div style="font-size:12px;color:var(--muted)">oder Bild aus Galerie wählen</div>
+    </div>
+    <div id="pz" class="prev-wrap" style="display:none">
+      <img id="prev" class="prev-img">
+      <button class="retake" onclick="retake()">🔄 Neu</button>
+    </div>
+  </div>
+  <div id="tip-card" class="card" style="padding:14px">
+    <div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:8px">💡 Tipps</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8">
+      • Neutraler Untergrund, kein Blitz<br>
+      • Alle 4 Ränder vollständig sichtbar<br>
+      • Scharf fokussiert, keine Reflexionen<br>
+      • Möglichst senkrecht von oben fotografieren
+    </div>
+  </div>
+  <div class="row">
+    <button class="btn btn-o" onclick="captureBack()" style="flex:1">← Zurück</button>
+    <button id="next-btn" class="btn btn-p" onclick="nextStep()" style="flex:2" disabled>Weiter →</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ ANALYZING ══════════════ -->
+<div id="s-analyzing" class="screen">
+<div class="page" style="padding-top:52px;text-align:center">
+  <div class="loader" style="margin-bottom:26px"></div>
+  <div style="font-size:18px;font-weight:700;margin-bottom:6px">KI-Analyse läuft</div>
+  <div id="amsg" style="font-size:13px;color:var(--muted);min-height:20px;margin-bottom:32px"></div>
+  <div style="display:flex;flex-direction:column;gap:6px;text-align:left">
+    <div style="background:var(--surf);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center"><span>⚖️</span>Zentrierung (PSA 2025 Toleranzen)</div>
+    <div style="background:var(--surf);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center"><span>🔍</span>Eckenqualität · Whitening-Erkennung</div>
+    <div style="background:var(--surf);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center"><span>📐</span>Randbeurteilung · Chipping & Fraying</div>
+    <div style="background:var(--surf);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center"><span>✨</span>Oberfläche · Holo-Schäden · Kratzer</div>
+    <div style="background:var(--surf);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--muted);display:flex;gap:8px;align-items:center"><span>🎯</span>Defektpositionen für Kartenbeschriftung</div>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ RESULTS ══════════════ -->
+<div id="s-results" class="screen">
+<div class="hdr">
+  <button class="btn-icon" onclick="showScreen('s-home');loadRecent()">✕</button>
+  <div class="hdr-title">Pregrading Ergebnis</div>
+  <button id="save-btn" onclick="saveResult()" style="background:var(--green-bg);border:1px solid rgba(34,197,94,.35);color:var(--green);padding:6px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer">💾 Speichern</button>
+</div>
+<div class="page" style="padding-top:14px" id="res-content"></div>
+</div>
+
+<!-- ══════════ SETTINGS ══════════ -->
+<div id="s-settings" class="screen">
+<div class="hdr">
+  <button class="btn-icon" onclick="showScreen('s-home');loadRecent()">✕</button>
+  <div class="hdr-title">Einstellungen</div>
+</div>
+<div class="page" style="padding-top:16px">
+  <div class="card">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:12px">🔑 Anthropic API-Key</div>
+    <input type="password" id="settings-key" placeholder="sk-ant-api03-..." style="width:100%;background:var(--surf2);border:1px solid var(--border2);border-radius:var(--rs);color:var(--text);padding:11px 14px;font-size:13px;font-family:monospace;outline:none" autocomplete="off" spellcheck="false">
+    <div id="key-status" style="font-size:11px;color:var(--muted);margin-top:6px"></div>
+    <button class="btn btn-p" onclick="updateKey()" style="margin-top:12px">Key speichern</button>
+  </div>
+  <div class="card" style="padding:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Key erstellen</div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.8">
+      1. <a href="https://console.anthropic.com" style="color:#3b82f6">console.anthropic.com</a> öffnen<br>
+      2. „API Keys" → „Create Key"<br>
+      3. Key kopieren und oben einfügen
+    </div>
+  </div>
+  <div class="card" style="padding:14px">
+    <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">Datenverwaltung</div>
+    <button class="btn btn-o" onclick="confirmClearAll()" style="color:var(--red);border-color:rgba(239,68,68,.3)">🗑 Verlauf löschen</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════════════ HISTORY ══════════════ -->
+<div id="s-history" class="screen">
+<div class="hdr">
+  <button class="btn-icon" onclick="showScreen('s-home')">✕</button>
+  <div class="hdr-title">Verlauf</div>
+  <button onclick="confirmClearAll()" style="background:none;border:none;color:var(--muted);font-size:12px;cursor:pointer">Alles löschen</button>
+</div>
+<div class="page" style="padding-top:14px" id="hist-list"></div>
+</div>
+
+<!-- ══════════════ HISTORY DETAIL ══════════════ -->
+<div id="s-detail" class="screen">
+<div class="hdr">
+  <button class="btn-icon" onclick="showScreen('s-history');renderHistory()">‹</button>
+  <div class="hdr-title" id="det-title">Details</div>
+  <button onclick="deleteCurrentEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer">🗑 Löschen</button>
+</div>
+<div class="page" style="padding-top:14px" id="det-content"></div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script>
+// ═══════════ CONSTANTS ═══════════
+const MCOLORS={whitening:'#fbbf24',corner_damage:'#ef4444',edge_damage:'#f97316',scratch:'#a855f7',print_line:'#3b82f6',holo_damage:'#ec4899',stain:'#84cc16',crease:'#ef4444',default:'#ef4444'};
+const MLABELS={whitening:'Whitening',corner_damage:'Ecken-Schaden',edge_damage:'Rand-Schaden',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo-Schaden',stain:'Fleck',crease:'Knick'};
+
+function mColor(t){return MCOLORS[t]||MCOLORS.default}
+function mLabel(t){return MLABELS[t]||t}
+
+function gradeColor(g){
+  if(g>=10)return{c:'#22c55e',bg:'rgba(34,197,94,.15)',border:'rgba(34,197,94,.4)'};
+  if(g>=9)return{c:'#60a5fa',bg:'rgba(96,165,250,.15)',border:'rgba(96,165,250,.4)'};
+  if(g>=7)return{c:'#a78bfa',bg:'rgba(167,139,250,.15)',border:'rgba(167,139,250,.4)'};
+  if(g>=5)return{c:'#fb923c',bg:'rgba(251,146,60,.15)',border:'rgba(251,146,60,.4)'};
+  return{c:'#f87171',bg:'rgba(248,113,113,.15)',border:'rgba(248,113,113,.4)'};
+}
+function scoreColor(s){
+  if(s>=9)return'#22c55e';if(s>=7)return'#60a5fa';if(s>=5)return'#f59e0b';return'#ef4444';
+}
+function centeringGradeColor(maxPct){
+  if(maxPct<=55)return'#22c55e';if(maxPct<=60)return'#60a5fa';
+  if(maxPct<=65)return'#a78bfa';if(maxPct<=70)return'#c084fc';
+  if(maxPct<=80)return'#fb923c';if(maxPct<=85)return'#fbbf24';
+  return'#ef4444';
+}
+
+// ═══════════ API KEY ═══════════
+function getKey(){return localStorage.getItem('pg_api_key')||''}
+function setKey(k){localStorage.setItem('pg_api_key',k)}
+
+// ═══════════ INDEXEDDB ═══════════
+const DB='pgDB2';let db;
+function openDB(){
+  return new Promise((res,rej)=>{
+    const r=indexedDB.open(DB,2);
+    r.onupgradeneeded=e=>{
+      const d=e.target.result;
+      if(!d.objectStoreNames.contains('grades'))d.createObjectStore('grades',{keyPath:'id'});
+    };
+    r.onsuccess=e=>{db=e.target.result;res(db)};
+    r.onerror=()=>rej(r.error);
+  });
+}
+async function dbSave(e){await openDB();return new Promise((r,j)=>{const t=db.transaction('grades','readwrite');t.objectStore('grades').put(e);t.oncomplete=()=>r();t.onerror=()=>j(t.error)})}
+async function dbAll(){await openDB();return new Promise((r,j)=>{const t=db.transaction('grades','readonly'),q=t.objectStore('grades').getAll();q.onsuccess=()=>r(q.result||[]);q.onerror=()=>j(q.error)})}
+async function dbGet(id){await openDB();return new Promise((r,j)=>{const t=db.transaction('grades','readonly'),q=t.objectStore('grades').get(id);q.onsuccess=()=>r(q.result);q.onerror=()=>j(q.error)})}
+async function dbDel(id){await openDB();return new Promise((r,j)=>{const t=db.transaction('grades','readwrite');t.objectStore('grades').delete(id);t.oncomplete=()=>r();t.onerror=()=>j(t.error)})}
+async function dbClear(){await openDB();return new Promise((r,j)=>{const t=db.transaction('grades','readwrite');t.objectStore('grades').clear();t.oncomplete=()=>r();t.onerror=()=>j(t.error)})}
+
+// ═══════════ STATE ═══════════
+const S={step:'front',frontUrl:null,frontB64:null,frontType:null,backUrl:null,backB64:null,backType:null,result:null,annotFront:null,annotBack:null,centeringImg:null,saved:false,currentId:null};
+
+// ═══════════ NAVIGATION ═══════════
+function showScreen(id){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));document.getElementById(id).classList.add('active');window.scrollTo(0,0)}
+
+// ═══════════ CAPTURE ═══════════
+// ═══ CAMERA STATE ═══
+let camStream=null,overlayRAF=null,frameRect=null,facingMode='environment',ghostImg=null;
+
+function startNew(){
+  Object.assign(S,{step:'front',frontUrl:null,frontB64:null,frontType:null,backUrl:null,backB64:null,backType:null,result:null,annotFront:null,annotBack:null,centeringImg:null,saved:false});
+  setupCapture('front');showScreen('s-capture');
+}
+
+function setupCapture(side){
+  S.step=side;const f=side==='front';
+  document.getElementById('cap-title').textContent=f?'Vorderseite':'Rückseite';
+  document.getElementById('dot1').className='sd '+(f?'a':'d');
+  document.getElementById('dot2').className='sd '+(f?'':'a');
+  document.getElementById('next-btn').textContent=f?'Weiter →':'🔬 Analyse starten';
+  const hintEl=document.getElementById('cap-hint');
+  if(hintEl)hintEl.textContent=f?'Karte auf neutralen Untergrund, alle Ränder sichtbar.':'Karte umdrehen, gleiche Position wie Vorderseite halten.';
+  document.getElementById('ghost-hint').style.display=(!f&&S.frontUrl)?'block':'none';
+  const camLbl=document.getElementById('cam-side-lbl');
+  if(camLbl)camLbl.textContent=f?'VORDERSEITE':'RÜCKSEITE';
+  const url=f?S.frontUrl:S.backUrl;
+  document.getElementById('shot-preview').style.display=url?'block':'none';
+  if(url)document.getElementById('shot-img').src=url;
+  document.getElementById('cam-outer').style.display=url?'none':'block';
+  document.getElementById('cam-err-msg').style.display='none';
+  document.getElementById('file-zone').style.display='none';
+  document.getElementById('next-btn').disabled=!url;
+  if(!url){
+    startCam();
+    if(!f&&S.frontUrl){if(!ghostImg){ghostImg=new Image();ghostImg.style.display='none';document.body.appendChild(ghostImg)}ghostImg.src=S.frontUrl}
+  }
+}
+
+async function startCam(){
+  stopCam();
+  const video=document.getElementById('cam-video');
+  try{
+    camStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:facingMode},width:{ideal:1920},height:{ideal:1080}},audio:false});
+    video.srcObject=camStream;await video.play();
+    document.getElementById('cam-err-msg').style.display='none';
+    document.getElementById('cam-shutter').disabled=false;
+    startOverlay();
+  }catch(e){
+    document.getElementById('cam-outer').style.display='none';
+    document.getElementById('cam-err-msg').style.display='block';
+    document.getElementById('cam-shutter').disabled=true;
+  }
+}
+function stopCam(){
+  if(overlayRAF){cancelAnimationFrame(overlayRAF);overlayRAF=null}
+  if(camStream){camStream.getTracks().forEach(t=>t.stop());camStream=null}
+}
+function flipCam(){facingMode=facingMode==='environment'?'user':'environment';startCam()}
+function switchToFile(){
+  stopCam();
+  document.getElementById('cam-outer').style.display='none';
+  document.getElementById('cam-err-msg').style.display='none';
+  document.getElementById('file-zone').style.display='block';
+}
+
+function startOverlay(){
+  const video=document.getElementById('cam-video');
+  const canvas=document.getElementById('cam-ovl');
+  function draw(){
+    const vw=video.clientWidth,vh=video.clientHeight;
+    if(!vw||!vh){overlayRAF=requestAnimationFrame(draw);return}
+    canvas.width=vw;canvas.height=vh;
+    const ctx=canvas.getContext('2d');ctx.clearRect(0,0,vw,vh);
+    const RATIO=63/88;
+    let fw=Math.round(vw*0.80),fh=Math.round(fw/RATIO);
+    if(fh>vh*0.84){fh=Math.round(vh*0.82);fw=Math.round(fh*RATIO)}
+    const fx=Math.round((vw-fw)/2),fy=Math.round((vh-fh)/2);
+    frameRect={fx,fy,fw,fh,vw,vh};
+    ctx.fillStyle='rgba(0,0,0,0.52)';ctx.fillRect(0,0,vw,vh);
+    ctx.clearRect(fx,fy,fw,fh);
+    if(S.step==='back'&&ghostImg&&ghostImg.complete&&ghostImg.naturalWidth>0){
+      ctx.globalAlpha=0.22;ctx.drawImage(ghostImg,fx,fy,fw,fh);ctx.globalAlpha=1;
+    }
+    const CL=Math.min(fw,fh)*0.09;const col=S.step==='front'?'#22c55e':'#3b82f6';
+    ctx.strokeStyle=col;ctx.lineWidth=2.8;ctx.lineCap='round';
+    [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{
+      ctx.beginPath();ctx.moveTo(cx+dx*CL,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx,cy+dy*CL);ctx.stroke();
+    });
+    ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=0.7;ctx.setLineDash([3,5]);
+    ctx.beginPath();ctx.moveTo(fx+fw/2,fy+4);ctx.lineTo(fx+fw/2,fy+fh-4);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(fx+4,fy+fh/2);ctx.lineTo(fx+fw-4,fy+fh/2);ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font='bold 10px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,0.28)';
+    ctx.fillText('Karte hier ausrichten',fx+fw/2,fy+fh-9);
+    overlayRAF=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function captureShot(){
+  const video=document.getElementById('cam-video');
+  if(!frameRect)return;
+  const {fx,fy,fw,fh,vw,vh}=frameRect;
+  const scX=video.videoWidth/vw,scY=video.videoHeight/vh;
+  const c=document.createElement('canvas');
+  c.width=Math.round(fw*scX);c.height=Math.round(fh*scY);
+  c.getContext('2d').drawImage(video,fx*scX,fy*scY,fw*scX,fh*scY,0,0,c.width,c.height);
+  c.toBlob(blob=>{
+    const url=URL.createObjectURL(blob);
+    const rd=new FileReader();
+    rd.onload=()=>storeCapture(url,rd.result.split(',')[1],'image/jpeg');
+    rd.readAsDataURL(blob);
+  },'image/jpeg',0.92);
+}
+function storeCapture(url,b64,type){
+  stopCam();
+  if(S.step==='front'){S.frontUrl=url;S.frontB64=b64;S.frontType=type}
+  else{S.backUrl=url;S.backB64=b64;S.backType=type}
+  document.getElementById('cam-outer').style.display='none';
+  document.getElementById('shot-preview').style.display='block';
+  document.getElementById('shot-img').src=url;
+  document.getElementById('next-btn').disabled=false;
+}
+function retakeShot(){
+  if(S.step==='front'){S.frontUrl=S.frontB64=S.frontType=null}else{S.backUrl=S.backB64=S.backType=null}
+  document.getElementById('shot-preview').style.display='none';
+  document.getElementById('cam-outer').style.display='block';
+  document.getElementById('next-btn').disabled=true;
+  startCam();
+}
+function handleFile(e){
+  const file=e.target.files[0];if(!file)return;
+  const url=URL.createObjectURL(file);
+  const rd=new FileReader();
+  rd.onload=()=>{
+    storeCapture(url,rd.result.split(',')[1],file.type||'image/jpeg');
+    document.getElementById('uz').style.display='none';
+    document.getElementById('file-pz').style.display='block';
+    document.getElementById('file-prev').src=url;
+  };
+  rd.readAsDataURL(file);e.target.value='';
+}
+function retakeFile(){
+  if(S.step==='front'){S.frontUrl=S.frontB64=S.frontType=null}else{S.backUrl=S.backB64=S.backType=null}
+  document.getElementById('uz').style.display='flex';document.getElementById('file-pz').style.display='none';
+  document.getElementById('shot-preview').style.display='none';document.getElementById('next-btn').disabled=true;
+}
+function captureBack(){stopCam();if(S.step==='front')showScreen('s-home');else setupCapture('front')}
+function nextStep(){if(S.step==='front'){stopCam();setupCapture('back')}else{stopCam();runAnalysis()}}
+
+// ═══════════ ANALYSIS ═══════════
+async function runAnalysis(){
+  showScreen('s-analyzing');
+  const msgs=['Bild wird verarbeitet...','Zentrierung wird gemessen...','Ecken werden analysiert...','Ränder werden geprüft...','Oberfläche wird bewertet...','Defektpositionen werden kartiert...','Grade wird berechnet...'];
+  let mi=0;const el=document.getElementById('amsg');el.textContent=msgs[0];
+  const iv=setInterval(()=>{mi=Math.min(mi+1,msgs.length-1);el.textContent=msgs[mi]},1700);
+  try{
+    const apiKey=getKey();
+    if(!apiKey){clearInterval(iv);toast('⚠️ Kein API-Key gespeichert – bitte in den Einstellungen eintragen');setupCapture('back');showScreen('s-capture');return}
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',headers:{
+        'Content-Type':'application/json',
+        'x-api-key':getKey(),
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',max_tokens:1500,
+        system:'You are a certified PSA card grading expert. Analyze Pokémon cards strictly by PSA 2025 grading standards. Final grade = LOWEST sub-score. Estimate defect marker positions as percentage of image dimensions (0-100). Respond ONLY with valid JSON. No markdown. No backticks. No extra text.',
+        messages:[{role:'user',content:[
+          {type:'image',source:{type:'base64',media_type:S.frontType,data:S.frontB64}},
+          {type:'image',source:{type:'base64',media_type:S.backType,data:S.backB64}},
+          {type:'text',text:`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
+
+PSA 2025 centering thresholds:
+Grade 10: front ≤55/45 LR and ≤55/45 TB, back ≤75/25
+Grade 9: front ≤60/40, back ≤90/10
+Grade 8: front ≤65/35, back ≤90/10
+Grade 7: front ≤70/30, back ≤90/10
+Grade 6: front ≤80/20, back ≤90/10
+Grade 5: front ≤85/15, back ≤90/10
+
+For centering percentages: estimate the border width on each side as a percentage of TOTAL card width or height.
+Example: front_left_pct=47 means left border = 47% of total horizontal border space, right=53%.
+
+For markers: estimate position in the front or back IMAGE as x_pct (0=left,100=right) and y_pct (0=top,100=bottom). Be precise for known defect locations. Side "front"=image1, "back"=image2.
+
+Marker types: whitening, corner_damage, edge_damage, scratch, print_line, holo_damage, stain, crease
+
+Return ONLY this JSON structure:
+{
+  "centering":{
+    "front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,
+    "back_left_pct":45,"back_right_pct":55,"back_top_pct":50,"back_bottom_pct":50,
+    "front_ratio_lr":"47/53","front_ratio_tb":"49/51",
+    "back_ratio_lr":"45/55","back_ratio_tb":"50/50",
+    "score":9,"notes":"German note"
+  },
+  "corners":{
+    "score":9,
+    "top_left":"condition desc","top_right":"condition desc","bottom_left":"condition desc","bottom_right":"condition desc",
+    "notes":"German note"
+  },
+  "edges":{
+    "score":9,
+    "top":"condition","right":"condition","bottom":"condition","left":"condition",
+    "notes":"German note"
+  },
+  "surface":{
+    "score":10,
+    "defects":["list or empty"],
+    "notes":"German note"
+  },
+  "markers":[
+    {"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"Leichtes Whitening oben links"}
+  ],
+  "final_grade":9,
+  "grade_label":"Mint",
+  "summary":"German 2-3 sentence summary",
+  "recommendation":"German recommendation for PSA submission"
+}`}
+        ]}]
+      })
+    });
+    if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(eb?.error?.message||`HTTP ${resp.status}`)}
+    const data=await resp.json();
+    const raw=(data.content||[]).filter(i=>i.type==='text').map(i=>i.text).join('');
+    const clean=raw.replace(/```json|```/g,'').trim();
+    S.result=JSON.parse(clean);
+    clearInterval(iv);
+
+    // Build annotated images
+    const frontMarkers=(S.result.markers||[]).filter(m=>m.side==='front');
+    const backMarkers=(S.result.markers||[]).filter(m=>m.side==='back');
+    [S.annotFront,S.annotBack,S.centeringImg]=await Promise.all([
+      annotateImage(S.frontUrl,frontMarkers),
+      annotateImage(S.backUrl,backMarkers),
+      createCenteringDiagram(S.result.centering)
+    ]);
+
+    renderResults();
+    showScreen('s-results');
+  }catch(err){
+    clearInterval(iv);
+    toast('❌ Analyse fehlgeschlagen: '+(err.message||'Erneut versuchen'));
+    setupCapture('back');showScreen('s-capture');
+  }
+}
+
+// ═══════════ CANVAS ANNOTATION ═══════════
+function annotateImage(url,markers){
+  return new Promise(resolve=>{
+    const img=new Image();
+    img.onload=()=>{
+      const MAX=900;const scale=img.width>MAX?MAX/img.width:1;
+      const W=Math.round(img.width*scale),H=Math.round(img.height*scale);
+      const c=document.createElement('canvas');c.width=W;c.height=H;
+      const ctx=c.getContext('2d');
+      ctx.drawImage(img,0,0,W,H);
+
+      if(markers&&markers.length>0){
+        markers.forEach((m,i)=>{
+          const x=W*(m.x_pct/100),y=H*(m.y_pct/100);
+          const col=mColor(m.type);const num=i+1;const R=14;
+          // Shadow
+          ctx.shadowColor='rgba(0,0,0,0.6)';ctx.shadowBlur=6;
+          // Circle fill
+          ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);
+          ctx.fillStyle=col+'cc';ctx.fill();
+          ctx.shadowBlur=0;
+          // Circle border
+          ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);
+          ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+          // Number
+          ctx.font=`bold ${R*0.95}px -apple-system,sans-serif`;
+          ctx.textAlign='center';ctx.textBaseline='middle';
+          ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.5)';ctx.shadowBlur=2;
+          ctx.fillText(String(num),x,y+0.5);
+          ctx.shadowBlur=0;
+        });
+      }
+      resolve(c.toDataURL('image/jpeg',0.88));
+    };
+    img.onerror=()=>resolve(url);
+    img.src=url;
+  });
+}
+
+function createCenteringDiagram(cen){
+  return new Promise(resolve=>{
+    const W=700,H=220;
+    const c=document.createElement('canvas');c.width=W;c.height=H;
+    const ctx=c.getContext('2d');
+
+    // Background
+    ctx.fillStyle='#151d30';ctx.fillRect(0,0,W,H);
+
+    // Draw one half: front or back
+    function drawSide(cx,cy,cw,ch,lp,rp,tp,bp,label){
+      const TOTAL_H=cw*0.15,TOTAL_V=ch*0.12;
+      const lW=TOTAL_H*(lp/100),rW=TOTAL_H*(rp/100);
+      const tH=TOTAL_V*(tp/100),bH=TOTAL_V*(bp/100);
+
+      const lrMax=Math.max(lp,rp);const tbMax=Math.max(tp,bp);
+      const lrCol=centeringGradeColor(lrMax);const tbCol=centeringGradeColor(tbMax);
+
+      // Card bg
+      ctx.fillStyle='#1e293b';
+      roundRect(ctx,cx,cy,cw,ch,5);ctx.fill();
+
+      // Left border highlight
+      ctx.fillStyle=lrCol+'28';ctx.fillRect(cx,cy,lW,ch);
+      // Right border
+      ctx.fillStyle=lrCol+'28';ctx.fillRect(cx+cw-rW,cy,rW,ch);
+      // Top border
+      ctx.fillStyle=tbCol+'28';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);
+      // Bottom border
+      ctx.fillStyle=tbCol+'28';ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);
+
+      // Art area
+      const ax=cx+lW,ay=cy+tH,aw=cw-lW-rW,ah=ch-tH-bH;
+      ctx.fillStyle='#0a0f1e';roundRect(ctx,ax,ay,aw,ah,3);ctx.fill();
+
+      // Center crosshair
+      ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=0.8;ctx.setLineDash([3,4]);
+      ctx.beginPath();ctx.moveTo(cx+cw/2,cy);ctx.lineTo(cx+cw/2,cy+ch);ctx.stroke();
+      ctx.beginPath();ctx.moveTo(cx,cy+ch/2);ctx.lineTo(cx+cw,cy+ch/2);ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Card border
+      ctx.strokeStyle='rgba(255,255,255,0.1)';ctx.lineWidth=0.8;
+      roundRect(ctx,cx,cy,cw,ch,5);ctx.stroke();
+
+      // Border measurement lines
+      // Left: double arrow
+      if(lW>10){
+        drawArrow(ctx,cx+lW/2,cy+3,cx,cy+3,lrCol);
+        drawArrow(ctx,cx+lW/2,cy+3,cx+lW,cy+3,lrCol);
+      }
+      if(rW>10){
+        drawArrow(ctx,cx+cw-rW/2,cy+3,cx+cw,cy+3,lrCol);
+        drawArrow(ctx,cx+cw-rW/2,cy+3,cx+cw-rW,cy+3,lrCol);
+      }
+
+      // Percentage labels inside borders
+      ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+
+      if(lW>14){ctx.fillStyle=lrCol;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2)}
+      if(rW>14){ctx.fillStyle=lrCol;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2)}
+      if(tH>10){ctx.fillStyle=tbCol;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2)}
+      if(bH>10){ctx.fillStyle=tbCol;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2)}
+
+      // Ratio labels
+      ctx.font='10px sans-serif';ctx.fillStyle='rgba(255,255,255,0.5)';
+      ctx.textAlign='left';ctx.fillText(`L/R: ${lp}/${rp}`,cx,cy+ch+12);
+      ctx.textAlign='right';ctx.fillText(`T/B: ${tp}/${bp}`,cx+cw,cy+ch+12);
+
+      // Section title
+      ctx.font='bold 11px sans-serif';ctx.fillStyle='rgba(255,255,255,0.35)';
+      ctx.textAlign='center';ctx.fillText(label,cx+cw/2,cy-10);
+
+      // PSA grade for this side's centering
+      const maxP=Math.max(lrMax,tbMax);
+      const gCol=centeringGradeColor(maxP);
+      const g=maxP<=55?10:maxP<=60?9:maxP<=65?8:maxP<=70?7:maxP<=80?6:maxP<=85?5:4;
+      ctx.fillStyle=gCol+'22';roundRect(ctx,cx+cw-28,cy-22,26,18,4);ctx.fill();
+      ctx.strokeStyle=gCol+'55';ctx.lineWidth=0.8;roundRect(ctx,cx+cw-28,cy-22,26,18,4);ctx.stroke();
+      ctx.font='bold 10px sans-serif';ctx.fillStyle=gCol;ctx.textAlign='center';ctx.fillText('PSA '+g,cx+cw-15,cy-13);
+    }
+
+    const pad=30,gap=20;
+    const cardW=(W-pad*2-gap)/2,cardH=H-55;
+
+    drawSide(pad,32,cardW,cardH,
+      cen.front_left_pct||50,cen.front_right_pct||50,
+      cen.front_top_pct||50,cen.front_bottom_pct||50,'Vorderseite');
+
+    drawSide(pad+cardW+gap,32,cardW,cardH,
+      cen.back_left_pct||50,cen.back_right_pct||50,
+      cen.back_top_pct||50,cen.back_bottom_pct||50,'Rückseite');
+
+    // Tolerance legend at bottom
+    const legend=[{c:'#22c55e',l:'PSA 10 (≤55/45)'},
+                  {c:'#60a5fa',l:'PSA 9 (≤60/40)'},
+                  {c:'#a78bfa',l:'PSA 8 (≤65/35)'},
+                  {c:'#fb923c',l:'PSA 6-7'},
+                  {c:'#ef4444',l:'PSA ≤5'}];
+    // Mini legend line
+    ctx.font='9px sans-serif';ctx.textAlign='left';
+    let lx=pad;
+    legend.forEach(({c,l})=>{
+      ctx.fillStyle=c;ctx.fillRect(lx,H-16,6,6);
+      ctx.fillStyle='rgba(255,255,255,0.35)';ctx.fillText(l,lx+9,H-11);
+      lx+=ctx.measureText(l).width+20;
+    });
+
+    resolve(c.toDataURL('image/jpeg',0.92));
+  });
+}
+
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+  ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+  ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+  ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+  ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+
+function drawArrow(ctx,fx,fy,tx,ty,col){
+  ctx.strokeStyle=col+'99';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(fx,fy);ctx.lineTo(tx,ty);ctx.stroke();
+  const angle=Math.atan2(ty-fy,tx-fx);const hs=5;
+  ctx.fillStyle=col+'99';
+  ctx.beginPath();
+  ctx.moveTo(tx,ty);
+  ctx.lineTo(tx-hs*Math.cos(angle-0.4),ty-hs*Math.sin(angle-0.4));
+  ctx.lineTo(tx-hs*Math.cos(angle+0.4),ty-hs*Math.sin(angle+0.4));
+  ctx.closePath();ctx.fill();
+}
+
+// ═══════════ RENDER RESULTS ═══════════
+function renderResults(r,annotF,annotB,cImg,fromHistory){
+  const res=r||S.result;
+  const af=annotF||S.annotFront;
+  const ab=annotB||S.annotBack;
+  const ci=cImg||S.centeringImg;
+  const g=res.final_grade;
+  const gc=gradeColor(g);
+  const markers=res.markers||[];
+  const frontM=markers.filter(m=>m.side==='front');
+  const backM=markers.filter(m=>m.side==='back');
+
+  function sBar(score,label){
+    const col=scoreColor(score);
+    return`<div class="sb"><div class="sb-hd"><span class="sb-lbl">${label}</span><span style="font-weight:600;color:${col}">${score}/10</span></div><div class="sb-track"><div class="sb-fill" style="width:${score*10}%;background:${col}"></div></div></div>`;
+  }
+
+  function markerLegend(mArr){
+    if(!mArr.length)return'';
+    return`<div class="mlegend">${mArr.map((m,i)=>`<div class="mleg-item"><div class="mleg-dot" style="background:${mColor(m.type)}"></div><span><b>${i+1}</b> ${m.description||mLabel(m.type)}</span></div>`).join('')}</div>`;
+  }
+
+  function accSection(id,icon,label,score,bodyHTML){
+    const col=scoreColor(score);
+    return`<div>
+      <div class="acc-hdr" onclick="toggleAcc('ab-${id}',this)">
+        <span style="font-size:16px">${icon}</span>
+        <span style="font-size:14px;font-weight:500">${label}</span>
+        <span style="font-size:12px;font-weight:600;color:${col};margin-left:auto;margin-right:8px">${score}/10</span>
+        <span class="acc-arrow">▾</span>
+      </div>
+      <div id="ab-${id}" style="display:none" class="acc-body">${bodyHTML}</div>
+    </div>`;
+  }
+
+  const cen=res.centering||{};
+  const cenBody=`
+    <div style="margin-bottom:10px">
+      ${ci?`<div class="cnt-wrap"><img class="cnt-canvas" src="${ci}" alt="Zentrierung"></div>`:''}
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
+        <div style="background:var(--surf2);border-radius:var(--rs);padding:9px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Vorderseite L/R</div>
+          <div style="font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:${centeringGradeColor(Math.max(cen.front_left_pct||50,cen.front_right_pct||50))}">${cen.front_ratio_lr||'–'}</div>
+        </div>
+        <div style="background:var(--surf2);border-radius:var(--rs);padding:9px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Vorderseite T/B</div>
+          <div style="font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:${centeringGradeColor(Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50))}">${cen.front_ratio_tb||'–'}</div>
+        </div>
+        <div style="background:var(--surf2);border-radius:var(--rs);padding:9px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Rückseite L/R</div>
+          <div style="font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:${centeringGradeColor(Math.max(cen.back_left_pct||50,cen.back_right_pct||50))}">${cen.back_ratio_lr||'–'}</div>
+        </div>
+        <div style="background:var(--surf2);border-radius:var(--rs);padding:9px;text-align:center">
+          <div style="font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">Rückseite T/B</div>
+          <div style="font-size:17px;font-weight:700;font-variant-numeric:tabular-nums;color:${centeringGradeColor(Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50))}">${cen.back_ratio_tb||'–'}</div>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.5">${cen.notes||''}</div>`;
+
+  const cornersBody=`
+    <div class="cgrid">
+      ${['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return`<div class="cgrid-c"><div class="cgrid-l">${l}</div><div style="font-size:12px">${res.corners?.[k]||'–'}</div></div>`}).join('')}
+    </div>
+    <div style="font-size:12px;color:var(--muted);line-height:1.5">${res.corners?.notes||''}</div>`;
+
+  const edgesBody=`
+    ${['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return`<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border);font-size:12px"><span style="color:var(--muted)">${l}</span><span style="max-width:58%;text-align:right">${res.edges?.[k]||'–'}</span></div>`}).join('')}
+    <div style="font-size:12px;color:var(--muted);margin-top:8px;line-height:1.5">${res.edges?.notes||''}</div>`;
+
+  const surfBody=`
+    ${res.surface?.defects?.length?res.surface.defects.map(d=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--amber);font-size:13px;margin-top:1px">⚠️</span><span style="font-size:12px">${d}</span></div>`).join(''):'<div style="font-size:12px;color:var(--muted);display:flex;gap:6px;margin-bottom:8px"><span style="color:var(--green)">✓</span>Keine Defekte erkannt</div>'}
+    <div style="font-size:12px;color:var(--muted);line-height:1.5">${res.surface?.notes||''}</div>`;
+
+  const html=`
+    <!-- Grade Summary -->
+    <div class="card" style="margin-bottom:10px">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">
+        <div class="gbadge" style="background:${gc.bg};border:1px solid ${gc.border}">
+          <div class="gnum" style="color:${gc.c}">${g}</div>
+          <div class="gpsa" style="color:${gc.c}">PSA</div>
+        </div>
+        <div>
+          <div style="font-size:21px;font-weight:800;margin-bottom:5px">${res.grade_label||''}</div>
+          <div style="display:inline-block;background:${gc.bg};border:1px solid ${gc.border};color:${gc.c};font-size:11px;font-weight:600;padding:3px 10px;border-radius:5px">Lowest subgrade: ${Math.min(res.centering?.score,res.corners?.score,res.edges?.score,res.surface?.score)}</div>
+        </div>
+      </div>
+      ${sBar(res.centering?.score||0,'Zentrierung')}
+      ${sBar(res.corners?.score||0,'Ecken')}
+      ${sBar(res.edges?.score||0,'Ränder')}
+      ${sBar(res.surface?.score||0,'Oberfläche')}
+      ${res.summary?`<div style="background:var(--surf2);border-radius:var(--rs);padding:12px;margin-top:12px;font-size:13px;line-height:1.6">${res.summary}</div>`:''}
+      ${res.recommendation?`<div style="background:var(--blue-bg);border:1px solid rgba(59,130,246,.25);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--blue);margin-bottom:4px;letter-spacing:.06em;text-transform:uppercase">💡 Empfehlung</div><div style="font-size:12px;color:var(--muted);line-height:1.5">${res.recommendation}</div></div>`:''}
+    </div>
+
+    <!-- Annotated Images -->
+    <div class="card" style="padding:14px">
+      <div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:10px">Kartenbeschriftung</div>
+      <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px">Vorderseite</div>
+      ${af?`<div class="ann-wrap" id="annWrapFront"><img src="${af}" class="ann-canvas" style="cursor:crosshair" onclick="handleCanvasTap(event,'front')"><div class="marker-tooltip" id="ttFront"></div></div>${markerLegend(frontM)}`:''}
+      <div style="font-size:12px;font-weight:500;color:var(--muted);margin-bottom:6px;margin-top:14px">Rückseite</div>
+      ${ab?`<div class="ann-wrap" id="annWrapBack"><img src="${ab}" class="ann-canvas" style="cursor:crosshair" onclick="handleCanvasTap(event,'back')"><div class="marker-tooltip" id="ttBack"></div></div>${markerLegend(backM)}`:''}
+    </div>
+
+    <!-- Detail Sections -->
+    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">
+      <div style="padding:12px 16px;border-bottom:1px solid var(--border);font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase">Detailbewertung</div>
+      ${accSection('cen','⚖️','Zentrierung',res.centering?.score||0,cenBody)}
+      ${accSection('cor','🔍','Ecken',res.corners?.score||0,cornersBody)}
+      ${accSection('edg','📐','Ränder',res.edges?.score||0,edgesBody)}
+      ${accSection('sur','✨','Oberfläche',res.surface?.score||0,surfBody)}
+    </div>
+
+    <div style="font-size:11px;color:var(--hint);text-align:center;padding:12px 0 4px;line-height:1.6">ℹ️ KI-gestützte Einschätzung · kein offizielles PSA-Ergebnis<br>Licht- und Bildqualität beeinflussen die Genauigkeit.</div>
+    ${fromHistory?`<button class="btn btn-s" onclick="showScreen('s-history');renderHistory()" style="margin-top:10px">← Zurück zum Verlauf</button>`:`<button class="btn btn-s" onclick="showScreen('s-home');loadRecent()" style="margin-top:10px">🏠 Zur Startseite</button>`}
+  `;
+
+  const el=fromHistory?document.getElementById('det-content'):document.getElementById('res-content');
+  el.innerHTML=html;
+
+  // store markers for tap interaction
+  window._frontMarkers=fromHistory?markers.filter(m=>m.side==='front'):frontM;
+  window._backMarkers=fromHistory?markers.filter(m=>m.side==='back'):backM;
+}
+
+// Marker tap detection
+function handleCanvasTap(e,side){
+  const img=e.target;const rect=img.getBoundingClientRect();
+  const xr=((e.clientX-rect.left)/rect.width)*100;
+  const yr=((e.clientY-rect.top)/rect.height)*100;
+  const markers=side==='front'?(window._frontMarkers||[]):(window._backMarkers||[]);
+  const RADIUS=5;
+  const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<RADIUS);
+  const tt=document.getElementById(side==='front'?'ttFront':'ttBack');
+  if(!tt)return;
+  if(hit){
+    tt.textContent=`${hit.label||''}: ${hit.description||mLabel(hit.type)}`;
+    tt.style.display='block';
+    const lp=Math.min(e.clientX-rect.left+10,rect.width-180);
+    const tp=Math.max(e.clientY-rect.top-40,5);
+    tt.style.left=lp+'px';tt.style.top=tp+'px';
+    setTimeout(()=>tt.style.display='none',2500);
+  }else{tt.style.display='none'}
+}
+
+function toggleAcc(id,hdr){
+  const el=document.getElementById(id);
+  const open=el.style.display!=='none';
+  el.style.display=open?'none':'block';
+  hdr.classList.toggle('open',!open);
+}
+
+// ═══════════ SAVE / HISTORY ═══════════
+async function saveResult(){
+  if(!S.result||S.saved)return;
+  const entry={
+    id:Date.now().toString(),
+    timestamp:Date.now(),
+    grade:S.result.final_grade,
+    label:S.result.grade_label,
+    summary:S.result.summary,
+    recommendation:S.result.recommendation,
+    centering:S.result.centering,
+    corners:S.result.corners,
+    edges:S.result.edges,
+    surface:S.result.surface,
+    markers:S.result.markers||[],
+    annotFront:S.annotFront,
+    annotBack:S.annotBack,
+    centeringImg:S.centeringImg,
+  };
+  try{
+    await dbSave(entry);S.saved=true;
+    const btn=document.getElementById('save-btn');
+    btn.textContent='✓ Gespeichert';btn.disabled=true;
+    btn.style.background='var(--green-bg)';btn.style.color='var(--green)';
+    toast('✅ Im Verlauf gespeichert');
+  }catch(e){toast('❌ Speichern fehlgeschlagen')}
+}
+
+async function renderHistory(){
+  showScreen('s-history');
+  const entries=await dbAll();
+  entries.sort((a,b)=>b.timestamp-a.timestamp);
+  const el=document.getElementById('hist-list');
+  if(!entries.length){el.innerHTML=`<div class="empty"><div style="font-size:48px;margin-bottom:12px;opacity:.3">🗂️</div><div style="font-size:15px;font-weight:600;margin-bottom:6px">Noch kein Verlauf</div><div style="font-size:13px">Analysierte Karten werden hier gespeichert.</div></div>`;return}
+  el.innerHTML=entries.map(e=>{
+    const gc=gradeColor(e.grade);
+    const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'numeric'});
+    const t=new Date(e.timestamp).toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit'});
+    return`<div class="hi" onclick="showDetail('${e.id}')">
+      ${e.annotFront?`<img class="hthumb" src="${e.annotFront}" alt="Karte">`:`<div class="hthumb" style="display:flex;align-items:center;justify-content:center;font-size:22px">🃏</div>`}
+      <div style="flex:1;min-width:0">
+        <div style="font-size:14px;font-weight:600;margin-bottom:2px">${e.label||'Unbekannt'}</div>
+        <div style="font-size:11px;color:var(--muted);margin-bottom:5px">${d} · ${t}</div>
+        <div style="display:flex;gap:5px;flex-wrap:wrap">
+          ${[{l:'Z',s:e.centering?.score},{l:'E',s:e.corners?.score},{l:'R',s:e.edges?.score},{l:'O',s:e.surface?.score}].map(({l,s})=>{const sc=s||0;const gc2=gradeColor(sc);return`<span style="background:${gc2.bg};color:${gc2.c};font-size:10px;font-weight:600;padding:2px 7px;border-radius:4px">${l}:${sc}</span>`}).join('')}
+        </div>
+      </div>
+      <div style="width:40px;height:40px;border-radius:8px;background:${gc.bg};border:1px solid ${gc.border};display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <span style="font-size:17px;font-weight:800;color:${gc.c}">${e.grade}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function showDetail(id){
+  const e=await dbGet(id);if(!e)return;
+  S.currentId=id;
+  document.getElementById('det-title').textContent=`PSA ${e.grade} – ${e.label}`;
+  showScreen('s-detail');
+  const res={...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]};
+  renderResults(res,e.annotFront,e.annotBack,e.centeringImg,true);
+}
+
+async function deleteCurrentEntry(){
+  if(!S.currentId)return;
+  await dbDel(S.currentId);S.currentId=null;
+  toast('🗑 Eintrag gelöscht');
+  renderHistory();
+}
+
+async function confirmClearAll(){
+  if(!confirm('Gesamten Verlauf unwiderruflich löschen?'))return;
+  await dbClear();renderHistory();toast('🗑 Verlauf geleert');
+}
+
+async function loadRecent(){
+  const entries=await dbAll();
+  entries.sort((a,b)=>b.timestamp-a.timestamp);
+  const recent=entries.slice(0,3);
+  const el=document.getElementById('home-recent');
+  if(!recent.length){el.innerHTML='';return}
+  el.innerHTML=`<div style="font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px">Letzte Analysen</div>`+
+    recent.map(e=>{
+      const gc=gradeColor(e.grade);
+      const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short'});
+      return`<div class="hi" onclick="showDetail('${e.id}')">
+        ${e.annotFront?`<img class="hthumb" src="${e.annotFront}" alt="K">`:`<div class="hthumb" style="display:flex;align-items:center;justify-content:center;font-size:20px">🃏</div>`}
+        <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">${e.label}</div><div style="font-size:11px;color:var(--muted)">${d}</div></div>
+        <div style="width:36px;height:36px;border-radius:7px;background:${gc.bg};border:1px solid ${gc.border};display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:15px;font-weight:800;color:${gc.c}">${e.grade}</span></div>
+      </div>`;
+    }).join('')+`<button class="btn btn-o" onclick="renderHistory()" style="margin-top:4px;font-size:13px">Alle ${entries.length} Einträge anzeigen →</button>`;
+}
+
+function initSettings(){const k=getKey();document.getElementById('settings-key').value=k;document.getElementById('key-status').textContent=k?'✓ Aktiv: '+k.substring(0,20)+'…':'Kein Key gespeichert'}
+function updateKey(){const k=document.getElementById('settings-key').value.trim();if(!k.startsWith('sk-ant')){toast('❌ Ungültiger Key');return}setKey(k);toast('✅ Key gespeichert');document.getElementById('key-status').textContent='✓ Aktiv: '+k.substring(0,20)+'…'}
+
+// ═══════════ TOAST ═══════════
+function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2500)}
+
+// ═══════════ PWA MANIFEST ═══════════
+const manifest={name:'PokéGrader PSA',short_name:'PokéGrader',start_url:'./',display:'standalone',background_color:'#0a0f1e',theme_color:'#0a0f1e',orientation:'portrait',icons:[{src:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="%230a0f1e"/><text y="46" x="10" font-size="40">🃏</text></svg>',sizes:'any',type:'image/svg+xml'}]};
+const mBlob=new Blob([JSON.stringify(manifest)],{type:'application/manifest+json'});
+const mUrl=URL.createObjectURL(mBlob);
+const mLink=document.createElement('link');mLink.rel='manifest';mLink.href=mUrl;
+document.head.appendChild(mLink);
+
+// ═══════════ INIT ═══════════
+openDB().catch(console.error);
+loadRecent();
+</script>
+</body>
+</html>
