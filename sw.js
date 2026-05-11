@@ -1,4 +1,4 @@
-const CACHE = 'pokeGrader-v3';
+const CACHE = 'pokeGrader-v10';
 const ASSETS = ['./manifest.json','./icons/icon-192.png','./icons/icon-512.png'];
 
 self.addEventListener('install', e => {

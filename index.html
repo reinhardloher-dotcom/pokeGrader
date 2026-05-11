@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- PokéGrader v10 build 2026-05-11 -->
 <html lang="de">
 <head>
 <meta charset="UTF-8">
@@ -231,6 +232,8 @@ input::placeholder{color:var(--hi)}
 </style>
 </head>
 <body>
+<div id="js-test" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#e63946;color:#fff;text-align:center;padding:8px;font-weight:bold;font-size:14px">JS LADET... wenn dieser Text bleibt = JS Fehler</div>
+
 <!-- CAMERA MODAL -->
 <div id="cam-modal">
   <video id="cam-video" autoplay playsinline muted></video>
@@ -580,124 +583,35 @@ input::placeholder{color:var(--hi)}
 </nav>
 <div id="toast"></div>
 
+
 <script>
 'use strict';
-
-// ── UTILS ──────────────────────────────────────
-const $ = id => document.getElementById(id);
-const sh = el => { if(el) el.style.display='block'; };
-const hi = el => { if(el) el.style.display='none'; };
-
+const $=id=>document.getElementById(id);
+const sh=el=>{if(el)el.style.display='block';};
+const hi=el=>{if(el)el.style.display='none';};
 let _tt;
-function toast(msg, dur) {
-  try {
-    const e=$('toast');
-    e.textContent=String(msg).substring(0,80);
-    e.classList.add('show');
-    clearTimeout(_tt);
-    _tt=setTimeout(()=>e.classList.remove('show'), dur||2800);
-  } catch(e) {}
-}
-
-// ── GRADE SCALE (built by JS, not template literal in HTML) ──
-function buildGradeScale() {
-  const el=$('grade-scale-bars');
-  if(!el) return;
-  const grades=[
-    {n:1,c:'#ef4444'},{n:2,c:'#f87171'},{n:3,c:'#fb923c'},
-    {n:4,c:'#fbbf24'},{n:5,c:'#facc15'},{n:6,c:'#a3e635'},
-    {n:7,c:'#4ade80'},{n:8,c:'#34d399'},{n:9,c:'#60a5fa'},{n:10,c:'#f5c842'}
-  ];
-  el.innerHTML = grades.map(({n,c}) =>
-    '<div class="gs-bar">' +
-      '<div class="gs-fill" style="height:'+((20+n*4))+'px;background:'+c+';opacity:.85"></div>' +
-      '<div class="gs-num" style="color:'+c+'">'+n+'</div>' +
-    '</div>'
-  ).join('');
-}
-
-// ── NAVIGATION ──────────────────────────────────
+function toast(m,d){try{const e=$('toast');e.textContent=String(m).substring(0,80);e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('show'),d||2800);}catch(e){}}
+function buildGradeScale(){const el=$('grade-scale-bars');if(!el)return;const g=[{n:1,c:'#ef4444'},{n:2,c:'#f87171'},{n:3,c:'#fb923c'},{n:4,c:'#fbbf24'},{n:5,c:'#facc15'},{n:6,c:'#a3e635'},{n:7,c:'#4ade80'},{n:8,c:'#34d399'},{n:9,c:'#60a5fa'},{n:10,c:'#f5c842'}];el.innerHTML=g.map(({n,c})=>'<div class="gs-bar"><div class="gs-fill" style="height:'+(20+n*4)+'px;background:'+c+';opacity:.85"></div><div class="gs-num" style="color:'+c+'">'+n+'</div></div>').join('');}
 const NAV=['pg-home','pg-collection','pg-settings'];
-function navTo(id) {
-  try {
-    stopCam();
-    document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));
-    const sec=$(id);
-    if(sec) sec.classList.add('on');
-    window.scrollTo(0,0);
-    const bnav=$('bnav');
-    if(NAV.includes(id)) {
-      bnav.style.display='flex';
-      document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
-      const m={'pg-home':'bn-home','pg-collection':'bn-coll','pg-settings':'bn-set'};
-      if(m[id]) $(m[id]).classList.add('active');
-    } else {
-      bnav.style.display='none';
-    }
-    if(id==='pg-home')    { loadRecent(); loadStats(); }
-    if(id==='pg-collection') { renderColl(); }
-    if(id==='pg-settings')   { initSettings(); loadSettingsStats(); }
-    const t=$('toast');
-    if(NAV.includes(id)) t.classList.remove('no-nav');
-    else t.classList.add('no-nav');
-  } catch(e) { console.error('navTo',e); }
-}
-function safeNav(id) { navTo(id); }
-
-// ── API KEY ──────────────────────────────────────
+function navTo(id){try{stopCam();document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));const sec=$(id);if(sec)sec.classList.add('on');window.scrollTo(0,0);const bnav=$('bnav');if(bnav){if(NAV.includes(id)){bnav.style.display='flex';document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));const m={'pg-home':'bn-home','pg-collection':'bn-coll','pg-settings':'bn-set'};if(m[id]){const bn=$(m[id]);if(bn)bn.classList.add('active');}}else bnav.style.display='none';}if(id==='pg-home'){loadRecent();loadStats();}if(id==='pg-collection')renderColl();if(id==='pg-settings'){initSettings();loadSettingsStats();}const t=$('toast');if(t)NAV.includes(id)?t.classList.remove('no-nav'):t.classList.add('no-nav');}catch(e){console.error('navTo:',e);}}
+function safeNav(id){navTo(id);}
 const KID='pg_key_v5';
-const getKey = () => { try { return localStorage.getItem(KID)||''; } catch(e) { return ''; } };
-const putKey = k => { try { localStorage.setItem(KID,k); } catch(e) {} };
-
-function saveSetupKey() {
-  const k=($('setup-key').value||'').trim();
-  const err=$('setup-err');
-  if(!k) { err.textContent='Bitte API-Key eingeben.'; sh(err); return; }
-  if(!k.startsWith('sk-ant')) { err.textContent='Ungültiger Key — muss mit sk-ant beginnen.'; sh(err); return; }
-  hi(err); putKey(k);
-  toast('✅ API-Key gespeichert');
-  navTo('pg-home');
-}
-function initSettings() {
-  const k=getKey();
-  $('set-key').value=k;
-  $('set-status').textContent=k?'✓ Aktiv: '+k.substring(0,18)+'…':'Kein Key gespeichert';
-  const eid=getEbayId();
-  $('set-ebay').value=eid;
-  $('set-ebay-status').textContent=eid?'✓ AppID gespeichert':'Kein eBay AppID — Bilder nicht verfügbar';
-}
+const getKey=()=>{try{return localStorage.getItem(KID)||'';}catch(e){return'';}};
+const putKey=k=>{try{localStorage.setItem(KID,k);}catch(e){}};
 const EBAY_ID_KEY='pg_ebay_appid';
-const getEbayId=()=>{try{return localStorage.getItem(EBAY_ID_KEY)||'';}catch(e){return '';}};
+const getEbayId=()=>{try{return localStorage.getItem(EBAY_ID_KEY)||'';}catch(e){return'';}};
 const putEbayId=v=>{try{localStorage.setItem(EBAY_ID_KEY,v);}catch(e){}};
-function saveEbayId(){
-  const v=($('set-ebay').value||'').trim();
-  putEbayId(v);
-  $('set-ebay-status').textContent=v?'✓ AppID gespeichert':'AppID gelöscht';
-  toast(v?'✅ eBay AppID gespeichert':'🗑 eBay AppID entfernt');
-}
-function saveSettingsKey() {
-  const k=($('set-key').value||'').trim();
-  if(!k.startsWith('sk-ant')) { toast('❌ Ungültiger Key'); return; }
-  putKey(k); toast('✅ Key gespeichert');
-  $('set-status').textContent='✓ Aktiv: '+k.substring(0,18)+'…';
-}
-
-// ── THEME ──────────────────────────────────────
-function toggleTheme() {
-  const isDark=document.body.getAttribute('data-theme')!=='light';
-  document.body.setAttribute('data-theme',isDark?'light':'dark');
-  localStorage.setItem('pg_theme',isDark?'light':'dark');
-  const btn=$('theme-btn');
-  if(btn) btn.textContent=isDark?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
-}
-function applyTheme() {
-  const t=localStorage.getItem('pg_theme')||'dark';
-  document.body.setAttribute('data-theme',t);
-  const btn=$('theme-btn');
-  if(btn) btn.textContent=t==='light'?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
-}
-
-// ── LEGAL ──────────────────────────────────────
+const QM_KEY='pg_quick_mode';
+const getQuickMode=()=>{try{return localStorage.getItem(QM_KEY)==='1';}catch(e){return false;}};
+function saveSetupKey(){const k=($('setup-key').value||'').trim();const err=$('setup-err');if(!k){if(err){err.textContent='API-Key eingeben.';sh(err);}return;}if(!k.startsWith('sk-ant')){if(err){err.textContent='Ungültiger Key.';sh(err);}return;}if(err)hi(err);putKey(k);toast('API-Key gespeichert');navTo('pg-home');}
+function initSettings(){const k=getKey();const se=$('set-key');if(se)se.value=k;const ss=$('set-status');if(ss)ss.textContent=k?'Aktiv: '+k.substring(0,18)+'...':'Kein Key';const eid=getEbayId();const se2=$('set-ebay');if(se2)se2.value=eid;const ss2=$('set-ebay-status');if(ss2)ss2.textContent=eid?'eBay AppID gespeichert':'Kein eBay AppID - bitte eintragen';const qmt=$('quick-mode-toggle');if(qmt)qmt.checked=getQuickMode();const tb=$('theme-btn');if(tb)tb.textContent=localStorage.getItem('pg_theme')==='light'?'&#9728; Light':'&#127769; Dark';}
+function saveSettingsKey(){const k=($('set-key').value||'').trim();if(!k.startsWith('sk-ant')){toast('Ungültiger Key');return;}putKey(k);toast('Key gespeichert');const ss=$('set-status');if(ss)ss.textContent='Aktiv: '+k.substring(0,18)+'...';}
+function saveEbayId(){const v=($('set-ebay').value||'').trim();putEbayId(v);const ss=$('set-ebay-status');if(ss)ss.textContent=v?'eBay AppID gespeichert':'AppID gelöscht';toast(v?'eBay AppID gespeichert':'eBay AppID entfernt');}
+function setQuickMode(on){try{localStorage.setItem(QM_KEY,on?'1':'0');}catch(e){}toast(on?'Schnell-Grading aktiviert':'Deaktiviert');}
+function applyTheme(){const t=localStorage.getItem('pg_theme')||'dark';document.body.setAttribute('data-theme',t);const btn=$('theme-btn');if(btn)btn.textContent=t==='light'?'&#9728; Light':'&#127769; Dark';}
+function toggleTheme(){const isDark=document.body.getAttribute('data-theme')!=='light';const t=isDark?'light':'dark';document.body.setAttribute('data-theme',t);try{localStorage.setItem('pg_theme',t);}catch(e){}const btn=$('theme-btn');if(btn)btn.textContent=isDark?'&#9728; Light':'&#127769; Dark';}
+function openLegal(type){const tl=$('legal-title'),ct=$('legal-content'),m=$('legal-modal');if(!tl||!ct||!m)return;tl.textContent=type==='impressum'?'Impressum':'Datenschutz';ct.innerHTML=type==='impressum'?IMPRESSUM:DATENSCHUTZ;m.classList.add('open');}
+function closeLegal(){const m=$('legal-modal');if(m)m.classList.remove('open');}
 const IMPRESSUM=`<div class="legal-section">
 <h3>netpixel.at</h3>
 <p><strong>Reinhard Loher</strong><br>Berufsfotograf &amp; Werbeagentur<br>A.-Stifterstrasse 17 – A-4770 Andorf</p>
@@ -744,324 +658,52 @@ const DATENSCHUTZ=`<div class="legal-section">
 </div>
 <div class="cr">© 2025 netpixel.at · Stand: Mai 2025</div>`;
 
-function openLegal(type) {
-  $('legal-title').textContent=type==='impressum'?'Impressum':'Datenschutzerklärung';
-  $('legal-content').innerHTML=type==='impressum'?IMPRESSUM:DATENSCHUTZ;
-  $('legal-modal').classList.add('open');
-}
-function closeLegal() { $('legal-modal').classList.remove('open'); }
+const A={front:{url:null,b64:null,type:null},back:{url:null,b64:null,type:null},result:null,detected:null,annF:null,annB:null,cenImg:null,saved:false,detailId:null,fromScreen:'pg-collection'};
+function resetAnalyzeBtn(){const ab=$('btn-analyze');if(ab){ab.disabled=true;ab.textContent='Analyse starten';}}
+function resetState(){try{if(A.front.url)URL.revokeObjectURL(A.front.url);}catch(e){}try{if(A.back.url)URL.revokeObjectURL(A.back.url);}catch(e){}A.front={url:null,b64:null,type:null};A.back={url:null,b64:null,type:null};A.result=null;A.detected=null;A.annF=null;A.annB=null;A.cenImg=null;A.saved=false;const sb=$('save-btn');if(sb){sb.textContent='SPEICHERN';sb.disabled=false;}resetAnalyzeBtn();}
+function startAnalysis(){if(!getKey()){navTo('pg-setup');return;}resetState();navTo('pg-capture');setTimeout(setupCapture,60);}
+function setupCapture(){const ab=$('btn-analyze');if(ab){ab.disabled=!A.front.url;ab.textContent=A.front.url?'Analyse starten':'Foto aufnehmen';}if(A.front.url){const pf=$('prev-front'),pi=$('prev-img-f'),bf=$('btn-cam-f'),bz=$('back-zone');if(pi)pi.src=A.front.url;if(pf)sh(pf);if(bf)hi(bf);if(bz)sh(bz);}else{const pf=$('prev-front'),bf=$('btn-cam-f'),bz=$('back-zone');if(pf)hi(pf);if(bf)sh(bf);if(bz)hi(bz);}if(A.back.url){const pb=$('prev-back'),pi=$('prev-img-b'),bb=$('btn-cam-b');if(pi)pi.src=A.back.url;if(pb)sh(pb);if(bb)hi(bb);}else{const pb=$('prev-back'),bb=$('btn-cam-b');if(pb)hi(pb);if(A.front.url&&bb)sh(bb);}const gh=$('ghost-hint');if(gh)gh.style.display=A.back.url?'block':'none';}
+function capBack(){stopCam();navTo('pg-home');}
+function openCamFor(side){_camTarget=side;openCam();}
+function retakeSide(side){if(side==='front'){try{if(A.front.url)URL.revokeObjectURL(A.front.url);}catch(e){}A.front={url:null,b64:null,type:null};}else{try{if(A.back.url)URL.revokeObjectURL(A.back.url);}catch(e){}A.back={url:null,b64:null,type:null};}setupCapture();}
+let _str=null,_facing='environment',_raf=null,_fR=null,_ghost=null,_camTarget='front',_zoomLevel=1,_ptDist=null,_torchOn=false;
+function openCam(){const modal=$('cam-modal');if(!modal)return;modal.classList.add('open');setZoom(1);_torchOn=false;const cb=$('cam-badge');if(cb)cb.textContent=_camTarget==='front'?'VORDERSEITE':'RÜCKSEITE';const vid=$('cam-video');if(!vid)return;vid.style.opacity=0;const sh2=$('shutter');if(sh2)sh2.disabled=true;navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},audio:false}).then(s=>{_str=s;vid.srcObject=s;return vid.play();}).then(()=>{vid.style.opacity=1;const sh3=$('shutter');if(sh3)sh3.disabled=false;startOvl();if(_camTarget==='back'&&A.front.url){if(!_ghost)_ghost=new Image();_ghost.src=A.front.url;}}).catch(()=>{closeCam();toast('Kamerazugriff verweigert');});}
+function closeCam(){try{stopCam();const m=$('cam-modal');if(m)m.classList.remove('open');}catch(e){}}
+function stopCam(){try{if(_raf){cancelAnimationFrame(_raf);_raf=null;}if(_str){_str.getTracks().forEach(t=>t.stop());_str=null;}}catch(e){}}
+function flipCam(){_facing=_facing==='environment'?'user':'environment';stopCam();openCam();}
+function setZoom(v){_zoomLevel=Math.max(1,Math.min(5,v));const vid=$('cam-video');if(vid)vid.style.transform='scale('+_zoomLevel+')';const lbl=$('zoom-lbl');if(lbl)lbl.textContent=_zoomLevel.toFixed(1)+'x';if(_str){try{const tr=_str.getVideoTracks()[0];if(tr&&tr.getCapabilities){const c=tr.getCapabilities();if(c.zoom){const z=Math.max(c.zoom.min,Math.min(c.zoom.max,_zoomLevel*(c.zoom.max/5)));tr.applyConstraints({advanced:[{zoom:z}]}).catch(()=>{});}}}catch(e){}}}
+function stepZoom(d){setZoom(_zoomLevel+d);}
+async function toggleTorch(){if(!_str){toast('Kamera nicht aktiv');return;}const track=_str.getVideoTracks()[0];if(!track)return;const caps=track.getCapabilities&&track.getCapabilities();if(!caps||!caps.torch){toast('Taschenlampe nicht verfügbar');return;}_torchOn=!_torchOn;try{await track.applyConstraints({advanced:[{torch:_torchOn}]});const btn=$('torch-btn');if(btn){btn.textContent=_torchOn?'&#128294;':'&#128294;';btn.classList.toggle('on',_torchOn);}}catch(e){toast('Torch: '+e.message);}}
+function startOvl(){const vid=$('cam-video'),cvs=$('cam-canvas');if(!vid||!cvs)return;function draw(){try{const vw=vid.clientWidth,vh=vid.clientHeight;if(!vw||!vh){_raf=requestAnimationFrame(draw);return;}cvs.width=vw;cvs.height=vh;const ctx=cvs.getContext('2d');ctx.clearRect(0,0,vw,vh);const R=63/88;let fw=vw*.84,fh=fw/R;if(fh>vh*.80){fh=vh*.78;fw=fh*R;}fw=Math.round(fw);fh=Math.round(fh);const fx=Math.round((vw-fw)/2),fy=Math.round((vh-fh)/2);_fR={fx,fy,fw,fh,vw,vh};ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,0,vw,vh);ctx.clearRect(fx,fy,fw,fh);if(_camTarget==='back'&&_ghost&&_ghost.complete&&_ghost.naturalWidth>0){const gw=_ghost.naturalWidth,gh=_ghost.naturalHeight,sc=Math.min(fw/gw,fh/gh),dw=gw*sc,dh=gh*sc,dx=fx+(fw-dw)/2,dy=fy+(fh-dh)/2;ctx.globalAlpha=.2;ctx.drawImage(_ghost,dx,dy,dw,dh);ctx.globalAlpha=1;}const CL=Math.min(fw,fh)*.09,col=_camTarget==='front'?'#e63946':'#60a5fa';ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';[[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{ctx.beginPath();ctx.moveTo(cx+dx*CL,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx,cy+dy*CL);ctx.stroke();});ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=.7;ctx.setLineDash([3,5]);ctx.beginPath();ctx.moveTo(fx+fw/2,fy+4);ctx.lineTo(fx+fw/2,fy+fh-4);ctx.stroke();ctx.beginPath();ctx.moveTo(fx+4,fy+fh/2);ctx.lineTo(fx+fw-4,fy+fh/2);ctx.stroke();ctx.setLineDash([]);ctx.font='bold 11px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.28)';ctx.fillText('Karte ausrichten',fx+fw/2,fy+fh-10);}catch(e){}_raf=requestAnimationFrame(draw);}draw();}
+function initPinch(){const modal=$('cam-modal');if(!modal)return;modal.addEventListener('touchstart',e=>{if(e.touches.length===2)_ptDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);},{passive:true});modal.addEventListener('touchmove',e=>{if(e.touches.length!==2||!_ptDist)return;e.preventDefault();const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);setZoom(_zoomLevel*(d/_ptDist));_ptDist=d;},{passive:false});modal.addEventListener('touchend',()=>{_ptDist=null;},{passive:true});}
+function takeShot(){try{const vid=$('cam-video');if(!_fR)return;const{fx,fy,fw,fh,vw,vh}=_fR;const scX=vid.videoWidth/vw,scY=vid.videoHeight/vh,z=_zoomLevel||1;const ofx=(fx+fw/2-vw/2)/z,ofy=(fy+fh/2-vh/2)/z;const vcx=vid.videoWidth/2+ofx*scX,vcy=vid.videoHeight/2+ofy*scY;const vfw=fw*scX/z,vfh=fh*scY/z;const c=document.createElement('canvas');c.width=Math.round(vfw);c.height=Math.round(vfh);c.getContext('2d').drawImage(vid,vcx-vfw/2,vcy-vfh/2,vfw,vfh,0,0,c.width,c.height);c.toBlob(blob=>{if(blob)readBlob(blob,'image/jpeg');},'image/jpeg',.92);closeCam();}catch(e){toast('Aufnahme fehlgeschlagen');}}
+function openGallery(){try{const fi=$('file-in');if(!fi)return;fi.removeAttribute('capture');fi.click();setTimeout(()=>fi.setAttribute('capture','environment'),500);}catch(e){}}
+function onFile(e){try{const f=e.target.files&&e.target.files[0];if(f)readBlob(f,f.type||'image/jpeg');e.target.value='';}catch(e){}}
+function readBlob(blob,type){const url=URL.createObjectURL(blob);const rd=new FileReader();rd.onload=()=>storePhoto(url,rd.result.split(',')[1],type);rd.onerror=()=>toast('Bild Fehler');rd.readAsDataURL(blob);}
+function storePhoto(url,b64,type){const side=_camTarget||'front';const s=side==='front'?A.front:A.back;s.url=url;s.b64=b64;s.type=type;setupCapture();}
+let _scanStr=null,_scanIv=null;
+function openScanner(){const modal=$('scan-modal');if(!modal)return;modal.classList.add('open');const vid=$('scan-video');if(!vid)return;navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false}).then(s=>{_scanStr=s;vid.srcObject=s;vid.play();startBarcodeDetect(vid);}).catch(()=>{closeScanner();toast('Kamera nicht verfügbar');});}
+function closeScanner(){try{if(_scanIv){clearInterval(_scanIv);_scanIv=null;}if(_scanStr){_scanStr.getTracks().forEach(t=>t.stop());_scanStr=null;}const m=$('scan-modal');if(m)m.classList.remove('open');}catch(e){}}
+function startBarcodeDetect(vid){if(!('BarcodeDetector' in window)){const ss=$('scan-status');if(ss)ss.textContent='QR-Scanner nicht unterstuetzt';return;}const det=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128']});_scanIv=setInterval(async()=>{if(!vid.videoWidth)return;try{const c=await det.detect(vid);if(c&&c.length>0){clearInterval(_scanIv);_scanIv=null;closeScanner();handleBarcodeResult(c[0].rawValue);}}catch(e){}},400);}
+function handleBarcodeResult(val){toast('Code: '+val.substring(0,30));if(val.startsWith('http')&&confirm('Link öffnen?'))window.open(val,'_blank');}
+const PSA_STEPS=[['Sleeve entnehmen','Baumwollhandschuhe verwenden'],['Oberfläche prüfen','Kratzer, Whitening prüfen'],['Zentrierung messen','VS 55/45 = PSA 10'],['Sleeve stecken','Semi-Rigid Sleeve'],['Toploader','66x91mm Standard'],['PSA Formular','Online einreichen'],['Versandkosten','Economy $25, Regular $50'],['Versicherung','Mit Einschreiben'],['Eingang warten','PSA sendet E-Mail'],['Ergebnis','5-65 Werktage']];
+let _psaChecked=new Set();
+function openPsaModal(){const list=$('psa-checklist'),m=$('psa-modal');if(!list||!m)return;list.innerHTML=PSA_STEPS.map((s,i)=>'<div class="check-item" onclick="toggleCheck('+i+')"><div class="check-box'+(_psaChecked.has(i)?' done':'')+'" id="cb'+i+'">'+(_psaChecked.has(i)?'&#10003;':'')+'</div><div class="check-text"><b>'+s[0]+'</b><br><span style="font-size:11px;color:var(--mu)">'+s[1]+'</span></div></div>').join('');m.style.display='flex';}
+function closePsaModal(){const m=$('psa-modal');if(m)m.style.display='none';}
+function toggleCheck(i){if(_psaChecked.has(i))_psaChecked.delete(i);else _psaChecked.add(i);const cb=$('cb'+i);if(cb){cb.classList.toggle('done',_psaChecked.has(i));cb.textContent=_psaChecked.has(i)?'&#10003;':'';}}
+function checkOnline(){if(!navigator.onLine){toast('Keine Internetverbindung',4000);return false;}return true;}
 
-// ── STATE ──────────────────────────────────────
-const A = {
-  front:{url:null,b64:null,type:null},
-  back: {url:null,b64:null,type:null},
-  result:null, detected:null,
-  annF:null, annB:null, cenImg:null,
-  saved:false, detailId:null, fromScreen:'pg-collection'
-};
-function resetState() {
-  try{if(A.front.url)URL.revokeObjectURL(A.front.url);}catch(e){}
-  try{if(A.back.url)URL.revokeObjectURL(A.back.url);}catch(e){}
-  A.front={url:null,b64:null,type:null};
-  A.back ={url:null,b64:null,type:null};
-  A.result=null; A.detected=null;
-  A.annF=null; A.annB=null; A.cenImg=null; A.saved=false;
-  // Always re-enable save button for the next card
-  const sbtn=$('save-btn');
-  if(sbtn){ sbtn.textContent='💾 SPEICHERN'; sbtn.disabled=false; }
-  const abtn=$('btn-analyze');
-  if(abtn){ abtn.textContent='📷 Erst Foto aufnehmen'; abtn.disabled=true; }
-}
-
-function startAnalysis() {
-  if(!getKey()) { navTo('pg-setup'); return; }
-  resetState();
-  navTo('pg-capture');
-  setTimeout(setupCapture, 50);
-}
-
-function setupCapture() {
-  const _ab=$('btn-analyze');
-  if(_ab){
-    _ab.disabled=!A.front.url;
-    _ab.textContent=A.front.url?'🔬 Analyse starten':'📷 Erst Foto aufnehmen';
-  }
-  if(A.front.url) {
-    $('prev-img-f').src=A.front.url;
-    sh($('prev-front')); hi($('btn-cam-f'));
-    sh($('back-zone'));
-  } else {
-    hi($('prev-front')); sh($('btn-cam-f'));
-    hi($('back-zone'));
-  }
-  if(A.back.url) {
-    $('prev-img-b').src=A.back.url;
-    sh($('prev-back')); hi($('btn-cam-b'));
-  } else {
-    hi($('prev-back'));
-    if(A.front.url) sh($('btn-cam-b'));
-  }
-  $('ghost-hint').style.display=A.back.url?'block':'none';
-}
-
-function capBack() { stopCam(); navTo('pg-home'); }
-function openCamFor(side) { _camTarget=side; openCam(); }
-function retakeSide(side) {
-  if(side==='front') {
-    if(A.front.url) { try{URL.revokeObjectURL(A.front.url);}catch(e){} }
-    A.front={url:null,b64:null,type:null};
-  } else {
-    if(A.back.url) { try{URL.revokeObjectURL(A.back.url);}catch(e){} }
-    A.back={url:null,b64:null,type:null};
-  }
-  setupCapture();
-}
-
-// ── CAMERA ──────────────────────────────────────
-let _str=null, _facing='environment', _raf=null, _fR=null, _ghost=null;
-let _camTarget='front', _zoomLevel=1, _ptDist=null;
-
-function openCam() {
-  const modal=$('cam-modal');
-  modal.classList.add('open');
-  setZoom(1);
-  $('cam-badge').textContent=_camTarget==='front'?'VORDERSEITE':'RÜCKSEITE';
-  const vid=$('cam-video');
-  vid.style.opacity=0;
-  $('shutter').disabled=true;
-  navigator.mediaDevices.getUserMedia({
-    video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},
-    audio:false
-  }).then(s=>{
-    _str=s; vid.srcObject=s; return vid.play();
-  }).then(()=>{
-    vid.style.opacity=1;
-    $('shutter').disabled=false;
-    startOvl();
-    if(_camTarget==='back' && A.front.url) {
-      if(!_ghost) _ghost=new Image();
-      _ghost.src=A.front.url;
-    }
-  }).catch(()=>{
-    closeCam();
-    sh($('no-cam')); sh($('uz-gal')); hi($('btn-cam-f')); hi($('btn-cam-b'));
-    toast('📱 Kamerazugriff verweigert');
-  });
-}
-function closeCam() {
-  try { stopCam(); $('cam-modal').classList.remove('open'); } catch(e) {}
-}
-function stopCam() {
-  try {
-    if(_raf) { cancelAnimationFrame(_raf); _raf=null; }
-    if(_str) { _str.getTracks().forEach(t=>t.stop()); _str=null; }
-  } catch(e) {}
-}
-function flipCam() { _facing=_facing==='environment'?'user':'environment'; stopCam(); openCam(); }
-
-function setZoom(v) {
-  _zoomLevel=Math.max(1, Math.min(5, v));
-  const vid=$('cam-video');
-  if(vid) vid.style.transform='scale('+_zoomLevel+')';
-  const lbl=$('zoom-lbl');
-  if(lbl) lbl.textContent=_zoomLevel.toFixed(1)+'×';
-  if(_str) {
-    const track=_str.getVideoTracks()[0];
-    if(track && track.getCapabilities) {
-      const caps=track.getCapabilities();
-      if(caps.zoom) {
-        const z=Math.max(caps.zoom.min, Math.min(caps.zoom.max, _zoomLevel*(caps.zoom.max/5)));
-        track.applyConstraints({advanced:[{zoom:z}]}).catch(()=>{});
-      }
-    }
-  }
-}
-function stepZoom(d) { setZoom(_zoomLevel+d); }
-
-function startOvl() {
-  const vid=$('cam-video'), cvs=$('cam-canvas');
-  function draw() {
-    try {
-      const vw=vid.clientWidth, vh=vid.clientHeight;
-      if(!vw||!vh) { _raf=requestAnimationFrame(draw); return; }
-      cvs.width=vw; cvs.height=vh;
-      const ctx=cvs.getContext('2d');
-      ctx.clearRect(0,0,vw,vh);
-      const R=63/88;
-      let fw=vw*.84, fh=fw/R;
-      if(fh>vh*.80) { fh=vh*.78; fw=fh*R; }
-      fw=Math.round(fw); fh=Math.round(fh);
-      const fx=Math.round((vw-fw)/2), fy=Math.round((vh-fh)/2);
-      _fR={fx,fy,fw,fh,vw,vh};
-      ctx.fillStyle='rgba(0,0,0,.48)';
-      ctx.fillRect(0,0,vw,vh);
-      ctx.clearRect(fx,fy,fw,fh);
-      if(_camTarget==='back' && _ghost && _ghost.complete && _ghost.naturalWidth>0) {
-        ctx.globalAlpha=.2;
-        // Draw ghost with contain (no distortion) - Pokémon card ratio 63:88
-        const gw=_ghost.naturalWidth, gh=_ghost.naturalHeight;
-        const scale=Math.min(fw/gw, fh/gh);
-        const dw=gw*scale, dh=gh*scale;
-        const dx=fx+(fw-dw)/2, dy=fy+(fh-dh)/2;
-        ctx.drawImage(_ghost, dx, dy, dw, dh);
-        ctx.globalAlpha=1;
-      }
-      const CL=Math.min(fw,fh)*.09;
-      const col=_camTarget==='front'?'#e63946':'#60a5fa';
-      ctx.strokeStyle=col; ctx.lineWidth=3; ctx.lineCap='round';
-      [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{
-        ctx.beginPath(); ctx.moveTo(cx+dx*CL,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+dy*CL); ctx.stroke();
-      });
-      ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=.7; ctx.setLineDash([3,5]);
-      ctx.beginPath(); ctx.moveTo(fx+fw/2,fy+4); ctx.lineTo(fx+fw/2,fy+fh-4); ctx.stroke();
-      ctx.beginPath(); ctx.moveTo(fx+4,fy+fh/2); ctx.lineTo(fx+fw-4,fy+fh/2); ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.font='bold 11px -apple-system,sans-serif';
-      ctx.textAlign='center';
-      ctx.fillStyle='rgba(255,255,255,.28)';
-      ctx.fillText('Karte hier ausrichten', fx+fw/2, fy+fh-10);
-    } catch(e) {}
-    _raf=requestAnimationFrame(draw);
-  }
-  draw();
-}
-
-function initPinch() {
-  const modal=$('cam-modal');
-  if(!modal) return;
-  modal.addEventListener('touchstart', e=>{
-    if(e.touches.length===2)
-      _ptDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-  }, {passive:true});
-  modal.addEventListener('touchmove', e=>{
-    if(e.touches.length!==2 || !_ptDist) return;
-    e.preventDefault();
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
-    setZoom(_zoomLevel*(d/_ptDist));
-    _ptDist=d;
-  }, {passive:false});
-  modal.addEventListener('touchend', ()=>{ _ptDist=null; }, {passive:true});
-}
-
-function takeShot() {
-  try {
-    const vid=$('cam-video');
-    if(!_fR) return;
-    const {fx,fy,fw,fh,vw,vh}=_fR;
-    const scX=vid.videoWidth/vw, scY=vid.videoHeight/vh;
-    const z=_zoomLevel||1;
-    const ofx=(fx+fw/2-vw/2)/z, ofy=(fy+fh/2-vh/2)/z;
-    const vcx=vid.videoWidth/2+ofx*scX;
-    const vcy=vid.videoHeight/2+ofy*scY;
-    const vfw=fw*scX/z, vfh=fh*scY/z;
-    const c=document.createElement('canvas');
-    c.width=Math.round(vfw); c.height=Math.round(vfh);
-    c.getContext('2d').drawImage(vid, vcx-vfw/2, vcy-vfh/2, vfw, vfh, 0, 0, c.width, c.height);
-    c.toBlob(blob=>{ if(blob) readBlob(blob,'image/jpeg'); }, 'image/jpeg', .92);
-    closeCam();
-  } catch(e) { toast('❌ Aufnahme fehlgeschlagen'); }
-}
-
-function openGallery() {
-  try {
-    const fi=$('file-in');
-    fi.removeAttribute('capture');
-    fi.click();
-    setTimeout(()=>fi.setAttribute('capture','environment'), 500);
-  } catch(e) {}
-}
-function onFile(e) {
-  try {
-    const f=e.target.files && e.target.files[0];
-    if(f) readBlob(f, f.type||'image/jpeg');
-    e.target.value='';
-  } catch(e2) {}
-}
-function readBlob(blob, type) {
-  const url=URL.createObjectURL(blob);
-  const rd=new FileReader();
-  rd.onload=()=>storePhoto(url, rd.result.split(',')[1], type);
-  rd.onerror=()=>toast('❌ Bild konnte nicht gelesen werden');
-  rd.readAsDataURL(blob);
-}
-function storePhoto(url, b64, type) {
-  // BUG FIX: use _camTarget, NOT A.step
-  const side=_camTarget||'front';
-  const s=side==='front'?A.front:A.back;
-  s.url=url; s.b64=b64; s.type=type;
-  setupCapture();
-}
-
-// ── QR SCANNER ──────────────────────────────────
-let _scanStr=null, _scanIv=null;
-function openScanner() {
-  const modal=$('scan-modal');
-  modal.classList.add('open');
-  const vid=$('scan-video');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
-  .then(s=>{ _scanStr=s; vid.srcObject=s; vid.play(); startBarcodeDetect(vid); })
-  .catch(()=>{ closeScanner(); toast('📱 Kamera nicht verfügbar'); });
-}
-function closeScanner() {
-  try {
-    if(_scanIv) { clearInterval(_scanIv); _scanIv=null; }
-    if(_scanStr) { _scanStr.getTracks().forEach(t=>t.stop()); _scanStr=null; }
-    $('scan-modal').classList.remove('open');
-  } catch(e) {}
-}
-function startBarcodeDetect(vid) {
-  if(!('BarcodeDetector' in window)) {
-    $('scan-status').textContent='QR-Scanner nicht unterstützt — manuell eingeben';
-    return;
-  }
-  const det=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128']});
-  _scanIv=setInterval(async()=>{
-    if(!vid.videoWidth) return;
-    try {
-      const codes=await det.detect(vid);
-      if(codes && codes.length>0) {
-        clearInterval(_scanIv); _scanIv=null;
-        closeScanner();
-        handleBarcodeResult(codes[0].rawValue);
-      }
-    } catch(e) {}
-  }, 400);
-}
-function handleBarcodeResult(val) {
-  toast('✅ Code: '+val.substring(0,30));
-  if(val.startsWith('http')) {
-    if(confirm('QR-Link öffnen?\n'+val.substring(0,60))) window.open(val,'_blank');
-  } else {
-    resetState();
-    navTo('pg-capture');
-    setTimeout(()=>{ setupCapture(); }, 50);
-  }
-}
-
-// ── ANALYSIS ──────────────────────────────────────
-const MSGS=['Bild wird verarbeitet…','Karte wird erkannt…','Zentrierung wird gemessen…','Ecken werden analysiert…','Ränder werden geprüft…','Defektpositionen kartieren…','Grade wird berechnet…'];
-
-function checkOnline() {
-  if(!navigator.onLine) { toast('⚠️ Keine Internetverbindung', 4000); return false; }
-  return true;
-}
-
-async function runAnalysis() {
-  if(!checkOnline()) return;
-  const abtn=$('btn-analyze');
-  if(abtn){ abtn.disabled=true; abtn.textContent='⏳ Läuft…'; }
-  navTo('pg-analyzing');
-  let mi=0;
-  $('ana-msg').textContent=MSGS[0];
-  const iv=setInterval(()=>{ mi=Math.min(mi+1,MSGS.length-1); $('ana-msg').textContent=MSGS[mi]; }, 1800);
-  try {
-    const key=getKey();
-    if(!key) throw new Error('no-key');
-    if(!A.front.b64) throw new Error('Vorderseitenfoto fehlt');
-    const content=[
-      {type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}},
-    ];
-    if(A.back.b64) content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
+async function runAnalysis(){
+  if(!checkOnline())return;
+  const ab=$('btn-analyze');if(ab){ab.disabled=true;ab.textContent='Läuft...';}
+  navTo('pg-analyzing');let mi=0;const am=$('ana-msg');if(am)am.textContent='Bild wird verarbeitet...';
+  const MSGS=['Bild wird verarbeitet...','Karte wird erkannt...','Zentrierung wird gemessen...','Ecken werden analysiert...','Ränder werden geprüft...','Defekte kartiert...','Grade berechnet...'];
+  const iv=setInterval(()=>{mi=Math.min(mi+1,MSGS.length-1);const am2=$('ana-msg');if(am2)am2.textContent=MSGS[mi];},1800);
+  try{
+    const key=getKey();if(!key)throw new Error('no-key');
+    if(!A.front.b64)throw new Error('Vorderseitenfoto fehlt');
+    const content=[{type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}}];
+    if(A.back.b64)content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
     content.push({type:'text',text:A.back.b64?`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
 PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
 Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
@@ -1069,1210 +711,401 @@ Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 H
 Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
 Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`});
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
-      },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',
-        max_tokens:1500,
-        system:'You are a certified PSA card grading expert AND Pokémon card identification specialist. Return ONLY valid JSON. No markdown. No backticks.',
-        messages:[{role:'user',content}]
-      })
-    });
-    if(!resp.ok) {
-      const eb=await resp.json().catch(()=>({}));
-      throw new Error(eb?.error?.message||'HTTP '+resp.status);
-    }
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:'You are a PSA card grading expert. Return ONLY valid JSON. No markdown.',messages:[{role:'user',content}]})});
+    if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(((eb&&eb.error)?eb.error.message:undefined)||'HTTP '+resp.status);}
     const data=await resp.json();
     const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
     A.result=JSON.parse(raw.replace(/```json|```/g,'').trim());
     clearInterval(iv);
-    const fm=(A.result.markers||[]).filter(m=>m.side==='front');
-    const bm=(A.result.markers||[]).filter(m=>m.side==='back');
-    [A.annF, A.annB, A.cenImg]=await Promise.all([
-      annotImg(A.front.url, fm),
-      annotImg(A.back.url,  bm),
-      cenDiag(A.result.centering||{})
-    ]);
     const d=A.result.card_info||{};
-    $('cd-name').value=d.card_name||'';
-    $('cd-lang').value=d.language||'';
-    $('cd-hp').value=d.hp||'';
-    $('cd-set').value=d.set_name||'';
-    $('cd-num').value=d.card_number||'';
-    $('cd-rar').value=d.rarity||'';
-    $('cd-cat').value=d.category||'';
-    // Reset analyze button before leaving capture flow
-    const _finBtn=$('btn-analyze');
-    if(_finBtn){_finBtn.disabled=true;_finBtn.textContent='📷 Erst Foto aufnehmen';}
+    const fm=(A.result.markers||[]).filter(m=>m.side==='front');
+    const bm2=(A.result.markers||[]).filter(m=>m.side==='back');
+    [A.annF,A.annB,A.cenImg]=await Promise.all([annotImg(A.front.url,fm),annotImg(A.back.url,bm2),cenDiag(A.result.centering||{})]);
     if(getQuickMode()){
-      // Quick mode: auto-confirm, skip card data review screen
-      A.detected={
-        card_name:d.card_name||'Unbekannte Karte',language:d.language||'',
-        hp:d.hp||'',set_name:d.set_name||'',card_number:d.card_number||'',
-        rarity:d.rarity||'',category:d.category||'',holo_type:d.holo_type||'',
-      };
+      A.detected={card_name:d.card_name||'Karte',language:d.language||'',hp:d.hp||'',set_name:d.set_name||'',card_number:d.card_number||'',rarity:d.rarity||'',category:d.category||'',holo_type:d.holo_type||''};
+      const sb=$('save-btn');if(sb){sb.textContent='SPEICHERN';sb.disabled=false;}
       renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
-      navTo('pg-results');
-      setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),150);
-    } else {
+      navTo('pg-results');setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),150);
+    }else{
+      const inputs=[['cd-name',d.card_name],['cd-lang',d.language],['cd-hp',d.hp],['cd-set',d.set_name],['cd-num',d.card_number],['cd-rar',d.rarity],['cd-cat',d.category]];
+      inputs.forEach(([id,val])=>{const el=$(id);if(el)el.value=val||'';});
       navTo('pg-carddata');
     }
-  } catch(err) {
+  }catch(err){
     clearInterval(iv);
-    if(err.message==='no-key') { toast('⚠️ Kein API-Key'); navTo('pg-settings'); }
-    else { toast('❌ '+(err.message||'Analyse fehlgeschlagen')); navTo('pg-capture'); setTimeout(()=>{ setupCapture(); const ab=$('btn-analyze'); if(ab){ab.disabled=false;ab.textContent='🔬 Analyse starten';} },50); }
+    const ab2=$('btn-analyze');if(ab2){ab2.disabled=false;ab2.textContent='Analyse starten';}
+    if(err.message==='no-key'){toast('Kein API-Key');navTo('pg-settings');}
+    else{toast('Fehler: '+(err.message||'Analyse fehlgeschlagen'));navTo('pg-capture');setTimeout(setupCapture,60);}
   }
 }
-
-function confirmCardData() {
-  // Reset save button — it stays disabled from the previous card otherwise
-  const sbtn=$('save-btn');
-  if(sbtn){ sbtn.textContent='💾 SPEICHERN'; sbtn.disabled=false; }
-  A.detected={
-    card_name:    $('cd-name').value.trim()||'Unbekannte Karte',
-    language:     $('cd-lang').value.trim(),
-    hp:           $('cd-hp').value.trim(),
-    set_name:     $('cd-set').value.trim(),
-    card_number:  $('cd-num').value.trim(),
-    rarity:       $('cd-rar').value.trim(),
-    category:     $('cd-cat').value.trim(),
-    holo_type:    A.result?.card_info?.holo_type||'',
-  };
-  renderResults(A.result, A.annF, A.annB, A.cenImg, false, A.detected);
-  navTo('pg-results');
-  setTimeout(()=>fetchEbayPrices(A.detected, A.result.final_grade), 150);
+function confirmCardData(){
+  const sb=$('save-btn');if(sb){sb.textContent='SPEICHERN';sb.disabled=false;}
+  A.detected={card_name:($('cd-name').value||'').trim()||'Karte',language:($('cd-lang').value||'').trim(),hp:($('cd-hp').value||'').trim(),set_name:($('cd-set').value||'').trim(),card_number:($('cd-num').value||'').trim(),rarity:($('cd-rar').value||'').trim(),category:($('cd-cat').value||'').trim(),holo_type:((A.result&&A.result.card_info)?A.result.card_info.holo_type:'')};
+  renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
+  navTo('pg-results');setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),150);
 }
 
-// ── EBAY ──────────────────────────────────────
-// JSONP helper — bypasses CORS for eBay Finding API
-function ebayJSONP(url) {
-  return new Promise((res) => {
-    const cb = '_eb' + Date.now();
-    const to = setTimeout(() => { cleanup(); res(null); }, 9000);
-    function cleanup() {
-      clearTimeout(to);
-      delete window[cb];
-      const s = document.getElementById(cb);
-      if(s) s.parentNode.removeChild(s);
-    }
-    window[cb] = (data) => { cleanup(); res(data); };
-    const s = document.createElement('script');
-    s.id = cb;
-    s.src = url + '&callback=' + cb;
-    s.onerror = () => { cleanup(); res(null); };
-    document.head.appendChild(s);
-  });
-}
-
-// Parse eBay Finding API response → [{title, price, currency, image, url, sold}]
-function parseEbayItems(data, operation) {
-  try {
-    const key = operation + 'Response';
-    const items = data[key]?.[0]?.searchResult?.[0]?.item || [];
-    return items.slice(0, 4).map(it => ({
-      title:    (it.title?.[0] || '').trim(),
-      price:    it.sellingStatus?.[0]?.currentPrice?.[0]?.['__value__'] || '–',
-      currency: it.sellingStatus?.[0]?.currentPrice?.[0]?.['@currencyId'] || 'EUR',
-      image:    (it.galleryURL?.[0] || '').replace('l140', 'l400'), // bigger thumb
-      url:      it.viewItemURL?.[0] || '#',
-      sold:     operation === 'findCompletedItems',
-      condition:it.condition?.[0]?.conditionDisplayName?.[0] || ''
-    }));
-  } catch(e) { return []; }
-}
-
-// Build eBay Finding API JSONP URL
-function ebayApiUrl(operation, keywords, appId, extraFilters) {
-  let url = 'https://svcs.ebay.de/services/search/FindingService/v1'
-    + '?OPERATION-NAME=' + operation
-    + '&SERVICE-VERSION=1.0.0'
-    + '&SECURITY-APPNAME=' + encodeURIComponent(appId)
-    + '&RESPONSE-DATA-FORMAT=JSON'
-    + '&REST-PAYLOAD'
-    + '&keywords=' + encodeURIComponent(keywords)
-    + '&paginationInput.entriesPerPage=4'
-    + '&outputSelector=GalleryInfo'
-    + '&sortOrder=BestMatch';
-  if(extraFilters) url += extraFilters;
-  return url;
-}
-
-async function fetchEbayPrices(cardInfo, grade) {
-  const el = $('ebay-section');
-  if(!el) return;
-  el.innerHTML = '<div class="st" style="margin-bottom:8px">&#128722; eBay Marktpreise <span class="spin-sm"></span></div>'
-    + '<div style="font-size:12px;color:var(--mu)">Suche läuft…</div>';
-
-  const ebayId  = getEbayId();
-  const q = [cardInfo.card_name, cardInfo.set_name, cardInfo.card_number, 'PSA ' + grade]
-    .filter(Boolean).join(' ');
-  const searchUrl = 'https://www.ebay.de/sch/i.html?_nkw=' + encodeURIComponent(q)
-    + '&LH_Complete=1&LH_Sold=1';
-
-  // ── PATH A: real eBay API with images ──────────────────────
-  if(ebayId) {
-    try {
-      // 1. Try sold/completed first
-      let items = [];
-      const soldData = await ebayJSONP(ebayApiUrl(
-        'findCompletedItems', q, ebayId,
-        '&itemFilter(0).name=SoldItemsOnly&itemFilter(0).value=true'
-      ));
-      if(soldData) items = parseEbayItems(soldData, 'findCompletedItems');
-
-      // 2. If fewer than 2 sold, add active listings
-      if(items.length < 2) {
-        const activeData = await ebayJSONP(ebayApiUrl('findItemsByKeywords', q, ebayId, ''));
-        if(activeData) {
-          const active = parseEbayItems(activeData, 'findItemsByKeywords');
-          // merge, avoid duplicates by url
-          const seen = new Set(items.map(i=>i.url));
-          active.forEach(a=>{ if(!seen.has(a.url)) items.push(a); });
-        }
-        items = items.slice(0, 4);
-      }
-
-      if(items.length > 0) {
-        renderEbayCards(el, items, searchUrl, q);
-        // price watch
-        if(A.detailId) {
-          dbAll().then(all => {
-            const ew = all.find(x => x.id === A.detailId);
-            if(ew) updatePriceWatchUI(ew, items);
-          }).catch(()=>{});
-        }
-        return;
-      }
-    } catch(e) { console.warn('eBay API error', e); }
-  }
-
-  // ── PATH B: Claude web search fallback (no images) ─────────
-  const key = getKey();
-  if(!key) {
-    el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
-    return;
-  }
-  try {
-    const resp = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': key,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-6', max_tokens: 600,
-        tools: [{type:'web_search_20250305',name:'web_search'}],
-        system: 'Search eBay for Pokémon card listings. Return ONLY a JSON array, no other text.',
-        messages: [{role:'user',content:
-          'Search eBay.de for "' + q + '". Return JSON array of 3-4 results: '
-          + '[{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/..."}]. Only JSON.'
-        }]
-      })
-    });
-    if(!resp.ok) throw new Error('HTTP ' + resp.status);
-    const data = await resp.json();
-    const text = (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
-    let items = [];
-    try { items = JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e) {}
-    if(items && items.length) {
-      el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">&#128722; eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">&#8635;</button></div>'
-        + '<div class="al al-b" style="margin-bottom:8px;font-size:11px">&#128247; Für Artikel-Bilder: eBay AppID in Einstellungen eintragen</div>'
-        + items.map(it =>
-          '<a href="' + (it.url||searchUrl) + '" target="_blank" class="ebay-item">'
-          + '<div style="flex:1;min-width:0"><div class="ebay-title">' + (it.title||q) + '</div>'
-          + '<div class="ebay-date">' + (it.sold_date||'') + '</div></div>'
-          + '<div class="ebay-price">' + (it.price||'–') + '</div>'
-          + '<div style="color:var(--mu);font-size:16px">›</div></a>'
-        ).join('')
-        + '<a href="' + searchUrl + '" target="_blank" style="text-decoration:none">'
-        + '<div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle auf eBay →</div></a>'
-        + '<div style="font-size:10px;color:var(--hi);padding:4px 0 8px">KI-gestützte Suche · Preise können variieren</div>';
-    } else {
-      el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
-    }
-  } catch(e) {
-    el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
-  }
-}
-
-function noEbayHtml(searchUrl, q, hasId) {
-  return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">&#128722; eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">&#8635;</button></div>'
-    + (hasId ? '' : '<div class="al al-b" style="font-size:11px;margin-bottom:8px">&#128247; Für Artikel-Bilder: eBay AppID in Einstellungen eintragen (kostenlos)</div>')
-    + '<a href="' + searchUrl + '" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">&#128269; Auf eBay suchen</a>';
-}
-
-function renderEbayCards(el, items, searchUrl, q) {
-  const currSymbol = c => c === 'USD' ? '$' : c === 'GBP' ? '£' : '€';
-  el.innerHTML = '<div class="st" style="margin-bottom:8px">&#128722; eBay Marktpreise</div>'
-    + '<div class="ebay-grid">'
-    + items.map(it => {
-      const price = parseFloat(it.price) > 0
-        ? currSymbol(it.currency) + parseFloat(it.price).toFixed(2)
-        : it.price || '–';
-      const badge = it.sold ? 'Verkauft' : 'Aktiv';
-      const badgeColor = it.sold ? 'rgba(74,222,128,.9)' : 'rgba(96,165,250,.9)';
-      const img = it.image
-        ? '<img src="' + it.image + '" alt="" loading="lazy" onerror="this.parentNode.innerHTML='&#127183;'">'
-        : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">&#127183;</div>';
-      return '<a href="' + it.url + '" target="_blank" class="ebay-card">'
-        + '<div class="ebay-img-wrap">' + img
-        + '<div class="ebay-badge" style="background:' + badgeColor + ';color:#fff">' + badge + '</div>'
-        + '</div>'
-        + '<div class="ebay-card-info">'
-        + '<div class="ebay-card-title">' + it.title + '</div>'
-        + '<div class="ebay-card-price">' + price + '</div>'
-        + (it.condition ? '<div class="ebay-card-meta">' + it.condition + '</div>' : '')
-        + '</div></a>';
-    }).join('')
-    + '</div>'
-    + '<a href="' + searchUrl + '" target="_blank" style="text-decoration:none">'
-    + '<div style="text-align:center;padding:8px;font-size:12px;color:var(--bl);font-weight:600">Alle Ergebnisse auf eBay →</div></a>'
-    + '<div style="font-size:10px;color:var(--hi);padding:2px 0 6px">eBay Finding API · Preise ohne Garantie</div>';
-  // Save avg price to DB entry
-  saveEbayPriceToDB(items);
-}
-
-function updatePriceWatchUI(entry, ebayItems) {
-  const wp = entry?.watchPrice;
-  const el = $('pw-indicator');
-  if(!el) return;
-  // Also populate PSA calculator
-  const calcEl=$('psa-calc-section');
-  if(calcEl&&ebayItems&&ebayItems.length){
-    const prices=ebayItems.map(i=>{const v=parseFloat(String(i.price).replace(/[^0-9.]/g,''));return isNaN(v)?null:v;}).filter(Boolean);
-    if(prices.length){const avg=prices.reduce((a,b)=>a+b,0)/prices.length;calcEl.innerHTML=buildPsaCalcSection(avg);}
-  }
-  if(!wp) { el.innerHTML=''; return; }
-  const prices = ebayItems.map(i => {
-    const v = parseFloat(i.price);
-    return isNaN(v) ? null : v;
-  }).filter(Boolean);
-  if(!prices.length) {
-    el.innerHTML = '<div class="pw-badge pw-set">⏰ Zielpreis: €' + wp.toFixed(2) + '</div>';
-    return;
-  }
-  const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
-  const hit = avg <= wp;
-  el.innerHTML = '<div class="pw-badge ' + (hit?'pw-hit':'pw-miss') + '">'
-    + (hit?'🟢':'🔴') + ' Zielpreis €' + wp.toFixed(2)
-    + ' · Ø eBay €' + avg.toFixed(2)
-    + ' ' + (hit ? '✓ Im Zielbereich' : '↑ Über Zielpreis') + '</div>';
-}
-
-// ── CANVAS ANNOTATION ──────────────────────────
+/* ── CANVAS ANNOTATION ────────────────────────── */
 const MC={whitening:'#fbbf24',corner_damage:'#ef4444',edge_damage:'#f97316',scratch:'#a855f7',print_line:'#3b82f6',holo_damage:'#ec4899',stain:'#84cc16',crease:'#ef4444'};
-const ML={whitening:'Whitening',corner_damage:'Ecken-Schaden',edge_damage:'Rand-Schaden',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo-Schaden',stain:'Fleck',crease:'Knick'};
-const mc=t=>MC[t]||'#ef4444';
-const ml=t=>ML[t]||t;
+const ML={whitening:'Whitening',corner_damage:'Ecken',edge_damage:'Rand',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo',stain:'Fleck',crease:'Knick'};
+const mc=t=>MC[t]||'#ef4444',ml=t=>ML[t]||t;
+function annotImg(url,markers){return new Promise(res=>{if(!url){res(null);return;}const img=new Image();img.onload=()=>{try{const MAX=900,sc=img.width>MAX?MAX/img.width:1,W=Math.round(img.width*sc),H=Math.round(img.height*sc);const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,W,H);(markers||[]).forEach((m,i)=>{const x=W*(m.x_pct/100),y=H*(m.y_pct/100),R=15,col=mc(m.type);ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=6;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.fillStyle=col+'cc';ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=1.8;ctx.stroke();ctx.font='bold 13px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.fillText(String(i+1),x,y+.5);});res(c.toDataURL('image/jpeg',.88));}catch(e){res(url);}};img.onerror=()=>res(url);img.src=url;});}
 
-function annotImg(url, markers) {
-  return new Promise(res=>{
-    if(!url) { res(null); return; }
-    const img=new Image();
-    img.onload=()=>{
-      try {
-        const MAX=900, sc=img.width>MAX?MAX/img.width:1;
-        const W=Math.round(img.width*sc), H=Math.round(img.height*sc);
-        const c=document.createElement('canvas'); c.width=W; c.height=H;
-        const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,W,H);
-        (markers||[]).forEach((m,i)=>{
-          const x=W*(m.x_pct/100), y=H*(m.y_pct/100), R=15, col=mc(m.type);
-          ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6;
-          ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.fillStyle=col+'cc'; ctx.fill();
-          ctx.shadowBlur=0;
-          ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=1.8; ctx.stroke();
-          ctx.font='bold 13px -apple-system,sans-serif';
-          ctx.textAlign='center'; ctx.textBaseline='middle';
-          ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=2;
-          ctx.fillText(String(i+1), x, y+.5); ctx.shadowBlur=0;
-        });
-        res(c.toDataURL('image/jpeg',.88));
-      } catch(e) { res(url); }
-    };
-    img.onerror=()=>res(url);
-    img.src=url;
-  });
-}
+function cenDiag(cen){return new Promise(res=>{try{const W=700,H=230,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.fillStyle='#13131f';ctx.fillRect(0,0,W,H);const cgC=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';const cgG=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;const rr=(ctx,x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();};const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;const TH=cw*.15,TV=ch*.12;const lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);const lrC=cgC(Math.max(lp,rp)),tbC=cgC(Math.max(tp,bp));ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();ctx.setLineDash([]);ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);const mx=Math.max(lp,rp,tp,bp),gc2=cgC(mx);ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';ctx.fillText('PSA '+cgG(mx),cx+cw-16,cy-13);ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);};const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rueckseite');const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA <=5'}];let lx=pad;ctx.font='9px sans-serif';leg.forEach(({c,l})=>{ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);lx+=ctx.measureText(l).width+18;});res(c.toDataURL('image/jpeg',.92));}catch(e){res(null);}});}
 
-function cenDiag(cen) {
-  return new Promise(res=>{
-    try {
-      const W=700, H=230;
-      const c=document.createElement('canvas'); c.width=W; c.height=H;
-      const ctx=c.getContext('2d');
-      ctx.fillStyle='#13131f'; ctx.fillRect(0,0,W,H);
-      const cgC=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';
-      const cgG=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;
-      const rr=(ctx,x,y,w,h,r)=>{
-        ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
-        ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
-        ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
-        ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
-        ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
-      };
-      const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{
-        lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;
-        const TH=cw*.15,TV=ch*.12;
-        const lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);
-        const lrC=cgC(Math.max(lp,rp)),tbC=cgC(Math.max(tp,bp));
-        ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();
-        ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);
-        ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);
-        ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();
-        ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();
-        ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);
-        ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();
-        ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();
-        ctx.setLineDash([]);
-        ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
-        if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}
-        if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}
-        if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}
-        if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}
-        ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';
-        ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);
-        ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);
-        const mx=Math.max(lp,rp,tp,bp),gc2=cgC(mx);
-        ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();
-        ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();
-        ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';
-        ctx.fillText('PSA '+cgG(mx),cx+cw-16,cy-13);
-        ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';
-        ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);
-      };
-      const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;
-      ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');
-      ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rückseite');
-      const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA ≤5'}];
-      let lx=pad;
-      ctx.font='9px sans-serif';
-      leg.forEach(({c,l})=>{
-        ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);
-        ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);
-        lx+=ctx.measureText(l).width+18;
-      });
-      res(c.toDataURL('image/jpeg',.92));
-    } catch(e) { res(null); }
-  });
-}
-
-// ── GRADE HELPERS ──────────────────────────────
-function gc(g){
-  if(g>=10) return{c:'#f5c842',bg:'rgba(245,200,66,.16)',bd:'rgba(245,200,66,.45)'};
-  if(g>=9)  return{c:'#94e0ff',bg:'rgba(148,224,255,.14)',bd:'rgba(148,224,255,.4)'};
-  if(g>=7)  return{c:'#c084fc',bg:'rgba(192,132,252,.14)',bd:'rgba(192,132,252,.4)'};
-  if(g>=5)  return{c:'#fb923c',bg:'rgba(251,146,60,.14)',bd:'rgba(251,146,60,.4)'};
-  return      {c:'#f87171',bg:'rgba(248,113,113,.14)',bd:'rgba(248,113,113,.4)'};
-}
-function sc(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
+/* ── GRADE HELPERS ────────────────────────────── */
+function gc(g){if(g>=10)return{c:'#f5c842',bg:'rgba(245,200,66,.16)',bd:'rgba(245,200,66,.45)'};if(g>=9)return{c:'#94e0ff',bg:'rgba(148,224,255,.14)',bd:'rgba(148,224,255,.4)'};if(g>=7)return{c:'#c084fc',bg:'rgba(192,132,252,.14)',bd:'rgba(192,132,252,.4)'};if(g>=5)return{c:'#fb923c',bg:'rgba(251,146,60,.14)',bd:'rgba(251,146,60,.4)'};return{c:'#f87171',bg:'rgba(248,113,113,.14)',bd:'rgba(248,113,113,.4)'};}
+function sc2(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
 function cc(p){return p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';}
 function gLbl(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
-function sbar(s,l){const col=sc(s);return '<div class="sb-row"><span style="color:var(--mu)">'+l+'</span><span style="font-weight:600;color:'+col+'">'+s+'/10</span></div><div class="sb-track"><div class="sb-fill" style="width:'+(s*10)+'%;background:'+col+'"></div></div>';}
-function mleg(arr){if(!arr||!arr.length)return'';return '<div class="mleg">'+arr.map((m,i)=>'<div class="mli"><div class="mld" style="background:'+mc(m.type)+'"></div><b>'+(i+1)+'</b>&nbsp;'+(m.description||ml(m.type))+'</div>').join('')+'</div>';}
-function accv(id,ico,lbl,score,body){const col=sc(score);return '<div><div class="ah" onclick="tAcc(\''+id+'\',this)"><span style="font-size:16px">'+ico+'</span><span style="font-size:14px;font-weight:500">'+lbl+'</span><span style="font-size:12px;font-weight:600;color:'+col+';margin-left:auto;margin-right:8px">'+score+'/10</span><span class="aa">▾</span></div><div id="'+id+'" style="display:none" class="ab">'+body+'</div></div>';}
-function tAcc(id,h){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';h.classList.toggle('open',!o);}
+function sbar(s,l){const col=sc2(s);return'<div class="sb-row"><span style="color:var(--mu)">'+l+'</span><span style="font-weight:600;color:'+col+'">'+s+'/10</span></div><div class="sb-track"><div class="sb-fill" style="width:'+s*10+'%;background:'+col+'"></div></div>';}
+function mleg(arr){if(!arr||!arr.length)return'';return'<div class="mleg">'+arr.map((m,i)=>'<div class="mli"><div class="mld" style="background:'+mc(m.type)+'"></div><b>'+(i+1)+'</b> '+(m.description||ml(m.type))+'</div>').join('')+'</div>';}
+function accv(id,ico,lbl,score,body){const col=sc2(score);return'<div><div class="ah" onclick="tAcc(\''+id+'\',this)"><span style="font-size:16px">'+ico+'</span><span style="font-size:14px;font-weight:500">'+lbl+'</span><span style="font-size:12px;font-weight:600;color:'+col+';margin-left:auto;margin-right:8px">'+score+'/10</span><span class="aa">v</span></div><div id="'+id+'" style="display:none" class="ab">'+body+'</div></div>';}
+function tAcc(id,h2){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';h2.classList.toggle('open',!o);}
 
-// ── RENDER RESULTS ──────────────────────────────
-let _fm=[], _bm=[];
-function renderResults(r, af, ab, ci, fromHist, det) {
-  const g=r.final_grade, gclr=gc(g), cen=r.centering||{};
+/* ── RENDER RESULTS ───────────────────────────── */
+let _fm=[],_bm=[];
+function renderResults(r,af,ab,ci,fromHist,det){
+  const g=r.final_grade,gclr=gc(g),cen=r.centering||{};
   _fm=(r.markers||[]).filter(m=>m.side==='front');
   _bm=(r.markers||[]).filter(m=>m.side==='back');
-  const lo=Math.min(cen.score||10,r.corners?.score||10,r.edges?.score||10,r.surface?.score||10);
+  const lo=Math.min((cen.score||10),(r.corners?r.corners.score:0)||10,(r.edges?r.edges.score:0)||10,(r.surface?r.surface.score:0)||10);
   const d=det||A.detected||{};
-
-  const cardHTML=d.card_name?'<div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1),rgba(230,57,70,.05));border-color:rgba(230,57,70,.2)"><div class="st" style="margin-bottom:6px">🃏 Kartendetails</div><div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:.02em">'+d.card_name+'</div><div style="display:flex;flex-wrap:wrap">'
-    +(d.language?'<div class="ipill">🌐 <b>'+d.language+'</b></div>':'')
-    +(d.set_name?'<div class="ipill">📦 <b>'+d.set_name+'</b></div>':'')
+  const cardHTML=d.card_name?'<div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1),rgba(230,57,70,.05));border-color:rgba(230,57,70,.2)"><div class="st" style="margin-bottom:6px">Kartendetails</div><div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px">'+d.card_name+'</div><div style="display:flex;flex-wrap:wrap">'
+    +(d.language?'<div class="ipill">Spr: <b>'+d.language+'</b></div>':'')
+    +(d.set_name?'<div class="ipill">Set: <b>'+d.set_name+'</b></div>':'')
     +(d.card_number?'<div class="ipill">#<b>'+d.card_number+'</b></div>':'')
-    +(d.hp?'<div class="ipill">❤️ <b>'+d.hp+'</b></div>':'')
-    +(d.rarity?'<div class="ipill">⭐ <b>'+d.rarity+'</b></div>':'')
-    +(d.holo_type?'<div class="ipill">✨ <b>'+d.holo_type+'</b></div>':'')
-    +(d.category?'<div class="ipill">🏷 <b>'+d.category+'</b></div>':'')
+    +(d.hp?'<div class="ipill">HP: <b>'+d.hp+'</b></div>':'')
+    +(d.rarity?'<div class="ipill"><b>'+d.rarity+'</b></div>':'')
+    +(d.holo_type?'<div class="ipill"><b>'+d.holo_type+'</b></div>':'')
+    +(d.category?'<div class="ipill">'+d.category+'</div>':'')
     +'</div></div>':'';
-
-  const cenBody='<div style="background:var(--s2);border-radius:var(--rs);padding:10px;margin-bottom:10px">'+(ci?'<img src="'+ci+'" style="width:100%;border-radius:4px;display:block">':'')+'</div>'
+  const cenBody=(ci?'<div style="background:var(--s2);border-radius:var(--rs);padding:10px;margin-bottom:10px"><img src="'+ci+'" style="width:100%;border-radius:4px;display:block"></div>':'')
     +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'
-    +[['VS L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],
-      ['VS T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],
-      ['RS L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],
-      ['RS T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>
-      '<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+l+'</div><div style="font-size:17px;font-weight:700;color:'+cc(p)+';font-family:var(--fh)">'+(v||'–')+'</div></div>').join('')
+    +[['VS L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],['VS T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],['RS L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],['RS T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>'<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+l+'</div><div style="font-size:17px;font-weight:700;color:'+cc(p)+';font-family:var(--fh)">'+(v||'-')+'</div></div>').join('')
     +'</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+(cen.notes||'')+'</div>';
-
-  const corBody='<div class="cg">'
-    +['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return '<div class="cgc"><div class="cgl">'+l+'</div><div style="font-size:12px">'+(r.corners?.[k]||'–')+'</div></div>';}).join('')
-    +'</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+(r.corners?.notes||'')+'</div>';
-
-  const edgBody=['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return '<div class="dr"><span style="color:var(--mu)">'+l+'</span><span style="max-width:58%;text-align:right">'+(r.edges?.[k]||'–')+'</span></div>';}).join('')
-    +'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+(r.edges?.notes||'')+'</div>';
-
-  const surBody=(r.surface?.defects?.length
-    ?r.surface.defects.map(d2=>'<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">⚠️</span><span style="font-size:12px">'+d2+'</span></div>').join('')
-    :'<div style="font-size:12px;color:var(--mu);margin-bottom:6px;display:flex;gap:5px"><span style="color:#4ade80">✓</span>Keine Defekte erkannt</div>')
-    +'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+(r.surface?.notes||'')+'</div>';
-
+  const corBody='<div class="cg">'+['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return'<div class="cgc"><div class="cgl">'+l+'</div><div style="font-size:12px">'+((r.corners?r.corners[k]:'-')||'-')+'</div></div>';}).join('')+'</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+((r.corners?r.corners.notes:'')||'')+'</div>';
+  const edgBody=['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return'<div class="dr"><span style="color:var(--mu)">'+l+'</span><span>'+((r.edges?r.edges[k]:'-')||'-')+'</span></div>';}).join('')+'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+((r.edges?r.edges.notes:'')||'')+'</div>';
+  const surBody=(((r.surface&&r.surface.defects)?r.surface.defects.length:0)?r.surface.defects.map(d2=>'<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">!</span><span style="font-size:12px">'+d2+'</span></div>').join(''):'<div style="font-size:12px;color:var(--mu);margin-bottom:6px">Keine Defekte erkannt</div>')+'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+((r.surface?r.surface.notes:'')||'')+'</div>';
   const html=cardHTML
     +'<div class="card" style="margin-bottom:10px">'
     +'<div style="display:flex;align-items:stretch;gap:14px;margin-bottom:14px">'
     +'<div class="psa-slab"><div class="psa-top">PSA</div><div class="psa-body"><div class="psa-num" style="color:'+gclr.c+'">'+g+'</div><div class="psa-sub">'+gLbl(g)+'</div></div></div>'
     +'<div style="flex:1"><div style="font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:5px;color:'+gclr.c+'">'+(r.grade_label||gLbl(g))+'</div>'
-    +'<div style="display:inline-block;background:'+gclr.bg+';border:1px solid '+gclr.bd+';color:'+gclr.c+';font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fh);letter-spacing:.04em">LOWEST: '+lo+'/10</div>'
-    +(r.summary?'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+r.summary+'</div>':'')
-    +'</div></div>'
-    +sbar(cen.score||0,'Zentrierung')+sbar(r.corners?.score||0,'Ecken')+sbar(r.edges?.score||0,'Ränder')+sbar(r.surface?.score||0,'Oberfläche')
-    +(r.recommendation?'<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+r.recommendation+'</div></div>':'')
-    +'</div>'
+    +'<div style="display:inline-block;background:'+gclr.bg+';border:1px solid '+gclr.bd+';color:'+gclr.c+';font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fh)">LOWEST: '+lo+'/10</div>'
+    +(r.summary?'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+r.summary+'</div>':'')+'</div></div>'
+    +sbar(cen.score||0,'Zentrierung')+sbar((r.corners?r.corners.score:0)||0,'Ecken')+sbar((r.edges?r.edges.score:0)||0,'Raender')+sbar((r.surface?r.surface.score:0)||0,'Oberflaeche')
+    +(r.recommendation?'<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+r.recommendation+'</div></div>':'')+'</div>'
     +'<div id="pw-indicator" style="margin-bottom:6px"></div>'
     +'<div id="psa-calc-section"></div>'
-    +'<div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>'
-    +'<div class="card" style="padding:14px;margin-bottom:10px"><div class="st" style="margin-bottom:10px">📌 Kartenbeschriftung</div>'
+    +'<div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Laedtdet...</div></div>'
+    +'<div class="card" style="padding:14px;margin-bottom:10px"><div class="st" style="margin-bottom:10px">Kartenbeschriftung</div>'
     +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Vorderseite</div>'
     +(af?'<div class="aw" id="aw-f"><img src="'+af+'" class="ai" onclick="tapM(event,\'f\')" style="cursor:crosshair"><div class="mtt" id="tt-f"></div></div>'+mleg(_fm):'')
-    +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin:14px 0 6px">Rückseite</div>'
-    +(ab?'<div class="aw" id="aw-b"><img src="'+ab+'" class="ai" onclick="tapM(event,\'b\')" style="cursor:crosshair"><div class="mtt" id="tt-b"></div></div>'+mleg(_bm):'')
-    +'</div>'
+    +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin:14px 0 6px">Rueckseite</div>'
+    +(ab?'<div class="aw" id="aw-b"><img src="'+ab+'" class="ai" onclick="tapM(event,\'b\')" style="cursor:crosshair"><div class="mtt" id="tt-b"></div></div>'+mleg(_bm):'')+'</div>'
     +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">'
     +'<div style="padding:12px 16px;border-bottom:1px solid var(--b0)" class="st">Detailbewertung</div>'
-    +accv('ac','⚖️','Zentrierung',cen.score||0,cenBody)
-    +accv('ae','🔍','Ecken & Whitening',r.corners?.score||0,corBody)
-    +accv('ar','📐','Ränder',r.edges?.score||0,edgBody)
-    +accv('as','✨','Oberfläche',r.surface?.score||0,surBody)
-    +'</div>'
-    +'<div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">ℹ️ KI-Einschätzung · kein offizielles PSA-Ergebnis</div>'
-    +(fromHist?'<button class="btn btn-s" onclick="safeNav(A.fromScreen||\'pg-collection\')" style="margin-top:10px">← Zurück</button>':'<button class="btn btn-s" onclick="safeNav(\'pg-home\')" style="margin-top:10px">🏠 Startseite</button>')
-    +'<div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>';
-
-  $(fromHist?'det-page':'res-page').innerHTML=html;
+    +accv('ac','Z','Zentrierung',cen.score||0,cenBody)+accv('ae','E','Ecken & Whitening',(r.corners?r.corners.score:0)||0,corBody)+accv('ar','R','Raender',(r.edges?r.edges.score:0)||0,edgBody)+accv('as','O','Oberflaeche',(r.surface?r.surface.score:0)||0,surBody)+'</div>'
+    +'<div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">KI-Einschaetzung - kein offizielles PSA-Ergebnis</div>'
+    +(fromHist?'<button class="btn btn-s" onclick="safeNav(A.fromScreen||\'pg-collection\')" style="margin-top:10px">Zurueck</button>':'<button class="btn btn-s" onclick="safeNav(\'pg-home\')" style="margin-top:10px">Startseite</button>')
+    +'<div class="cr"><a href="https://netpixel.at" target="_blank">netpixel.at</a></div>';
+  const target=$(fromHist?'det-page':'res-page');if(target)target.innerHTML=html;
 }
+function tapM(e,s){try{const img=e.target,rect=img.getBoundingClientRect();const xr=((e.clientX-rect.left)/rect.width)*100,yr=((e.clientY-rect.top)/rect.height)*100;const markers=s==='f'?_fm:_bm;const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);const tt=$('tt-'+s);if(!tt)return;if(hit){tt.textContent=(hit.label||'')+': '+(hit.description||ml(hit.type));tt.style.display='block';tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';setTimeout(()=>tt.style.display='none',2800);}else tt.style.display='none';}catch(e){}}
 
-function tapM(e,s) {
-  try {
-    const img=e.target, rect=img.getBoundingClientRect();
-    const xr=((e.clientX-rect.left)/rect.width)*100, yr=((e.clientY-rect.top)/rect.height)*100;
-    const markers=s==='f'?_fm:_bm;
-    const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);
-    const tt=$('tt-'+s);
-    if(!tt) return;
-    if(hit) {
-      tt.textContent=(hit.label||'')+': '+(hit.description||ml(hit.type));
-      tt.style.display='block';
-      tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';
-      tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';
-      setTimeout(()=>tt.style.display='none',2800);
-    } else { tt.style.display='none'; }
-  } catch(e2) {}
-}
-
-// ── INDEXEDDB ──────────────────────────────────
+/* ── INDEXEDDB ────────────────────────────────── */
 let _db=null;
-const openDB=()=>new Promise((res,rej)=>{
-  if(_db){res(_db);return;}
-  const r=indexedDB.open('pgDB8',1);
-  r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};
-  r.onsuccess=e=>{_db=e.target.result;res(_db);};
-  r.onerror=()=>rej(new Error('DB Fehler'));
-});
-const dbPut=async e=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').put(e);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Schreiben fehlgeschlagen'));});};
+const openDB=()=>new Promise((res,rej)=>{if(_db){res(_db);return;}const r=indexedDB.open('pgDB8',1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=()=>rej(new Error('DB Fehler'));});
+const dbPut=async e=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').put(e);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Speichern fehlgeschlagen'));});};
 const dbAll=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readonly'),q=tx.objectStore('g').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(new Error('Lesen fehlgeschlagen'));});};
-const dbDel=async id=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Löschen fehlgeschlagen'));});};
+const dbDel=async id=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Loeschen fehlgeschlagen'));});};
 const dbClear=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Fehler'));});};
 
-// ── SAVE ──────────────────────────────────────
-async function saveGrade() {
-  const btn=$('save-btn');
-  if(!A.result||A.saved) return;
-  // Duplicate check
+/* ── SAVE ─────────────────────────────────────── */
+async function saveGrade(){
+  const btn=$('save-btn');if(!A.result||A.saved)return;
   const d0=A.detected||{};
   const isDup=await checkDuplicate(d0.card_name,d0.set_name,d0.card_number);
-  if(isDup && !confirm('⚠️ Diese Karte existiert bereits in deiner Sammlung. Trotzdem speichern?'))return;
-  btn.textContent='⏳ Speichern…'; btn.disabled=true;
-  try {
+  if(isDup&&!confirm('Diese Karte existiert bereits. Trotzdem speichern?'))return;
+  if(btn){btn.textContent='Speichert...';btn.disabled=true;}
+  try{
     const d=A.detected||{};
-    const entry={
-      id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), timestamp:Date.now(),
-      cardName:d.card_name||'Unbekannte Karte',
-      cardLang:d.language, cardSet:d.set_name, cardNumber:d.card_number,
-      cardHP:d.hp, cardRarity:d.rarity, cardHolo:d.holo_type, cardCat:d.category,
-      grade:A.result.final_grade, label:A.result.grade_label,
-      summary:A.result.summary, recommendation:A.result.recommendation,
-      centering:A.result.centering, corners:A.result.corners,
-      edges:A.result.edges, surface:A.result.surface,
-      markers:A.result.markers||[], annF:A.annF, annB:A.annB, cenImg:A.cenImg
-    };
-    await dbPut(entry);
-    A.saved=true; btn.textContent='✓ Gespeichert';
-    toast('✅ In Sammlung gespeichert');
-  } catch(e) { btn.textContent='💾 SPEICHERN'; btn.disabled=false; toast('❌ '+e.message); }
+    const entry={id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),timestamp:Date.now(),
+      cardName:d.card_name||'Karte',cardLang:d.language,cardSet:d.set_name,cardNumber:d.card_number,
+      cardHP:d.hp,cardRarity:d.rarity,cardHolo:d.holo_type,cardCat:d.category,
+      grade:A.result.final_grade,label:A.result.grade_label,summary:A.result.summary,recommendation:A.result.recommendation,
+      centering:A.result.centering,corners:A.result.corners,edges:A.result.edges,surface:A.result.surface,
+      markers:A.result.markers||[],annF:A.annF,annB:A.annB,cenImg:A.cenImg};
+    await dbPut(entry);A.saved=true;if(btn)btn.textContent='Gespeichert';toast('In Sammlung gespeichert');
+  }catch(e){if(btn){btn.textContent='SPEICHERN';btn.disabled=false;}toast('Fehler: '+e.message);}
 }
 
-// ── EDIT CARD ──────────────────────────────────
+/* ── EDIT CARD ────────────────────────────────── */
 let _editId=null;
-function openEditModal() {
-  if(!A.detailId) return;
-  dbAll().then(all=>{
-    const e=all.find(x=>x.id===A.detailId);
-    if(!e) return;
-    _editId=e.id;
-    $('em-name').value=e.cardName||'';
-    $('em-lang').value=e.cardLang||'';
-    $('em-hp').value=e.cardHP||'';
-    $('em-set').value=e.cardSet||'';
-    $('em-num').value=e.cardNumber||'';
-    $('em-rar').value=e.cardRarity||'';
-    $('em-cat').value=e.cardCat||'';
-    $('em-watch').value=e.watchPrice||'';
-    $('em-holo').value=e.cardHolo||'';
-    $('edit-modal').classList.add('open');
-  }).catch(e=>toast('❌ '+e.message));
+function openEditModal(){
+  if(!A.detailId)return;
+  dbAll().then(all=>{const e=all.find(x=>x.id===A.detailId);if(!e)return;_editId=e.id;
+    const fields=[['em-name',e.cardName],['em-lang',e.cardLang],['em-hp',e.cardHP],['em-set',e.cardSet],['em-num',e.cardNumber],['em-rar',e.cardRarity],['em-cat',e.cardCat],['em-holo',e.cardHolo],['em-watch',e.watchPrice||'']];
+    fields.forEach(([id,val])=>{const el=$(id);if(el)el.value=val||'';});
+    const m=$('edit-modal');if(m)m.classList.add('open');
+  }).catch(e=>toast('Fehler: '+e.message));
 }
-function openEditForResult() {
-  // Before saving, allow editing detected data
-  $('em-name').value=$('cd-name')?.value||A.detected?.card_name||'';
-  $('em-lang').value=$('cd-lang')?.value||A.detected?.language||'';
-  $('em-hp').value=$('cd-hp')?.value||A.detected?.hp||'';
-  $('em-set').value=$('cd-set')?.value||A.detected?.set_name||'';
-  $('em-num').value=$('cd-num')?.value||A.detected?.card_number||'';
-  $('em-rar').value=$('cd-rar')?.value||A.detected?.rarity||'';
-  $('em-cat').value=$('cd-cat')?.value||A.detected?.category||'';
-  $('em-holo').value=A.detected?.holo_type||'';
-  $('em-watch').value='';
-  _editId=null;
-  $('edit-modal').classList.add('open');
+function openEditForResult(){
+  const d=A.detected||{};
+  const fields=[['em-name',d.card_name],['em-lang',d.language],['em-hp',d.hp],['em-set',d.set_name],['em-num',d.card_number],['em-rar',d.rarity],['em-cat',d.category],['em-holo',d.holo_type],['em-watch','']];
+  fields.forEach(([id,val])=>{const el=$(id);if(el)el.value=val||'';});
+  _editId=null;const m=$('edit-modal');if(m)m.classList.add('open');
 }
-function closeEdit() { $('edit-modal').classList.remove('open'); }
-async function saveEdit() {
-  if(_editId) {
-    // Save to existing DB entry
-    try {
-      const all=await dbAll();
-      const e=all.find(x=>x.id===_editId);
-      if(!e) return;
-      e.cardName=$('em-name').value.trim()||e.cardName;
-      e.cardLang=$('em-lang').value.trim(); e.cardHP=$('em-hp').value.trim();
-      e.cardSet=$('em-set').value.trim(); e.cardNumber=$('em-num').value.trim();
-      e.cardRarity=$('em-rar').value.trim(); e.cardCat=$('em-cat').value.trim();
-      e.cardHolo=$('em-holo').value.trim();
-      const wp=$('em-watch').value.trim();
-      e.watchPrice=wp?parseFloat(wp):null;
-      await dbPut(e); closeEdit(); toast('✅ Gespeichert');
-      showDetail(_editId, A.fromScreen);
-    } catch(err) { toast('❌ '+err.message); }
-  } else {
-    // Update A.detected before results are rendered
-    if(A.detected) {
-      A.detected.card_name=$('em-name').value.trim()||A.detected.card_name;
-      A.detected.language=$('em-lang').value.trim();
-      A.detected.hp=$('em-hp').value.trim();
-      A.detected.set_name=$('em-set').value.trim();
-      A.detected.card_number=$('em-num').value.trim();
-      A.detected.rarity=$('em-rar').value.trim();
-      A.detected.category=$('em-cat').value.trim();
-      A.detected.holo_type=$('em-holo').value.trim();
-      renderResults(A.result, A.annF, A.annB, A.cenImg, false, A.detected);
-    }
-    closeEdit();
-    toast('✅ Kartendetails aktualisiert');
+function closeEdit(){const m=$('edit-modal');if(m)m.classList.remove('open');}
+async function saveEdit(){
+  if(_editId){
+    try{const all=await dbAll();const e=all.find(x=>x.id===_editId);if(!e)return;
+      const fields=[['em-name','cardName'],['em-lang','cardLang'],['em-hp','cardHP'],['em-set','cardSet'],['em-num','cardNumber'],['em-rar','cardRarity'],['em-cat','cardCat'],['em-holo','cardHolo']];
+      fields.forEach(([id,prop])=>{const el=$(id);if(el){const v=el.value.trim();if(v||prop!=='cardName')e[prop]=v;}});
+      const wp=$('em-watch');e.watchPrice=wp&&wp.value.trim()?parseFloat(wp.value.trim()):null;
+      await dbPut(e);closeEdit();toast('Gespeichert');showDetail(_editId,A.fromScreen);
+    }catch(err){toast('Fehler: '+err.message);}
+  }else{
+    if(A.detected){const fields=[['em-name','card_name'],['em-lang','language'],['em-hp','hp'],['em-set','set_name'],['em-num','card_number'],['em-rar','rarity'],['em-cat','category'],['em-holo','holo_type']];fields.forEach(([id,prop])=>{const el=$(id);if(el)A.detected[prop]=el.value.trim();});renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);}
+    closeEdit();toast('Kartendetails aktualisiert');
   }
 }
-$('edit-modal').addEventListener('click', e=>{ if(e.target===$('edit-modal')) closeEdit(); });
 
-// ── PNG EXPORT ──────────────────────────────────
-async function triggerExport() {
-  const id=A.detailId||null;
-  const entry=id?(await dbAll()).find(x=>x.id===id):null;
-  const src=entry||{
-    cardName:A.detected?.card_name, cardSet:A.detected?.set_name,
-    cardNumber:A.detected?.card_number, cardLang:A.detected?.language,
-    grade:A.result?.final_grade, label:A.result?.grade_label,
-    centering:A.result?.centering, corners:A.result?.corners,
-    edges:A.result?.edges, surface:A.result?.surface,
-    annF:A.annF, timestamp:Date.now()
-  };
-  toast('⏳ Export wird erstellt…', 5000);
-  try {
-    const dataUrl=await buildSlabImage(src);
-    const a=document.createElement('a');
-    a.download=(src.cardName||'PokéGrader').replace(/[^a-z0-9äöüÄÖÜ]/gi,'_')+'_PSA'+(src.grade||'')+'.png';
-    a.href=dataUrl; a.click();
-    toast('✅ PNG gespeichert');
-  } catch(e) { toast('❌ Export: '+e.message); }
+/* ── EXPORT ───────────────────────────────────── */
+async function triggerExport(){
+  const id=A.detailId;
+  const src=id?(await dbAll().catch(()=>[])).find(x=>x.id===id)||null:null;
+  const entry=src||{cardName:((A.detected)?A.detected.card_name:''),cardSet:((A.detected)?A.detected.set_name:''),cardNumber:((A.detected)?A.detected.card_number:''),cardLang:((A.detected)?A.detected.language:''),grade:(A.result?A.result.final_grade:0),label:(A.result?A.result.grade_label:''),centering:(A.result?A.result.centering:{}),corners:(A.result?A.result.corners:{}),edges:(A.result?A.result.edges:{}),surface:(A.result?A.result.surface:{}),annF:A.annF,timestamp:Date.now()};
+  toast('Export wird erstellt...',5000);
+  try{const dataUrl=await buildSlabImage(entry);const a=document.createElement('a');a.download=(entry.cardName||'PokéGrader').replace(/[^a-z0-9]/gi,'_')+'_PSA'+(entry.grade||'')+'.png';a.href=dataUrl;a.click();toast('PNG gespeichert');}catch(e){toast('Export fehlgeschlagen');}
 }
-function buildSlabImage(e) {
+function buildSlabImage(e){
   return new Promise(res=>{
-    const W=420, H=600;
-    const c=document.createElement('canvas'); c.width=W; c.height=H;
-    const ctx=c.getContext('2d');
-    ctx.fillStyle='#f5f5f0'; ctx.fillRect(0,0,W,H);
-    ctx.fillStyle='#e63946'; ctx.fillRect(0,0,W,72);
-    ctx.fillStyle='#fff'; ctx.font='bold 20px Arial,sans-serif'; ctx.textAlign='center';
-    ctx.fillText('PSA PRE-GRADING', W/2, 28);
-    ctx.font='11px Arial,sans-serif'; ctx.fillText('PokéGrader by netpixel.at', W/2, 50);
-    ctx.font='9px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,.65)';
-    ctx.fillText('Kein offizielles PSA-Ergebnis', W/2, 66);
-    const gMap={10:'#f5c842',9:'#60a5fa',8:'#a78bfa',7:'#c084fc',6:'#4ade80',5:'#fb923c'};
-    const gCol=gMap[e.grade]||'#f87171';
-    ctx.font='bold 80px Arial,sans-serif'; ctx.fillStyle=gCol; ctx.textAlign='center';
-    ctx.fillText(String(e.grade||'?'), W/2, 174);
-    ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='#333';
-    ctx.fillText(gLbl(e.grade||0), W/2, 206);
-    const bars=[['Zentrierung',e.centering?.score||0],['Ecken',e.corners?.score||0],['Ränder',e.edges?.score||0],['Oberfläche',e.surface?.score||0]];
-    bars.forEach(([lbl,s],i)=>{
-      const bx=28, by=222+i*22, bw=W-56, bh=12, val=s/10;
-      ctx.fillStyle='#e0e0e0'; ctx.fillRect(bx,by,bw,bh);
-      const bc=s>=9?'#22c55e':s>=7?'#3b82f6':s>=5?'#f59e0b':'#ef4444';
-      ctx.fillStyle=bc; ctx.fillRect(bx,by,Math.round(bw*val),bh);
-      ctx.fillStyle='#555'; ctx.font='10px Arial'; ctx.textAlign='left'; ctx.fillText(lbl,bx,by-2);
-      ctx.textAlign='right'; ctx.fillText(s+'/10',bx+bw,by-2);
-    });
-    const drawRest=()=>{
-      const iw=210, ih=Math.round(210*88/63), ix=(W-iw)/2, iy=316;
-      ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.lineWidth=1; ctx.strokeRect(ix,iy,iw,ih);
-      ctx.fillStyle='#111'; ctx.font='bold 14px Arial'; ctx.textAlign='center';
-      ctx.fillText((e.cardName||'Unbekannte Karte').substring(0,30), W/2, iy+ih+20);
-      ctx.font='11px Arial'; ctx.fillStyle='#666';
-      ctx.fillText([e.cardSet,e.cardNumber].filter(Boolean).join(' · ').substring(0,36)||'', W/2, iy+ih+38);
-      if(e.cardLang){ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText('Sprache: '+e.cardLang, W/2, iy+ih+54);}
-      ctx.font='9px Arial'; ctx.fillStyle='#aaa';
-      ctx.fillText(new Date(e.timestamp||Date.now()).toLocaleDateString('de-AT'), W/2, H-24);
-      ctx.fillText('© netpixel.at PokéGrader', W/2, H-12);
-      res(c.toDataURL('image/png'));
-    };
-    if(e.annF) {
-      const img=new Image();
-      img.onload=()=>{
-        const iw=210,ih=Math.round(210*88/63),ix=(W-iw)/2,iy=316;
-        ctx.save(); ctx.beginPath(); ctx.rect(ix,iy,iw,ih); ctx.clip();
-        ctx.drawImage(img,ix,iy,iw,ih); ctx.restore();
-        drawRest();
-      };
-      img.onerror=drawRest; img.src=e.annF;
-    } else { drawRest(); }
+    const W=420,H=600,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');
+    ctx.fillStyle='#f5f5f0';ctx.fillRect(0,0,W,H);ctx.fillStyle='#e63946';ctx.fillRect(0,0,W,72);
+    ctx.fillStyle='#fff';ctx.font='bold 20px Arial';ctx.textAlign='center';ctx.fillText('PSA PRE-GRADING',W/2,28);
+    ctx.font='11px Arial';ctx.fillText('PokéGrader by netpixel.at',W/2,50);
+    const gMap={10:'#f5c842',9:'#60a5fa',8:'#a78bfa',7:'#c084fc',6:'#4ade80',5:'#fb923c'};const gCol=gMap[e.grade]||'#f87171';
+    ctx.font='bold 80px Arial';ctx.fillStyle=gCol;ctx.fillText(String(e.grade||'?'),W/2,174);
+    ctx.font='bold 22px Arial';ctx.fillStyle='#333';ctx.fillText(gLbl(e.grade||0),W/2,206);
+    const bars=[['Zentrierung',(e.centering?e.centering.score:0)||0],['Ecken',(e.corners?e.corners.score:0)||0],['Raender',(e.edges?e.edges.score:0)||0],['Oberflaeche',(e.surface?e.surface.score:0)||0]];
+    bars.forEach(([l,s],i)=>{const bx=28,by=222+i*22,bw=W-56,bc=s>=9?'#22c55e':s>=7?'#3b82f6':s>=5?'#f59e0b':'#ef4444';ctx.fillStyle='#e0e0e0';ctx.fillRect(bx,by,bw,12);ctx.fillStyle=bc;ctx.fillRect(bx,by,Math.round(bw*s/10),12);ctx.fillStyle='#555';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText(l,bx,by-2);ctx.textAlign='right';ctx.fillText(s+'/10',bx+bw,by-2);});
+    const drawRest=()=>{const iw=210,ih=Math.round(210*88/63),ix=(W-iw)/2,iy=316;ctx.strokeStyle='rgba(0,0,0,.15)';ctx.lineWidth=1;ctx.strokeRect(ix,iy,iw,ih);ctx.fillStyle='#111';ctx.font='bold 14px Arial';ctx.textAlign='center';ctx.fillText((e.cardName||'Karte').substring(0,30),W/2,iy+ih+20);ctx.font='11px Arial';ctx.fillStyle='#666';ctx.fillText([e.cardSet,e.cardNumber].filter(Boolean).join(' - ').substring(0,36)||'',W/2,iy+ih+38);ctx.font='9px Arial';ctx.fillStyle='#aaa';ctx.fillText(new Date(e.timestamp||Date.now()).toLocaleDateString('de-AT'),W/2,H-24);ctx.fillText('netpixel.at PokéGrader',W/2,H-12);res(c.toDataURL('image/png'));};
+    if(e.annF){const img=new Image();img.onload=()=>{const iw=210,ih=Math.round(210*88/63),ix=(W-iw)/2,iy=316;ctx.save();ctx.beginPath();ctx.rect(ix,iy,iw,ih);ctx.clip();ctx.drawImage(img,ix,iy,iw,ih);ctx.restore();drawRest();};img.onerror=drawRest;img.src=e.annF;}else drawRest();
   });
 }
 
-// ── CSV EXPORT ──────────────────────────────────
-async function exportCSV() {
-  try {
-    const all=await dbAll();
-    all.sort((a,b)=>b.timestamp-a.timestamp);
-    if(!all.length) { toast('Keine Karten vorhanden'); return; }
-    const heads=['Datum','Kartenname','Sprache','Edition','Nummer','Seltenheit','Holo-Typ','Bezeichnung','Grade','Label','Zentrierung','Ecken','Ränder','Oberfläche'];
-    const rows=all.map(e=>[
-      new Date(e.timestamp).toLocaleDateString('de-AT'),
-      e.cardName||'',e.cardLang||'',e.cardSet||'',e.cardNumber||'',
-      e.cardRarity||'',e.cardHolo||'',e.cardCat||'',
-      e.grade,e.label||'',
-      e.centering?.score||0,e.corners?.score||0,e.edges?.score||0,e.surface?.score||0
-    ].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
-    const csv=[heads.map(h=>'"'+h+'"').join(','),...rows.map(r=>r.join(','))].join('\n');
+/* ── SHARE ────────────────────────────────────── */
+async function shareResult(){
+  const id=A.detailId;let src=null;
+  if(id){const all=await dbAll().catch(()=>[]);src=all.find(x=>x.id===id);}
+  if(!src){src={cardName:((A.detected)?A.detected.card_name:''),grade:(A.result?A.result.final_grade:0),label:(A.result?A.result.grade_label:''),centering:(A.result?A.result.centering:{}),corners:(A.result?A.result.corners:{}),edges:(A.result?A.result.edges:{}),surface:(A.result?A.result.surface:{}),annF:A.annF};}
+  if(!navigator.share){toast('Teilen nicht unterstuetzt');return;}
+  const text=(src.cardName||'Pokemon Karte')+' - PSA Pre-Grade: '+src.grade+' ('+gLbl(src.grade||0)+')\nZentrierung: '+((src.centering?src.centering.score:'?')||'?')+'/10 | Ecken: '+((src.corners?src.corners.score:'?')||'?')+'/10\nbewertet mit PokéGrader by netpixel.at';
+  try{if(src.annF&&navigator.canShare){const blob=await(await fetch(src.annF)).blob();const file=new File([blob],'PokéGrader_PSA'+(src.grade||'')+'.jpg',{type:'image/jpeg'});if(navigator.canShare({files:[file]})){await navigator.share({title:'PokéGrader PSA',text,files:[file]});return;}}await navigator.share({title:'PokéGrader PSA',text});}catch(e){if(e.name!=='AbortError')toast('Teilen: '+e.message);}
+}
+
+/* ── CSV EXPORT ───────────────────────────────── */
+async function exportCSV(){
+  try{const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);if(!all.length){toast('Keine Karten');return;}
+    const heads=['Datum','Kartenname','Sprache','Edition','Nummer','Seltenheit','Holo','Bezeichnung','Grade','Label','Zentrierung','Ecken','Raender','Oberflaeche'];
+    const rows=all.map(e=>[new Date(e.timestamp).toLocaleDateString('de-AT'),e.cardName||'',e.cardLang||'',e.cardSet||'',e.cardNumber||'',e.cardRarity||'',e.cardHolo||'',e.cardCat||'',e.grade,e.label||'',(e.centering?e.centering.score:0)||0,(e.corners?e.corners.score:0)||0,(e.edges?e.edges.score:0)||0,(e.surface?e.surface.score:0)||0].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
+    const csv=[heads.map(hh=>'"'+hh+'"').join(','),...rows.map(r=>r.join(','))].join('\n');
     const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;
-    a.download='PokéGrader_Sammlung_'+new Date().toISOString().substring(0,10)+'.csv';
-    a.click(); URL.revokeObjectURL(url);
-    toast('✅ CSV exportiert ('+all.length+' Karten)');
-  } catch(e) { toast('❌ '+e.message); }
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='PokéGrader_'+new Date().toISOString().substring(0,10)+'.csv';a.click();URL.revokeObjectURL(url);
+    toast('CSV exportiert ('+all.length+' Karten)');
+  }catch(e){toast('CSV Fehler: '+e.message);}
 }
 
-// ── COMPARE ──────────────────────────────────────
-let _cmpSlots=[];
-function addToCompare() {
-  const id=A.detailId;
-  if(!id) return;
-  if(_cmpSlots.includes(id)) { toast('⚠️ Bereits ausgewählt'); return; }
-  _cmpSlots.push(id);
-  if(_cmpSlots.length>=2) {
-    renderCompare();
-    navTo('pg-compare');
-  } else {
-    toast('✅ Karte 1 ausgewählt — wähle eine zweite in der Sammlung');
-    navTo('pg-collection');
-  }
+/* ── BACKUP / RESTORE ─────────────────────────── */
+async function backupCollection(){
+  try{const all=await dbAll();if(!all.length){toast('Keine Karten');return;}
+    const blob=new Blob([JSON.stringify({version:1,date:new Date().toISOString(),entries:all})],{type:'application/json'});
+    const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download='PokéGrader_Backup_'+new Date().toISOString().substring(0,10)+'.json';a.click();URL.revokeObjectURL(url);toast('Backup erstellt ('+all.length+' Karten)');
+  }catch(e){toast('Backup Fehler: '+e.message);}
 }
-function clearCompare() { _cmpSlots=[]; navTo('pg-collection'); }
-async function renderCompare() {
-  const el=$('cmp-content');
-  const info=$('cmp-info');
-  if(!el) return;
-  if(_cmpSlots.length<2) { el.innerHTML=''; if(info)info.style.display='block'; return; }
-  if(info)info.style.display='none';
-  try {
-    const all=await dbAll();
-    const cards=_cmpSlots.map(id=>all.find(e=>e.id===id)).filter(Boolean);
-    if(cards.length<2) return;
-    const bars=['Zentrierung','Ecken','Ränder','Oberfläche'];
-    const scoreKeys=[['centering','score'],['corners','score'],['edges','score'],['surface','score']];
-    const cols=cards.map(e=>{
-      const gclr=gc(e.grade);
-      return '<div class="cmp-col">'
-        +(e.annF?'<img src="'+e.annF+'" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">':'')
-        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
-        +'<div style="width:40px;height:40px;border-radius:8px;background:'+gclr.bg+';border:1px solid '+gclr.bd+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:18px;font-weight:800;color:'+gclr.c+';font-family:var(--fh)">'+e.grade+'</span></div>'
-        +'<div><div style="font-size:13px;font-weight:700;font-family:var(--fh)">'+(e.cardName||'–')+'</div>'
-        +'<div style="font-size:10px;color:var(--mu)">'+(e.cardSet||'–')+'</div></div></div>'
-        +bars.map((l,i)=>{
-          const [obj,key]=scoreKeys[i]; const s=e[obj]?.[key]||0;
-          const col=sc(s);
-          return '<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--mu)">'+l+'</span><span style="color:'+col+';font-weight:600">'+s+'</span></div><div style="height:4px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+(s*10)+'%;background:'+col+'"></div></div></div>';
-        }).join('')
-        +'<button onclick="showDetail(\''+e.id+'\',\'pg-compare\')" class="btn btn-o" style="font-size:11px;padding:7px;margin-top:6px">Details →</button>'
-        +'</div>';
-    });
-    el.innerHTML='<div style="width:100%;display:flex;gap:0">'+cols.join('<div style="width:1px;background:var(--b1);margin:0 4px;flex-shrink:0"></div>')+'</div>';
-  } catch(e) { el.innerHTML='<div class="empty">Fehler: '+e.message+'</div>'; }
+async function restoreCollection(event){
+  const file=event.target.files&&event.target.files[0];event.target.value='';if(!file)return;
+  try{const text=await file.text();const data=JSON.parse(text);const entries=data.entries||data;
+    if(!Array.isArray(entries)||!entries.length){toast('Ungueltige Backup-Datei');return;}
+    if(!confirm(entries.length+' Karten importieren?'))return;
+    let ok=0;for(const e of entries)if(e.id&&e.grade){await dbPut(e);ok++;}
+    toast(ok+' Karten importiert');if(ok)renderColl();
+  }catch(e){toast('Import Fehler: '+e.message);}
 }
 
-// ── COLLECTION ──────────────────────────────────
-let _fg='all', _sm=0;
-const SORTS=[
-  {l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},
-  {l:'Beste Note',fn:(a,b)=>b.grade-a.grade},
-  {l:'Schwächste',fn:(a,b)=>a.grade-b.grade},
-  {l:'Name A–Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}
-];
-function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
-function cycleSort(){_sm=(_sm+1)%SORTS.length;$('sort-lbl').textContent=SORTS[_sm].l;renderColl();}
+/* ── DUPLICATE CHECK ──────────────────────────── */
+async function checkDuplicate(name,set,num){
+  if(!name)return false;
+  try{const all=await dbAll();return all.some(e=>(e.cardName||'').toLowerCase()===name.toLowerCase()&&(!set||(e.cardSet||'').toLowerCase()===set.toLowerCase())&&(!num||(e.cardNumber||'')===(num||'')));}catch(e){return false;}
+}
+
+/* ── BULK DELETE ──────────────────────────────── */
+let _selectMode=false,_selected=new Set();
+function toggleSelectMode(){
+  _selectMode=!_selectMode;_selected.clear();
+  const bar=$('coll-select-bar'),grid=$('coll-grid'),btn=$('btn-select-mode');
+  if(bar)bar.classList.toggle('on',_selectMode);
+  if(grid)grid.classList.toggle('select-mode',_selectMode);
+  if(btn)btn.style.color=_selectMode?'var(--red)':'var(--mu)';
+  updateDeleteBtn();renderColl();
+}
+function cancelSelect(){_selectMode=false;_selected.clear();
+  const bar=$('coll-select-bar'),grid=$('coll-grid'),btn=$('btn-select-mode');
+  if(bar)bar.classList.remove('on');if(grid)grid.classList.remove('select-mode');if(btn)btn.style.color='var(--mu)';
+  updateDeleteBtn();renderColl();
+}
+function updateDeleteBtn(){const btn=$('btn-del-sel');if(btn){btn.textContent='Loeschen ('+_selected.size+')';btn.disabled=_selected.size===0;}}
+function selectAll(){document.querySelectorAll('.card-cb').forEach(cb=>{const id=cb.dataset.id;if(id){_selected.add(id);cb.classList.add('checked');cb.textContent='v';}});updateDeleteBtn();}
+async function deleteSelected(){
+  if(!_selected.size)return;if(!confirm(_selected.size+' Karten loeschen?'))return;
+  try{for(const id of _selected)await dbDel(id);toast(_selected.size+' Karten geloescht');_selected.clear();cancelSelect();}catch(e){toast('Fehler: '+e.message);}
+}
 function _collClick(e){
-  const card=e.currentTarget;
-  const id=card.dataset.id;
-  if(!id)return;
+  const card=e.currentTarget;const id=card.dataset.id;if(!id)return;
   if(_selectMode){
     const cb=card.querySelector('.card-cb');
     if(_selected.has(id)){_selected.delete(id);card.style.outline='';if(cb){cb.classList.remove('checked');cb.textContent='';}}
-    else{_selected.add(id);card.style.outline='2px solid var(--red)';if(cb){cb.classList.add('checked');cb.textContent='✓';}}
+    else{_selected.add(id);card.style.outline='2px solid var(--red)';if(cb){cb.classList.add('checked');cb.textContent='v';}}
     updateDeleteBtn();
-  }else{showDetail(id);}
+  }else showDetail(id);
 }
 
-async function renderColl() {
-  const grid=$('coll-grid'), empty=$('coll-empty'), cnt=$('coll-count');
-  try {
+/* ── GRADE CHART ──────────────────────────────── */
+function buildGradeChart(all){
+  const wrap=$('grade-chart-wrap');if(!wrap||!all.length)return;
+  const groups=[{label:'PSA 10',color:'#f5c842',n:all.filter(e=>e.grade>=10).length},{label:'PSA 9',color:'#94e0ff',n:all.filter(e=>e.grade===9).length},{label:'PSA 8',color:'#a78bfa',n:all.filter(e=>e.grade===8).length},{label:'PSA 7',color:'#4ade80',n:all.filter(e=>e.grade===7).length},{label:'<= PSA 6',color:'#fb923c',n:all.filter(e=>e.grade<=6).length}];
+  const total=all.length;const R=42,r=24,cx=54,cy=54,W=108,H=108;
+  let angle=-Math.PI/2,paths='';
+  groups.forEach(({color,n})=>{if(!n)return;const slice=(n/total)*Math.PI*2;const x1=cx+R*Math.cos(angle),y1=cy+R*Math.sin(angle),x2=cx+R*Math.cos(angle+slice),y2=cy+R*Math.sin(angle+slice),xi1=cx+r*Math.cos(angle),yi1=cy+r*Math.sin(angle),xi2=cx+r*Math.cos(angle+slice),yi2=cy+r*Math.sin(angle+slice),large=slice>Math.PI?1:0;
+    paths+='<path d="M'+x1+','+y1+' A'+R+','+R+' 0 '+large+',1 '+x2+','+y2+' L'+xi2+','+yi2+' A'+r+','+r+' 0 '+large+',0 '+xi1+','+yi1+' Z" fill="'+color+'" opacity=".85"/>';angle+=slice;});
+  const svg='<svg width="'+W+'" height="'+H+'" viewBox="0 0 '+W+' '+H+'" style="flex-shrink:0">'+paths+'<text x="'+cx+'" y="'+(cy+5)+'" text-anchor="middle" font-size="14" font-weight="700" fill="var(--tx)" font-family="var(--fh)">'+total+'</text></svg>';
+  const legend=groups.filter(g=>g.n>0).map(g=>'<div class="dl-item"><div class="dl-dot" style="background:'+g.color+'"></div><span style="color:var(--mu)">'+g.label+': </span><b>'+g.n+'</b></div>').join('');
+  wrap.style.display='flex';wrap.innerHTML=svg+'<div class="donut-legend">'+legend+'</div>';
+}
+
+/* ── COLLECTION ───────────────────────────────── */
+let _fg='all',_sm=0;
+const SORTS=[{l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},{l:'Beste Note',fn:(a,b)=>b.grade-a.grade},{l:'Schwaechste',fn:(a,b)=>a.grade-b.grade},{l:'Name A-Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}];
+function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
+function cycleSort(){_sm=(_sm+1)%SORTS.length;const sl=$('sort-lbl');if(sl)sl.textContent=SORTS[_sm].l;renderColl();}
+async function renderColl(){
+  const grid=$('coll-grid'),empty=$('coll-empty'),cnt=$('coll-count');
+  try{
     let all=await dbAll();
-    const q=($('coll-search').value||'').toLowerCase().trim();
-    if(q) all=all.filter(e=>(e.cardName||'').toLowerCase().includes(q)||(e.cardSet||'').toLowerCase().includes(q)||(e.cardNumber||'').toLowerCase().includes(q));
-    if(_fg==='10') all=all.filter(e=>e.grade>=10);
-    else if(_fg==='9') all=all.filter(e=>e.grade===9);
-    else if(_fg==='8') all=all.filter(e=>e.grade===8);
-    else if(_fg==='7') all=all.filter(e=>e.grade===7);
-    else if(_fg==='low') all=all.filter(e=>e.grade<=6);
-    all.sort(SORTS[_sm].fn);
-    cnt.textContent=all.length+' Karten';
-    if(!all.length) { grid.innerHTML=''; sh(empty); return; }
-    hi(empty);
-    grid.innerHTML=all.map(e=>{
-      const gclr=gc(e.grade);
-      return '<div class="coll-card" data-id="'+e.id+'" onclick="_collClick(event)">'
-        +'<div class="coll-tw">'+(_selectMode?'<div class="card-cb" data-id="'+e.id+'"></div>':'')+(e.annF?'<img class="coll-thumb" src="'+e.annF+'" alt="" loading="lazy">':'<div class="coll-ph">🃏</div>')
+    const qs=$('coll-search');const q=(qs?qs.value:'').toLowerCase().trim();
+    if(q)all=all.filter(e=>(e.cardName||'').toLowerCase().includes(q)||(e.cardSet||'').toLowerCase().includes(q)||(e.cardNumber||'').toLowerCase().includes(q));
+    if(_fg==='10')all=all.filter(e=>e.grade>=10);else if(_fg==='9')all=all.filter(e=>e.grade===9);else if(_fg==='8')all=all.filter(e=>e.grade===8);else if(_fg==='7')all=all.filter(e=>e.grade===7);else if(_fg==='low')all=all.filter(e=>e.grade<=6);
+    all.sort(SORTS[_sm].fn);if(cnt)cnt.textContent=all.length+' Karten';
+    if(!all.length){if(grid)grid.innerHTML='';if(empty)sh(empty);return;}if(empty)hi(empty);
+    if(!grid)return;
+    grid.innerHTML=all.map(e=>{const gclr=gc(e.grade);
+      return'<div class="coll-card" data-id="'+e.id+'" onclick="_collClick(event)">'
+        +'<div class="coll-tw">'+(_selectMode?'<div class="card-cb" data-id="'+e.id+'"></div>':'')+(e.annF?'<img class="coll-thumb" src="'+e.annF+'" alt="" loading="lazy">':'<div class="coll-ph">?</div>')
         +'<div class="cgs"><div class="cgs-top"></div><div class="cgs-num" style="color:'+gclr.c+'">'+e.grade+'</div></div></div>'
-        +'<div class="coll-info">'
-        +'<div class="coll-name">'+(e.cardName||'Unbekannt')+'</div>'
-        +'<div class="coll-sub">'+[e.cardSet,e.cardNumber].filter(Boolean).join(' · ')+'</div>'
+        +'<div class="coll-info"><div class="coll-name">'+(e.cardName||'Unbekannt')+'</div>'
+        +'<div class="coll-sub">'+[e.cardSet,e.cardNumber].filter(Boolean).join(' - ')+'</div>'
         +(e.cardLang?'<div style="font-size:10px;color:var(--hi);margin-top:1px">'+e.cardLang+'</div>':'')
         +'<div class="coll-tag" style="background:'+gclr.bg+';color:'+gclr.c+';border:1px solid '+gclr.bd+'">PSA '+e.grade+' '+gLbl(e.grade)+'</div>'
-        +'</div></div>';
-    }).join('');
-  } catch(e) { grid.innerHTML='<div class="empty">Fehler: '+e.message+'</div>'; }
+        +'</div></div>';}).join('');
+  }catch(e){if(grid)grid.innerHTML='<div class="empty">Fehler: '+e.message+'</div>';}
 }
 
-// ── DETAIL ──────────────────────────────────────
-async function showDetail(id, fromScreen) {
-  try {
-    A.fromScreen=fromScreen||'pg-collection';
-    A.detailId=id;
-    const all=await dbAll();
-    const e=all.find(x=>x.id===id);
-    if(!e) { toast('❌ Eintrag nicht gefunden'); return; }
-    $('det-title').textContent=e.cardName||(e.label+' PSA '+e.grade);
-    $('det-back').onclick=()=>safeNav(A.fromScreen);
+/* ── DETAIL ───────────────────────────────────── */
+async function showDetail(id,fromScreen){
+  try{A.fromScreen=fromScreen||'pg-collection';A.detailId=id;
+    const all=await dbAll();const e=all.find(x=>x.id===id);
+    if(!e){toast('Nicht gefunden');return;}
+    const dt=$('det-title');if(dt)dt.textContent=e.cardName||(e.label+' PSA '+e.grade);
+    const db2=$('det-back');if(db2)db2.onclick=()=>safeNav(A.fromScreen);
     navTo('pg-detail');
-    _fm=(e.markers||[]).filter(m=>m.side==='front');
-    _bm=(e.markers||[]).filter(m=>m.side==='back');
+    _fm=(e.markers||[]).filter(m=>m.side==='front');_bm=(e.markers||[]).filter(m=>m.side==='back');
     const det={card_name:e.cardName,language:e.cardLang,hp:e.cardHP,set_name:e.cardSet,card_number:e.cardNumber,rarity:e.cardRarity,holo_type:e.cardHolo,category:e.cardCat};
     renderResults({...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]},e.annF,e.annB,e.cenImg,true,det);
     setTimeout(()=>fetchEbayPrices(det,e.grade),200);
-  } catch(e) { toast('❌ '+e.message); }
+  }catch(e){toast('Fehler: '+e.message);}
 }
-async function delEntry() {
-  if(!A.detailId) return;
-  try { await dbDel(A.detailId); A.detailId=null; toast('🗑 Gelöscht'); safeNav(A.fromScreen||'pg-collection'); }
-  catch(e) { toast('❌ '+e.message); }
-}
-async function confirmClear() {
-  if(!confirm('Gesamte Sammlung unwiderruflich löschen?')) return;
-  try { await dbClear(); toast('🗑 Geleert'); navTo('pg-home'); }
-  catch(e) {}
-}
+async function delEntry(){if(!A.detailId)return;try{await dbDel(A.detailId);A.detailId=null;toast('Geloescht');safeNav(A.fromScreen||'pg-collection');}catch(e){toast('Fehler: '+e.message);}}
+async function confirmClear(){if(!confirm('Gesamte Sammlung loeschen?'))return;try{await dbClear();toast('Geleert');navTo('pg-home');}catch(e){}}
 
-// ── HOME DATA ──────────────────────────────────
-async function loadStats() {
-  try {
-    const all=await dbAll();
-    const cnt=$('home-stats');
-    if(!all.length) { cnt.innerHTML=''; return; }
-    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
-    const gem=all.filter(e=>e.grade>=10).length;
-    cnt.innerHTML=[{ico:'🃏',v:all.length,l:'Karten'},{ico:'⭐',v:avg,l:'Ø Note'},{ico:'💎',v:gem,l:'Gem Mint'}]
-      .map(({ico,v,l})=>'<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:20px">'+ico+'</div><div style="font-family:var(--fh);font-size:20px;font-weight:700">'+v+'</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">'+l+'</div></div>').join('');
-  } catch(e) {}
+/* ── HOME DATA ────────────────────────────────── */
+async function loadStats(){
+  try{const all=await dbAll();const cnt=$('home-stats');if(!cnt)return;
+    if(!all.length){cnt.innerHTML='';return;}
+    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);const gem=all.filter(e=>e.grade>=10).length;
+    cnt.innerHTML=[{ico:'?',v:all.length,l:'Karten'},{ico:'*',v:avg,l:'Avg Note'},{ico:'G',v:gem,l:'Gem Mint'}].map(({ico,v,l})=>'<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-family:var(--fh);font-size:20px;font-weight:700">'+v+'</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">'+l+'</div></div>').join('');
+  }catch(e){}
 }
-async function loadRecent() {
-  const el=$('recent-list');
-  try {
-    const all=await dbAll();
-    all.sort((a,b)=>b.timestamp-a.timestamp);
-    if(!all.length) { el.innerHTML=''; return; }
+async function loadRecent(){
+  const el=$('recent-list');if(!el)return;
+  try{const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);
+    if(!all.length){el.innerHTML='';return;}
     el.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Zuletzt bewertet</div>'
-      +all.slice(0,3).map(e=>{
-        const gclr=gc(e.grade);
-        const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
-        return '<div class="hi" onclick="showDetail(\''+e.id+'\',\'pg-home\')">'
-          +(e.annF?'<img class="hth" src="'+e.annF+'" alt="">':'<div class="hth" style="display:flex;align-items:center;justify-content:center;font-size:20px">🃏</div>')
-          +'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;margin-bottom:1px">'+(e.cardName||'Unbekannte Karte')+'</div>'
-          +'<div style="font-size:11px;color:var(--mu)">'+(e.cardSet?e.cardSet+' · ':'')+d+'</div></div>'
+      +all.slice(0,3).map(e=>{const gclr=gc(e.grade);const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
+        return'<div class="hi" onclick="showDetail(\''+e.id+'\',\'pg-home\')">'
+          +(e.annF?'<img class="hth" src="'+e.annF+'" alt="">':'<div class="hth" style="display:flex;align-items:center;justify-content:center;font-size:20px">?</div>')
+          +'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;margin-bottom:1px">'+(e.cardName||'Karte')+'</div>'
+          +'<div style="font-size:11px;color:var(--mu)">'+(e.cardSet?e.cardSet+' - ':'')+d+'</div></div>'
           +'<div style="width:38px;height:38px;border-radius:8px;background:'+gclr.bg+';border:1px solid '+gclr.bd+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px;font-weight:800;color:'+gclr.c+';font-family:var(--fh)">'+e.grade+'</span></div>'
-          +'</div>';
-      }).join('')
-      +'<button class="btn btn-s" onclick="navTo(\'pg-collection\')" style="margin-top:4px;font-size:13px">Alle anzeigen →</button>';
-  } catch(e) { el.innerHTML=''; }
+          +'</div>';}).join('')
+      +'<button class="btn btn-s" onclick="navTo(\'pg-collection\')" style="margin-top:4px;font-size:13px">Alle anzeigen</button>';
+  }catch(e){el.innerHTML='';}
 }
-async function loadSettingsStats() {
-  try {
-    const all=await dbAll();
-    const el=$('settings-stats');
-    if(!el) return;
-    if(!all.length) { el.textContent='Noch keine Karten bewertet'; return; }
-    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
-    el.innerHTML='Gesamt: <b>'+all.length+' Karten</b><br>Durchschnittsnote: <b>'+avg+'</b><br>Gem Mint (PSA 10): <b>'+all.filter(e=>e.grade>=10).length+'</b><br>Mint (PSA 9): <b>'+all.filter(e=>e.grade===9).length+'</b>';
-  } catch(e) {}
-}
-
-
-// ── TORCH ──────────────────────────────────────────────────
-let _torchOn=false;
-async function toggleTorch(){
-  if(!_str){toast('📱 Kamera nicht aktiv');return;}
-  const track=_str.getVideoTracks()[0];
-  if(!track){return;}
-  const caps=track.getCapabilities&&track.getCapabilities();
-  if(!caps||!caps.torch){toast('🔦 Taschenlampe nicht verfügbar');return;}
-  _torchOn=!_torchOn;
-  try{
-    await track.applyConstraints({advanced:[{torch:_torchOn}]});
-    const btn=$('torch-btn');
-    if(btn){btn.textContent=_torchOn?'🔆':'🔦';btn.classList.toggle('on',_torchOn);}
-  }catch(e){toast('❌ Taschenlampe: '+e.message);}
-}
-// Reset torch when camera closes
-const _origCloseCam=closeCam;
-
-// ── QUICK GRADE MODE ────────────────────────────────────────
-const QM_KEY='pg_quick_mode';
-function getQuickMode(){try{return localStorage.getItem(QM_KEY)==='1';}catch(e){return false;}}
-function setQuickMode(on){
-  try{localStorage.setItem(QM_KEY,on?'1':'0');}catch(e){}
-  toast(on?'⚡ Schnell-Grading aktiviert':'Schnell-Grading deaktiviert');
-}
-function initQuickModeToggle(){
-  const el=$('quick-mode-toggle');
-  if(el)el.checked=getQuickMode();
-}
-
-// ── PSA CHECKLIST ───────────────────────────────────────────
-const PSA_STEPS=[
-  ['Karte aus Hülle/Sleeve entnehmen','Verwende Baumwollhandschuhe um Fingerabdrücke zu vermeiden'],
-  ['Oberfläche prüfen','Kratzer, Whitening, Schmutz unter guter Beleuchtung prüfen'],
-  ['Zentrierung messen','Lineal oder PSA-Zentrierungstool: VS 55/45, RS 75/25 für PSA 10'],
-  ['Karte in Semi-Rigid Sleeve stecken','Kein Sleeve knittern oder biegen'],
-  ['In Toploader einlegen','66x91mm Standard Toploader für normale Karten'],
-  ['Online-Formular ausfüllen','PSA-Account → Submit Cards → Service Level wählen'],
-  ['Versandkosten kalkulieren','Economy (~$25/Karte), Regular (~$50), Express (~$150)'],
-  ['Versicherung & Tracking','Sendung mit Einschreiben und Versicherungswert'],
-  ['Auf Eingangsbestätigung warten','PSA sendet E-Mail wenn Sendung eingegangen ist'],
-  ['Ergebnis abwarten','Bearbeitungszeit je nach Service Level 5–65 Werktage'],
-];
-let _psaChecked=new Set();
-function openPsaModal(){
-  const list=$('psa-checklist');
-  if(!list)return;
-  list.innerHTML=PSA_STEPS.map((s,i)=>
-    '<div class="check-item" onclick="toggleCheck('+i+')">'
-    +'<div class="check-box'+((_psaChecked.has(i))?' done':'')+'\" id="cb'+i+'">'+((_psaChecked.has(i))?'✓':'')+'</div>'
-    +'<div class="check-text"><b>'+s[0]+'</b><br><span style="font-size:11px;color:var(--mu)">'+s[1]+'</span></div>'
-    +'</div>'
-  ).join('');
-  $('psa-modal').style.display='flex';
-}
-function closePsaModal(){$('psa-modal').style.display='none';}
-function toggleCheck(i){
-  if(_psaChecked.has(i))_psaChecked.delete(i);else _psaChecked.add(i);
-  const cb=$('cb'+i);
-  if(cb){cb.classList.toggle('done',_psaChecked.has(i));cb.textContent=_psaChecked.has(i)?'✓':'';}
-}
-$('psa-modal').addEventListener('click',e=>{if(e.target===$('psa-modal'))closePsaModal();});
-
-// ── WEB SHARE ────────────────────────────────────────────────
-async function shareResult(){
-  const id=A.detailId;
-  let entry=null;
-  if(id){const all=await dbAll().catch(()=>[]);entry=all.find(x=>x.id===id);}
-  const src=entry||{cardName:A.detected?.card_name,grade:A.result?.final_grade,
-    label:A.result?.grade_label,centering:A.result?.centering,corners:A.result?.corners,
-    edges:A.result?.edges,surface:A.result?.surface,annF:A.annF};
-  if(!navigator.share){toast('Teilen nicht unterstützt auf diesem Gerät');return;}
-  const text='🃏 '+( src.cardName||'Pokémon Karte')+'\n'
-    +'PSA Pre-Grade: '+src.grade+' ('+( src.label||gLbl(src.grade||0))+')\n'
-    +'Zentrierung: '+(src.centering?.score||'?')+'/10 · Ecken: '+(src.corners?.score||'?')+'/10\n'
-    +'Ränder: '+(src.edges?.score||'?')+'/10 · Oberfläche: '+(src.surface?.score||'?')+'/10\n'
-    +'Bewertet mit PokéGrader by netpixel.at';
-  try{
-    if(src.annF && navigator.canShare){
-      const blob=await(await fetch(src.annF)).blob();
-      const file=new File([blob],'PokéGrader_PSA'+(src.grade||'')+'.jpg',{type:'image/jpeg'});
-      if(navigator.canShare({files:[file]})){
-        await navigator.share({title:'PokéGrader PSA',text,files:[file]});
-        return;
-      }
-    }
-    await navigator.share({title:'PokéGrader PSA',text});
-  }catch(e){if(e.name!=='AbortError')toast('❌ Teilen: '+e.message);}
-}
-
-// ── eBay PRICE REFRESH ──────────────────────────────────────
-async function refreshEbay(){
-  const id=A.detailId;
-  if(!id){
-    // Results view - use current detected data
-    if(A.detected)setTimeout(()=>fetchEbayPrices(A.detected,A.result?.final_grade),50);
-    return;
-  }
-  const all=await dbAll().catch(()=>[]);
-  const e=all.find(x=>x.id===id);
-  if(e){
-    const det={card_name:e.cardName,set_name:e.cardSet,card_number:e.cardNumber};
-    setTimeout(()=>fetchEbayPrices(det,e.grade),50);
-  }
-}
-
-// ── SAVE eBay PRICE TO DB ───────────────────────────────────
-function saveEbayPriceToDB(items){
-  if(!items||!items.length)return;
-  const prices=items.map(i=>{
-    const v=parseFloat(String(i.price).replace(',','.').replace(/[^0-9.]/g,''));
-    return isNaN(v)?null:v;
-  }).filter(Boolean);
-  if(!prices.length)return;
-  const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
-  // Save to DB if viewing a detail
-  if(!A.detailId)return;
-  dbAll().then(all=>{
-    const e=all.find(x=>x.id===A.detailId);
-    if(e){e.lastEbayPrice=avg;e.lastEbayDate=Date.now();dbPut(e).catch(()=>{});}
-  }).catch(()=>{});
-}
-
-// ── COLLECTION VALUE & GRADE CHART ──────────────────────────
 async function loadSettingsStats(){
-  try{
-    const all=await dbAll();
-    const el=$('settings-stats');
-    if(!el)return;
+  try{const all=await dbAll();const el=$('settings-stats');if(!el)return;
     if(!all.length){el.textContent='Noch keine Karten bewertet';return;}
     const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
-    const totalVal=all.reduce((s,e)=>s+(e.lastEbayPrice||0),0);
-    const priced=all.filter(e=>e.lastEbayPrice>0).length;
-    el.innerHTML='Gesamt: <b>'+all.length+' Karten</b><br>'
-      +'Durchschnittsnote: <b>'+avg+'</b><br>'
-      +'Gem Mint (PSA 10): <b>'+all.filter(e=>e.grade>=10).length+'</b><br>'
-      +'Mint (PSA 9): <b>'+all.filter(e=>e.grade===9).length+'</b><br>'
-      +(priced?'<br><span class="val-chip">💰 Gesamtwert ~€'+totalVal.toFixed(2)+'</span>'
-        +'<div style="font-size:10px;color:var(--hi);margin-top:4px">Basierend auf '+priced+'/'+all.length+' eBay-Preisen</div>':'');
-    // Grade distribution chart
+    const totalVal=all.reduce((s,e)=>s+(e.lastEbayPrice||0),0);const priced=all.filter(e=>e.lastEbayPrice>0).length;
+    el.innerHTML='Gesamt: <b>'+all.length+' Karten</b><br>Durchschnittsnote: <b>'+avg+'</b><br>Gem Mint (PSA 10): <b>'+all.filter(e=>e.grade>=10).length+'</b><br>Mint (PSA 9): <b>'+all.filter(e=>e.grade===9).length+'</b>'
+      +(priced?'<br><br><span class="val-chip">EUR '+totalVal.toFixed(2)+' Gesamtwert</span><div style="font-size:10px;color:var(--hi);margin-top:4px">'+priced+'/'+all.length+' eBay-Preise</div>':'');
     buildGradeChart(all);
   }catch(e){}
 }
 
-function buildGradeChart(all){
-  const wrap=$('grade-chart-wrap');
-  if(!wrap||!all.length)return;
-  const groups=[
-    {label:'PSA 10',color:'#f5c842',filter:e=>e.grade>=10},
-    {label:'PSA 9', color:'#94e0ff',filter:e=>e.grade===9},
-    {label:'PSA 8', color:'#a78bfa',filter:e=>e.grade===8},
-    {label:'PSA 7', color:'#4ade80',filter:e=>e.grade===7},
-    {label:'≤ PSA 6',color:'#fb923c',filter:e=>e.grade<=6},
-  ];
-  const counts=groups.map(g=>({...g,n:all.filter(g.filter).length}));
-  const total=all.length;
-  // SVG donut
-  const R=42,r=24,cx=54,cy=54,W=108,H=108;
-  let angle=-Math.PI/2;
-  let paths='';
-  counts.forEach(({color,n})=>{
-    if(!n)return;
-    const slice=(n/total)*Math.PI*2;
-    const x1=cx+R*Math.cos(angle),y1=cy+R*Math.sin(angle);
-    const x2=cx+R*Math.cos(angle+slice),y2=cy+R*Math.sin(angle+slice);
-    const xi1=cx+r*Math.cos(angle),yi1=cy+r*Math.sin(angle);
-    const xi2=cx+r*Math.cos(angle+slice),yi2=cy+r*Math.sin(angle+slice);
-    const large=slice>Math.PI?1:0;
-    paths+=`<path d="M${x1},${y1} A${R},${R} 0 ${large},1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${large},0 ${xi1},${yi1} Z" fill="${color}" opacity=".85"/>`;
-    angle+=slice;
-  });
-  const svg=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0">${paths}<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--tx)" font-family="var(--fh)">${total}</text></svg>`;
-  const legend=counts.filter(g=>g.n>0).map(g=>
-    '<div class="dl-item"><div class="dl-dot" style="background:'+g.color+'"></div>'
-    +'<span style="color:var(--mu)">'+g.label+': </span><b> '+g.n+'</b></div>'
-  ).join('');
-  wrap.style.display='flex';
-  wrap.innerHTML=svg+'<div class="donut-legend">'+legend+'</div>';
+/* ── COMPARE ──────────────────────────────────── */
+let _cmpSlots=[];
+function addToCompare(){
+  const id=A.detailId;if(!id)return;
+  if(_cmpSlots.includes(id)){toast('Bereits ausgewaehlt');return;}
+  _cmpSlots.push(id);
+  if(_cmpSlots.length>=2){renderCompare();navTo('pg-compare');}
+  else toast('Karte 1 ausgewaehlt - waehle zweite in Sammlung');
+}
+function clearCompare(){_cmpSlots=[];navTo('pg-collection');}
+async function renderCompare(){
+  const el=$('cmp-content'),info=$('cmp-info');if(!el)return;
+  if(_cmpSlots.length<2){el.innerHTML='';if(info)sh(info);return;}if(info)hi(info);
+  try{const all=await dbAll();const cards=_cmpSlots.map(id=>all.find(e=>e.id===id)).filter(Boolean);if(cards.length<2)return;
+    const sk=[['centering','score'],['corners','score'],['edges','score'],['surface','score']];
+    const bl=['Zentrierung','Ecken','Raender','Oberflaeche'];
+    el.innerHTML='<div style="width:100%;display:flex;gap:0">'+cards.map(e=>{const gclr=gc(e.grade);
+      return'<div class="cmp-col">'+(e.annF?'<img src="'+e.annF+'" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">':'')
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:40px;height:40px;border-radius:8px;background:'+gclr.bg+';border:1px solid '+gclr.bd+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:18px;font-weight:800;color:'+gclr.c+';font-family:var(--fh)">'+e.grade+'</span></div><div><div style="font-size:13px;font-weight:700;font-family:var(--fh)">'+(e.cardName||'-')+'</div><div style="font-size:10px;color:var(--mu)">'+(e.cardSet||'-')+'</div></div></div>'
+        +bl.map((l,i)=>{const[obj,key]=sk[i];const s=(e[obj]?e[obj][key]:0)||0;const col=sc2(s);return'<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--mu)">'+l+'</span><span style="color:'+col+';font-weight:600">'+s+'</span></div><div style="height:4px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+s*10+'%;background:'+col+'"></div></div></div>';}).join('')
+        +'<button onclick="showDetail(\''+e.id+'\',\'pg-compare\')" class="btn btn-o" style="font-size:11px;padding:7px;margin-top:6px">Details</button>'
+        +'</div>';}).join('<div style="width:1px;background:var(--b1);margin:0 4px;flex-shrink:0"></div>')+'</div>';
+  }catch(e){if(el)el.innerHTML='<div class="empty">Fehler: '+e.message+'</div>';}
 }
 
-// ── PSA FEE CALCULATOR ──────────────────────────────────────
-function buildPsaCalcSection(avgPrice){
-  if(!avgPrice||avgPrice<=0)return'';
-  const fees=[
-    {name:'Economy',usd:25,days:'65 WT',min:avgPrice*1.1>25},
-    {name:'Regular', usd:50,days:'20 WT',min:avgPrice*1.2>50},
-    {name:'Express', usd:150,days:'5 WT', min:avgPrice*1.4>150},
-  ];
-  const eur=avgPrice;
-  const worthIt=eur>30;
-  return '<div class="card" style="margin-bottom:10px">'
-    +'<div class="st" style="margin-bottom:8px">🧮 PSA-Kalkulator</div>'
-    +'<div class="al '+(worthIt?'al-g':'al-a')+'" style="margin-bottom:10px;font-size:12px">'
-    +(worthIt?'✓ Einreichung könnte sich lohnen':'⚠ Preis niedrig — Einreichung prüfen')
-    +' (Ø eBay €'+eur.toFixed(2)+')</div>'
-    +'<div style="font-size:11px;color:var(--mu);margin-bottom:6px">PSA-Gebühren (USD, bis $499 Kartenwert):</div>'
-    +fees.map(f=>'<div class="calc-row">'
-      +'<span>'+f.name+' · '+f.days+'</span>'
-      +'<span class="calc-fee" style="color:'+(f.min?'#4ade80':'var(--am)')+'">~$'+f.usd+'</span>'
-      +'</div>').join('')
-    +'<div style="font-size:10px;color:var(--hi);margin-top:6px">Preise ohne Gewähr · psa.com</div>'
-    +'</div>';
-}
+/* ── SERVICE WORKER ───────────────────────────── */
+if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 
-// ── BACKUP & RESTORE ────────────────────────────────────────
-async function backupCollection(){
-  try{
-    const all=await dbAll();
-    if(!all.length){toast('Keine Karten zum Exportieren');return;}
-    const blob=new Blob([JSON.stringify({version:1,date:new Date().toISOString(),entries:all},null,2)],
-      {type:'application/json'});
-    const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');
-    a.href=url;a.download='PokéGrader_Backup_'+new Date().toISOString().substring(0,10)+'.json';
-    a.click();URL.revokeObjectURL(url);
-    toast('✅ Backup erstellt ('+all.length+' Karten)');
-  }catch(e){toast('❌ '+e.message);}
-}
-async function restoreCollection(event){
-  const file=event.target.files&&event.target.files[0];
-  event.target.value='';
-  if(!file)return;
-  try{
-    const text=await file.text();
-    const data=JSON.parse(text);
-    const entries=data.entries||data;
-    if(!Array.isArray(entries)||!entries.length){toast('❌ Ungültige Backup-Datei');return;}
-    if(!confirm(''+entries.length+' Karten importieren? Vorhandene Karten bleiben erhalten.'))return;
-    let ok=0;
-    for(const e of entries){if(e.id&&e.grade){await dbPut(e);ok++;}}
-    toast('✅ '+ok+' Karten importiert');
-    if(ok)renderColl();
-  }catch(e){toast('❌ Import: '+e.message);}
-}
-
-// ── DUPLICATE DETECTION ─────────────────────────────────────
-async function checkDuplicate(name,set,num){
-  if(!name)return false;
-  try{
-    const all=await dbAll();
-    return all.some(e=>
-      (e.cardName||'').toLowerCase()===name.toLowerCase()&&
-      (!set||(e.cardSet||'').toLowerCase()===set.toLowerCase())&&
-      (!num||(e.cardNumber||'')===(num||''))
-    );
-  }catch(e){return false;}
-}
-
-// ── BULK DELETE ─────────────────────────────────────────────
-let _selectMode=false;
-let _selected=new Set();
-function toggleSelectMode(){
-  _selectMode=!_selectMode;
-  _selected.clear();
-  const bar=$('coll-select-bar');
-  const grid=$('coll-grid');
-  if(bar)bar.classList.toggle('on',_selectMode);
-  if(grid)grid.classList.toggle('select-mode',_selectMode);
-  const btn=$('btn-select-mode');
-  if(btn)btn.style.color=_selectMode?'var(--red)':'var(--mu)';
-  updateDeleteBtn();
-  renderColl();
-}
-function cancelSelect(){_selectMode=false;_selected.clear();toggleSelectMode();}
-function toggleCardSelect(id,el){
-  if(!_selectMode)return;
-  if(_selected.has(id)){_selected.delete(id);el.classList.remove('checked');el.textContent='';}
-  else{_selected.add(id);el.classList.add('checked');el.textContent='✓';}
-  updateDeleteBtn();
-}
-function selectAll(){
-  document.querySelectorAll('.card-cb').forEach(cb=>{
-    const id=cb.dataset.id;
-    if(id){_selected.add(id);cb.classList.add('checked');cb.textContent='✓';}
-  });
-  updateDeleteBtn();
-}
-function updateDeleteBtn(){
-  const btn=$('btn-del-sel');
-  if(btn){btn.textContent='🗑 Löschen ('+_selected.size+')';btn.disabled=_selected.size===0;}
-}
-async function deleteSelected(){
-  if(!_selected.size)return;
-  if(!confirm(_selected.size+' Karten löschen?'))return;
-  try{
-    for(const id of _selected)await dbDel(id);
-    toast('🗑 '+_selected.size+' Karten gelöscht');
-    _selected.clear();cancelSelect();
-  }catch(e){toast('❌ '+e.message);}
-}
-
-// ── INIT ADDITIONS ──────────────────────────────────────────
-function initAppExtras(){
-  initQuickModeToggle();
-}
-
-// ── SERVICE WORKER ──────────────────────────────
-if('serviceWorker' in navigator) {
-  window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-}
-
-// ── INIT ──────────────────────────────────────
+/* ── INIT ─────────────────────────────────────── */
+document.addEventListener('click',e=>{const m=$('edit-modal');if(m&&e.target===m)closeEdit();});
+document.addEventListener('click',e=>{const m=$('psa-modal');if(m&&e.target===m)closePsaModal();});
 (function init(){
-  try {
+  var dbg=document.getElementById('js-test');
+  if(dbg)dbg.parentNode.removeChild(dbg);
+  try{
     buildGradeScale();
     initPinch();
     applyTheme();
-    initAppExtras();
-    if(getKey()) navTo('pg-home');
-    else navTo('pg-setup');
-  } catch(e) {
-    console.error('Init error:', e);
-    navTo('pg-home');
-  }
+    if(getKey())navTo('pg-home');else navTo('pg-setup');
+  }catch(e){console.error('Init:',e);try{navTo('pg-home');}catch(e2){}}
 })();
 </script>
+
 
 <!-- SET AUTOCOMPLETE -->
 <datalist id="set-list">
