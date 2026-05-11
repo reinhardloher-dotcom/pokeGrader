@@ -11,524 +11,509 @@
 <link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icons/icon-180.png">
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <title>PokéGrader PSA</title>
 <style>
-/* ── DESIGN TOKENS ─────────────────────────────── */
-:root {
-  --bg:#0e0e1a; --s1:#161624; --s2:#1e1e32; --s3:#26263e;
-  --b0:rgba(255,255,255,.06); --b1:rgba(255,255,255,.12); --b2:rgba(255,255,255,.2);
-  --tx:#eff0f8; --mu:#858aa8; --hi:#3e4060;
-  --red:#e63946; --redb:rgba(230,57,70,.15); --redd:rgba(230,57,70,.3);
-  --gold:#f5c842; --goldb:rgba(245,200,66,.14); --goldd:rgba(245,200,66,.35);
-  --bl:#60a5fa; --blb:rgba(96,165,250,.13);
-  --am:#fb923c; --amb:rgba(251,146,60,.13);
-  --gn:#4ade80; --gnb:rgba(74,222,128,.12);
-  --r:14px; --rs:9px; --rx:22px;
-  --nav-h:64px;
-  --font-head:'Rajdhani',system-ui,sans-serif;
-  --font-body:'Inter',system-ui,sans-serif;
+:root{
+  --bg:#0e0e1a;--s1:#161624;--s2:#1e1e32;--s3:#26263e;
+  --b0:rgba(255,255,255,.06);--b1:rgba(255,255,255,.13);
+  --tx:#eff0f8;--mu:#858aa8;--hi:#3e4060;
+  --red:#e63946;--redb:rgba(230,57,70,.15);--redd:rgba(230,57,70,.3);
+  --gold:#f5c842;--goldb:rgba(245,200,66,.14);--goldd:rgba(245,200,66,.35);
+  --bl:#60a5fa;--blb:rgba(96,165,250,.13);--bld:rgba(96,165,250,.3);
+  --am:#fb923c;--gnb:rgba(74,222,128,.12);
+  --r:14px;--rs:9px;--nav-h:64px;
+  --fh:'Rajdhani',system-ui,sans-serif;
+  --fb:'Inter',system-ui,sans-serif;
 }
-/* Grade ramp */
-.g10{--gc:#f5c842;--gcb:rgba(245,200,66,.16);--gcd:rgba(245,200,66,.45)}
-.g9 {--gc:#94e0ff;--gcb:rgba(148,224,255,.14);--gcd:rgba(148,224,255,.4)}
-.g8 {--gc:#7eb8f7;--gcb:rgba(126,184,247,.14);--gcd:rgba(126,184,247,.4)}
-.g7 {--gc:#c084fc;--gcb:rgba(192,132,252,.14);--gcd:rgba(192,132,252,.4)}
-.g6 {--gc:#4ade80;--gcb:rgba(74,222,128,.14);--gcd:rgba(74,222,128,.4)}
-.g5 {--gc:#fb923c;--gcb:rgba(251,146,60,.14);--gcd:rgba(251,146,60,.4)}
-.g4,.g3,.g2,.g1{--gc:#f87171;--gcb:rgba(248,113,113,.14);--gcd:rgba(248,113,113,.4)}
-
-/* ── RESET ─────────────────────────────────────── */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--font-body);font-size:15px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
-
-/* ── SCREENS ────────────────────────────────────── */
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:15px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 section{display:none;flex-direction:column;min-height:100svh}
 section.on{display:flex}
-section.with-nav .page{padding-bottom:calc(var(--nav-h) + 12px)}
-
-/* ── LAYOUT ─────────────────────────────────────── */
+.with-nav .page{padding-bottom:calc(var(--nav-h) + 16px)}
 .page{flex:1;padding:16px;max-width:500px;width:100%;margin:0 auto;overflow-y:auto;-webkit-overflow-scrolling:touch}
-.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));background:var(--bg);flex-shrink:0;border-bottom:1px solid var(--b0)}
-.hdr h1{font-family:var(--font-head);font-size:18px;font-weight:600;letter-spacing:.02em;flex:1}
-.ib{width:38px;height:38px;border-radius:50%;background:var(--s2);border:none;color:var(--tx);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background .15s}
+.hdr{display:flex;align-items:center;gap:10px;padding:12px 16px;padding-top:calc(12px + env(safe-area-inset-top));background:var(--bg);flex-shrink:0;border-bottom:1px solid var(--b0);position:sticky;top:0;z-index:10}
+.hdr h1{font-family:var(--fh);font-size:18px;font-weight:600;flex:1;letter-spacing:.02em}
+.ib{width:38px;height:38px;border-radius:50%;background:var(--s2);border:none;color:var(--tx);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .ib:active{background:var(--s3)}
-
-/* ── BOTTOM NAV ─────────────────────────────────── */
-.bnav{
-  position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));
-  background:rgba(14,14,26,.95);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
-  border-top:1px solid var(--b1);display:flex;align-items:stretch;z-index:50;
-  padding-bottom:env(safe-area-inset-bottom);
-}
-.bn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;transition:opacity .15s;color:var(--mu)}
-.bn.active{color:var(--red)}
-.bn-ico{font-size:22px;line-height:1}
-.bn-lbl{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-.bn:active{opacity:.7}
-
-/* ── CARDS ───────────────────────────────────────── */
-.card{background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);padding:16px;margin-bottom:12px;position:relative}
-.card-red{border-color:var(--redd);background:linear-gradient(135deg,var(--s1) 0%,rgba(230,57,70,.06) 100%)}
-
-/* ── BUTTONS ────────────────────────────────────── */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s,transform .1s;font-family:var(--font-head);letter-spacing:.04em;text-transform:uppercase}
+.card{background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);padding:16px;margin-bottom:12px}
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;border-radius:var(--r);font-size:14px;font-weight:600;cursor:pointer;border:none;transition:opacity .15s,transform .1s;font-family:var(--fh);letter-spacing:.04em;text-transform:uppercase}
 .btn:active{transform:scale(.97);opacity:.8}
 .btn:disabled{opacity:.35;pointer-events:none}
 .btn-r{background:var(--red);color:#fff}
-.btn-g{background:linear-gradient(135deg,#22c55e,#16a34a);color:#fff}
 .btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--b1)}
 .btn-o{background:transparent;color:var(--tx);border:1px solid var(--b1)}
 .row{display:flex;gap:8px}
-.pill{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;white-space:nowrap;transition:all .15s}
-
-/* ── FORM INPUTS ─────────────────────────────────── */
-.input-group{margin-bottom:12px}
-.input-label{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:block}
-input[type=text],input[type=password],input[type=search]{
-  width:100%;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--rs);
-  color:var(--tx);padding:12px 14px;font-size:14px;font-family:var(--font-body);
-  outline:none;-webkit-appearance:none;transition:border-color .2s}
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:rgba(14,14,26,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;align-items:stretch;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
+.bn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;color:var(--mu)}
+.bn.active{color:var(--red)}
+.bn-ico{font-size:22px;line-height:1}
+.bn-lbl{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+/* Form */
+.ilabel{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:block}
+input[type=text],input[type=password],input[type=search]{width:100%;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--rs);color:var(--tx);padding:12px 14px;font-size:14px;font-family:var(--fb);outline:none;-webkit-appearance:none;transition:border-color .2s}
 input:focus{border-color:var(--red)}
 input::placeholder{color:var(--hi)}
-
-/* ── STEP INDICATOR ──────────────────────────────── */
+/* Steps */
 .steps{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 2px}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--s3);transition:all .2s}
 .dot.cur{background:var(--red);width:24px;border-radius:4px}
 .dot.done{background:var(--red);opacity:.45}
-.step-label{font-size:11px;font-weight:600;color:var(--mu);text-align:center;margin-bottom:10px;text-transform:uppercase;letter-spacing:.08em}
-
-/* ── CAMERA MODAL ────────────────────────────────── */
+/* Camera modal */
 #cam-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#000;display:none;flex-direction:column}
 #cam-modal.open{display:flex}
-#cam-video{width:100%;flex:1;object-fit:cover;min-height:0;display:block}
+#cam-video{width:100%;flex:1;object-fit:cover;min-height:0;display:block;transform-origin:center center;transition:transform .15s}
 #cam-canvas{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none}
 .cam-top{position:absolute;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:calc(16px + env(safe-area-inset-top)) 16px 16px;background:linear-gradient(rgba(0,0,0,.6),transparent)}
 .cam-bot{position:absolute;bottom:0;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:20px;padding:16px 24px calc(24px + env(safe-area-inset-bottom));background:linear-gradient(transparent,rgba(0,0,0,.7))}
 .shutter{width:70px;height:70px;border-radius:50%;background:#fff;border:4px solid rgba(255,255,255,.35);font-size:28px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:transform .12s;flex-shrink:0}
 .shutter:active{transform:scale(.88)}
 .shutter:disabled{opacity:.4;pointer-events:none}
-.cam-pill{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;font-family:var(--font-body);font-weight:500}
-.cam-badge{position:absolute;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:5px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:var(--font-head)}
-
-/* ── PREVIEW ─────────────────────────────────────── */
+.cpill{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;font-weight:500}
+#cam-badge{position:absolute;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:5px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:var(--fh)}
+/* Preview */
 .prev-wrap{position:relative;margin-bottom:12px;border-radius:var(--rs);overflow:hidden;background:var(--s2)}
-.prev-img{width:100%;display:block;max-height:320px;object-fit:contain}
+.prev-img{width:100%;display:block;max-height:300px;object-fit:contain}
 .retake{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:500}
-.uz{border:2px dashed var(--b1);border-radius:var(--r);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:20px;text-align:center;background:var(--s1);transition:all .15s}
+.uz{border:2px dashed var(--b1);border-radius:var(--r);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:20px;text-align:center;background:var(--s1)}
 .uz:active{border-color:var(--red);background:var(--redb)}
-
-/* ── SCORE BARS ──────────────────────────────────── */
-.sb-row{display:flex;justify-content:space-between;margin-bottom:5px;font-size:12px}
-.sb-track{height:6px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:9px}
-.sb-fill{height:100%;border-radius:3px;transition:width .6s ease}
-
-/* ── GRADE BADGE (PSA style) ─────────────────────── */
+/* Score */
+.sb-row{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px}
+.sb-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:8px}
+.sb-fill{height:100%;border-radius:3px}
+/* PSA Slab */
 .psa-slab{display:flex;flex-direction:column;align-items:center;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.5)}
-.psa-top{background:var(--red);color:#fff;font-size:9px;font-weight:800;letter-spacing:.14em;padding:3px 0;width:100%;text-align:center;font-family:var(--font-head)}
+.psa-top{background:var(--red);color:#fff;font-size:9px;font-weight:800;letter-spacing:.14em;padding:3px 0;width:100%;text-align:center;font-family:var(--fh)}
 .psa-body{background:#fff;padding:4px 10px 6px;text-align:center;min-width:56px}
-.psa-num{font-size:28px;font-weight:800;color:#111;line-height:1;font-family:var(--font-head)}
+.psa-num{font-size:28px;font-weight:800;color:#111;line-height:1;font-family:var(--fh)}
 .psa-sub{font-size:8px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-
-/* ── COLLECTION GRID ─────────────────────────────── */
+/* Collection */
 .coll-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .coll-card{background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s;position:relative}
 .coll-card:active{transform:scale(.97);border-color:var(--b1)}
-.coll-thumb-wrap{position:relative;aspect-ratio:3/4;background:var(--s2);overflow:hidden}
+.coll-tw{position:relative;aspect-ratio:3/4;background:var(--s2);overflow:hidden}
 .coll-thumb{width:100%;height:100%;object-fit:cover;display:block}
-.coll-thumb-placeholder{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,var(--s2),var(--s3))}
-.coll-grade-stamp{position:absolute;top:6px;right:6px;background:#fff;border-radius:5px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);min-width:28px}
+.coll-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:36px;background:linear-gradient(135deg,var(--s2),var(--s3))}
+.cgs{position:absolute;top:6px;right:6px;background:#fff;border-radius:5px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.5);min-width:28px}
 .cgs-top{height:5px;background:var(--red)}
-.cgs-num{font-size:14px;font-weight:800;color:#111;text-align:center;line-height:1.2;padding:1px 4px 2px;font-family:var(--font-head)}
+.cgs-num{font-size:14px;font-weight:800;color:#111;text-align:center;line-height:1.2;padding:1px 4px 2px;font-family:var(--fh)}
 .coll-info{padding:8px 10px 10px}
-.coll-name{font-size:13px;font-weight:600;color:var(--tx);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.coll-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coll-sub{font-size:10px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.coll-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;background:var(--gcb,var(--s2));color:var(--gc,var(--mu));margin-top:4px;font-family:var(--font-head);letter-spacing:.04em;border:1px solid var(--gcd,var(--b0))}
-
-/* ── FILTER/SORT BAR ─────────────────────────────── */
-.filter-row{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
-.filter-row::-webkit-scrollbar{display:none}
-.f-chip{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--font-head);letter-spacing:.04em;transition:all .15s}
-.f-chip.active{background:var(--redb);border-color:var(--redd);color:var(--red)}
+.coll-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px;font-family:var(--fh);letter-spacing:.04em}
+/* Filter */
+.frow{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.frow::-webkit-scrollbar{display:none}
+.fc{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--fh);letter-spacing:.04em}
+.fc.active{background:var(--redb);border-color:var(--redd);color:var(--red)}
 .sort-btn{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
-
-/* ── ACCORDION ───────────────────────────────────── */
-.acc-h{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--b0)}
-.acc-h:last-child{border-bottom:none}
-.acc-a{margin-left:auto;font-size:11px;color:var(--mu);transition:transform .2s;flex-shrink:0}
-.acc-h.open .acc-a{transform:rotate(180deg)}
-.acc-b{padding:12px 16px 14px;border-bottom:1px solid var(--b0);background:rgba(0,0,0,.15)}
-
-/* ── HISTORY LIST ────────────────────────────────── */
-.hi{display:flex;align-items:center;gap:12px;background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);padding:10px;margin-bottom:8px;cursor:pointer;transition:border-color .15s}
+/* Accordion */
+.ah{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--b0)}
+.aa{margin-left:auto;font-size:11px;color:var(--mu);transition:transform .2s;flex-shrink:0}
+.ah.open .aa{transform:rotate(180deg)}
+.ab{padding:12px 16px 14px;border-bottom:1px solid var(--b0);background:rgba(0,0,0,.15)}
+/* History */
+.hi{display:flex;align-items:center;gap:12px;background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);padding:10px;margin-bottom:8px;cursor:pointer}
 .hi:active{border-color:var(--b1)}
 .hth{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--s2);flex-shrink:0}
-
-/* ── CARD INFO DETAIL ────────────────────────────── */
-.info-pill{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--mu);margin:3px 3px 3px 0}
-.info-pill b{color:var(--tx)}
-
-/* ── LOADER ──────────────────────────────────────── */
-.spin{width:50px;height:50px;border-radius:50%;border:3px solid var(--s3);border-top-color:var(--red);animation:rot .8s linear infinite;margin:0 auto}
-@keyframes rot{to{transform:rotate(360deg)}}
-
-/* ── ALERT ───────────────────────────────────────── */
-.alert{border-radius:var(--rs);padding:11px 14px;font-size:13px;margin-bottom:10px;line-height:1.5;border-width:1px;border-style:solid}
-.a-r{background:var(--redb);color:var(--red);border-color:var(--redd)}
-.a-b{background:var(--blb);color:var(--bl);border-color:rgba(96,165,250,.3)}
-.a-g{background:var(--gnb);color:var(--gn);border-color:rgba(74,222,128,.3)}
-.a-a{background:var(--amb);color:var(--am);border-color:rgba(251,146,60,.3)}
-
-/* ── TOAST ───────────────────────────────────────── */
-#toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);background:var(--s2);color:var(--tx);padding:10px 20px;border-radius:24px;font-size:13px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;border:1px solid var(--b1);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
-#toast.show{opacity:1}
-#toast.no-nav{bottom:28px}
-
-/* ── CORNER GRID ─────────────────────────────────── */
+/* Corner grid */
 .cg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
 .cgc{background:var(--s2);border-radius:var(--rs);padding:8px 10px}
 .cgl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-
-/* ── ANNOTATION ──────────────────────────────────── */
+/* Annotation */
 .aw{position:relative;border-radius:var(--rs);overflow:hidden;margin-bottom:8px;background:var(--s2)}
 .ai{width:100%;display:block}
 .mtt{position:absolute;background:rgba(14,14,26,.97);border:1px solid var(--b1);border-radius:8px;padding:7px 11px;font-size:12px;pointer-events:none;display:none;z-index:5;max-width:210px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.4)}
 .mleg{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .mli{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mu);background:var(--s2);padding:3px 8px;border-radius:5px}
 .mld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-
-/* ── COPYRIGHT ───────────────────────────────────── */
+/* Alert */
+.al{border-radius:var(--rs);padding:11px 14px;font-size:13px;margin-bottom:10px;line-height:1.5;border-width:1px;border-style:solid}
+.al-r{background:var(--redb);color:var(--red);border-color:var(--redd)}
+.al-b{background:var(--blb);color:var(--bl);border-color:var(--bld)}
+.al-g{background:var(--gnb);color:#4ade80;border-color:rgba(74,222,128,.3)}
+.al-a{background:rgba(251,146,60,.13);color:var(--am);border-color:rgba(251,146,60,.3)}
+/* Loader */
+.spin{width:50px;height:50px;border-radius:50%;border:3px solid var(--s3);border-top-color:var(--red);animation:rot .8s linear infinite;margin:0 auto}
+.spin-sm{width:20px;height:20px;border-radius:50%;border:2px solid var(--s3);border-top-color:var(--bl);animation:rot .8s linear infinite;display:inline-block}
+@keyframes rot{to{transform:rotate(360deg)}}
+/* Toast */
+#toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);background:var(--s2);color:var(--tx);padding:10px 20px;border-radius:24px;font-size:13px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;border:1px solid var(--b1);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1}
+#toast.no-nav{bottom:28px}
+/* Copyright */
 .cr{text-align:center;padding:16px 0 calc(16px + env(safe-area-inset-bottom));font-size:11px;color:var(--hi)}
 .cr a{color:var(--mu);text-decoration:none}
-
-/* ── EMPTY STATE ─────────────────────────────────── */
-.empty{text-align:center;padding:48px 20px;color:var(--mu)}
-
-/* ── MISC ────────────────────────────────────────── */
+/* Info pill */
+.ipill{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--mu);margin:3px 3px 3px 0}
+.ipill b{color:var(--tx)}
+/* eBay price cards */
+.ebay-item{background:var(--s2);border-radius:var(--rs);border:1px solid var(--b1);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.ebay-item:active{border-color:var(--b1)}
+.ebay-price{font-family:var(--fh);font-size:18px;font-weight:700;color:#4ade80;flex-shrink:0;min-width:70px;text-align:right}
+.ebay-title{font-size:12px;color:var(--tx);flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ebay-date{font-size:10px;color:var(--mu);margin-top:2px}
+/* Section title */
+.st{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:var(--fh)}
 .dr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b0);font-size:12px}
 .dr:last-child{border-bottom:none}
-.section-title{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:var(--font-head)}
-.divider{height:1px;background:var(--b0);margin:12px 0}
+/* Hero */
+.hero{background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(24px + env(safe-area-inset-top)) 16px 20px;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.2) 0%,transparent 70%);pointer-events:none}
+.hero::after{content:'';position:absolute;bottom:-40px;left:-20px;width:150px;height:150px;background:radial-gradient(circle,rgba(245,200,66,.1) 0%,transparent 70%);pointer-events:none}
+/* Grade scale viz */
+.grade-scale{display:flex;gap:3px;margin:12px 0}
+.gs-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
+.gs-fill{width:100%;border-radius:3px;transition:opacity .2s}
+.gs-num{font-size:9px;font-weight:700;font-family:var(--fh);opacity:.7}
+/* Card stack illustration */
+.card-stack{position:relative;width:70px;height:98px;flex-shrink:0}
+.cs-card{position:absolute;width:56px;height:78px;border-radius:5px;border:1.5px solid rgba(255,255,255,.15)}
+.cs-c1{background:linear-gradient(135deg,#2a1a3e,#1a2a3e);transform:rotate(-8deg) translate(-8px,6px);top:10px;left:7px}
+.cs-c2{background:linear-gradient(135deg,#1a2a3e,#0a1a2e);transform:rotate(-3deg) translate(-3px,3px);top:7px;left:4px}
+.cs-c3{background:linear-gradient(135deg,#1e1e32,#261826);top:5px;left:1px}
+/* Detected field pill */
+.det-pill{display:inline-flex;align-items:center;gap:5px;background:var(--gnb);border:1px solid rgba(74,222,128,.25);border-radius:6px;padding:2px 8px;font-size:10px;color:#4ade80;margin-bottom:4px}
+/* Impressum / legal */
+.legal-section{margin-bottom:16px}
+.legal-section h3{font-family:var(--fh);font-size:14px;font-weight:600;margin-bottom:8px;color:var(--tx)}
+.legal-section p,.legal-section li{font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:6px}
+.legal-section a{color:var(--red)}
+/* Modal overlay for legal */
+#legal-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
+#legal-modal.open{display:flex}
+.empty{text-align:center;padding:48px 20px;color:var(--mu)}
 </style>
 </head>
 <body>
 
-<!-- ══════════ CAMERA MODAL ══════════ -->
+<!-- CAMERA MODAL -->
 <div id="cam-modal">
   <video id="cam-video" autoplay playsinline muted></video>
   <canvas id="cam-canvas"></canvas>
   <div id="cam-badge" class="cam-badge">VORDERSEITE</div>
   <div class="cam-top">
-    <button class="cam-pill" onclick="closeCam()">✕ Abbrechen</button>
-    <div style="width:80px"></div>
-    <button class="cam-pill" onclick="flipCam()">🔄 Flip</button>
+    <button class="cpill" onclick="closeCam()">✕ Abbrechen</button>
+    <button class="cpill" onclick="flipCam()">🔄 Flip</button>
+  </div>
+  <!-- Zoom bar -->
+  <div id="zoom-bar" style="position:absolute;bottom:112px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.5);padding:6px 14px;border-radius:24px;backdrop-filter:blur(8px)">
+    <button onclick="stepZoom(-0.5)" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0 4px">−</button>
+    <div id="zoom-lbl" style="font-size:13px;font-weight:600;color:#fff;min-width:40px;text-align:center">1.0×</div>
+    <button onclick="stepZoom(0.5)" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0 4px">+</button>
   </div>
   <div class="cam-bot">
-    <button class="cam-pill" onclick="openGallery()">🖼 Galerie</button>
+    <button class="cpill" onclick="openGallery()">🖼 Galerie</button>
     <button class="shutter" id="shutter" onclick="takeShot()">📸</button>
     <div style="width:80px"></div>
   </div>
 </div>
 
-<!-- ══════════ HOME ══════════ -->
+<!-- LEGAL MODAL -->
+<div id="legal-modal">
+  <div class="hdr">
+    <button class="ib" onclick="closeLegal()">✕</button>
+    <h1 id="legal-title">Impressum</h1>
+  </div>
+  <div class="page" id="legal-content" style="overflow-y:auto"></div>
+</div>
+
+<!-- HOME -->
 <section id="pg-home" class="with-nav">
-<div style="background:linear-gradient(180deg,#1a0a0e 0%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 20px;max-width:500px;margin:0 auto">
-  <div style="display:flex;align-items:center;justify-content:space-between">
+<div class="hero" style="max-width:500px;margin:0 auto;width:100%">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
     <div>
-      <div style="font-family:var(--font-head);font-size:28px;font-weight:700;letter-spacing:-.5px;line-height:1">
+      <div style="font-family:var(--fh);font-size:32px;font-weight:700;line-height:1;letter-spacing:-.5px">
         <span style="color:var(--red)">Poké</span><span style="color:var(--tx)">Grader</span>
       </div>
-      <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;font-weight:500">PSA Pre-Grading · KI-gestützt</div>
+      <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:3px">PSA Pre-Grading · KI-gestützt</div>
     </div>
-    <div style="width:44px;height:44px;background:var(--redb);border:1.5px solid var(--redd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px">🃏</div>
+    <div class="card-stack">
+      <div class="cs-card cs-c1">
+        <div style="margin:6px;height:30px;background:rgba(255,255,255,.08);border-radius:3px"></div>
+        <div style="margin:4px;flex:1;background:rgba(255,255,255,.04);border-radius:2px;height:28px"></div>
+      </div>
+      <div class="cs-card cs-c2"></div>
+      <div class="cs-card cs-c3" style="display:flex;flex-direction:column;padding:5px">
+        <div style="height:26px;background:rgba(230,57,70,.3);border-radius:3px;margin-bottom:3px"></div>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px"></div>
+        <div style="height:8px;background:rgba(245,200,66,.2);border-radius:2px;margin-top:3px"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Grade scale -->
+  <div class="grade-scale">
+    ${[{n:1,c:'#ef4444'},{n:2,c:'#f87171'},{n:3,c:'#fb923c'},{n:4,c:'#fbbf24'},{n:5,c:'#facc15'},{n:6,c:'#a3e635'},{n:7,c:'#4ade80'},{n:8,c:'#34d399'},{n:9,c:'#60a5fa'},{n:10,c:'#f5c842'}].map(({n,c})=>`<div class="gs-bar"><div class="gs-fill" style="height:${20+n*4}px;background:${c};opacity:.8"></div><div class="gs-num" style="color:${c}">${n}</div></div>`).join('')}
+  </div>
+  <div style="font-size:10px;color:var(--hi);display:flex;justify-content:space-between;margin-top:-4px;padding:0 2px">
+    <span>POOR</span><span>GEM MINT</span>
   </div>
 </div>
 <div class="page" style="padding-top:8px">
-  <!-- Quick stats -->
   <div id="home-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"></div>
-  <!-- Start button -->
   <button class="btn btn-r" onclick="startAnalysis()" style="margin-bottom:14px;font-size:16px;padding:16px">
-    <span style="font-size:20px">📷</span> Neue Karte graden
+    <span style="font-size:22px">📷</span> Karte bewerten
   </button>
-  <!-- Recent -->
   <div id="recent-list"></div>
-  <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
 </div>
 </section>
 
-<!-- ══════════ CARD INFO ══════════ -->
-<section id="pg-cardinfo">
-<div class="hdr">
-  <button class="ib" onclick="safeNav('pg-home')">✕</button>
-  <h1>Karteninfo</h1>
-  <button onclick="skipCardInfo()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer">Überspringen</button>
-</div>
-<div class="page">
-  <div class="alert a-b" style="margin-bottom:14px">
-    ℹ️ Gib die Kartendetails ein — sie werden zusammen mit dem Grading gespeichert.
-  </div>
-  <!-- Pokemon card diagram hint -->
-  <div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:14px;margin-bottom:14px;display:flex;gap:14px;align-items:flex-start">
-    <div style="flex:1">
-      <div class="input-group">
-        <label class="input-label">Kartenname *</label>
-        <input type="text" id="ci-name" placeholder="z.B. Glurak / Charizard">
-      </div>
-      <div class="input-group">
-        <label class="input-label">Edition / Set</label>
-        <input type="text" id="ci-set" placeholder="z.B. Basisedition (1999)">
-      </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
-        <div class="input-group">
-          <label class="input-label">Kartennummer</label>
-          <input type="text" id="ci-num" placeholder="z.B. 4/102">
-        </div>
-        <div class="input-group">
-          <label class="input-label">HP / Energie</label>
-          <input type="text" id="ci-hp" placeholder="z.B. 120 HP">
-        </div>
-      </div>
-      <div class="input-group" style="margin-bottom:0">
-        <label class="input-label" style="display:flex;align-items:center;gap:5px">
-          Bezeichnung <span style="color:var(--hi);font-weight:400;text-transform:none;letter-spacing:0">(links unten auf der Karte)</span>
-        </label>
-        <input type="text" id="ci-cat" placeholder="z.B. Basis-Pokémon · Stufe 2 · Pokémon-ex">
-      </div>
-    </div>
-    <!-- Mini card diagram -->
-    <div style="flex-shrink:0;width:68px">
-      <div style="width:68px;height:95px;background:linear-gradient(135deg,#2a1a3e,#1a2a3e);border-radius:6px;border:1.5px solid var(--b1);position:relative;display:flex;flex-direction:column;padding:4px">
-        <div style="background:rgba(255,255,255,.1);border-radius:3px;height:40px;margin-bottom:3px"></div>
-        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:3px"></div>
-        <div style="position:absolute;bottom:4px;left:4px;right:4px;background:rgba(230,57,70,.3);border-radius:2px;height:10px;display:flex;align-items:center;padding:0 3px">
-          <span style="font-size:6px;color:rgba(255,255,255,.7)">← Bezeichnung</span>
-        </div>
-      </div>
-      <div style="font-size:9px;color:var(--hi);text-align:center;margin-top:4px;line-height:1.3">links unten<br>auf der Karte</div>
-    </div>
-  </div>
-  <button class="btn btn-r" onclick="confirmCardInfo()">Weiter zu den Fotos →</button>
-  <div class="cr" style="padding-top:12px">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
-</div>
-</section>
-
-<!-- ══════════ CAPTURE ══════════ -->
+<!-- CAPTURE -->
 <section id="pg-capture">
 <div class="hdr">
   <button class="ib" onclick="capBack()">‹</button>
   <h1 id="cap-title">Vorderseite</h1>
 </div>
 <div class="page">
-  <div class="steps"><div class="dot" id="d1"></div><div class="dot" id="d2"></div></div>
-  <div id="step-label" class="step-label"></div>
-  <div id="no-cam-hint" class="alert a-a" style="display:none">📱 Kamera nicht verfügbar — bitte Galerie verwenden.</div>
-  <div id="ghost-hint" class="alert a-b" style="display:none">💡 Vorderseite als Overlay eingeblendet — Karte umdrehen und gleiche Position halten.</div>
-  <button class="btn btn-r" id="btn-cam" onclick="openCam()" style="margin-bottom:12px">📷 Kamera öffnen</button>
+  <div id="no-cam" class="al al-a" style="display:none">📱 Kamera nicht verfügbar — bitte Galerie verwenden.</div>
+  <div id="ghost-hint" class="al al-b" style="display:none">💡 Vorderseite wird eingeblendet — Karte gleich positionieren.</div>
+
+  <!-- Front photo area -->
+  <div id="front-zone">
+    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Vorderseite *</div>
+    <button class="btn btn-r" id="btn-cam-f" onclick="openCamFor('front')" style="margin-bottom:8px">📷 Vorderseite fotografieren</button>
+    <div id="prev-front" style="display:none">
+      <div class="prev-wrap"><img id="prev-img-f" class="prev-img" alt=""><button class="retake" onclick="retakeSide('front')">🔄 Neu</button></div>
+    </div>
+  </div>
+
+  <!-- Back photo area (optional) -->
+  <div id="back-zone" style="display:none">
+    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+      Rückseite <span style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:2px 8px;border-radius:10px;font-size:10px;text-transform:none;letter-spacing:0;font-weight:400">optional – verbessert Zentrierungsanalyse</span>
+    </div>
+    <button class="btn btn-o" id="btn-cam-b" onclick="openCamFor('back')" style="margin-bottom:8px">📷 Rückseite hinzufügen</button>
+    <div id="prev-back" style="display:none">
+      <div class="prev-wrap"><img id="prev-img-b" class="prev-img" alt=""><button class="retake" onclick="retakeSide('back')">🔄 Neu</button></div>
+    </div>
+  </div>
+
   <input type="file" id="file-in" accept="image/*" capture="environment" style="display:none" onchange="onFile(event)">
   <div class="uz" id="uz-gal" onclick="openGallery()" style="display:none;margin-bottom:12px">
-    <div style="font-size:38px">🖼</div>
-    <div style="font-size:14px;font-weight:600">Foto aus Galerie wählen</div>
+    <div style="font-size:38px">🖼</div><div style="font-size:14px;font-weight:600">Galerie</div>
   </div>
-  <div id="preview-box" style="display:none">
-    <div class="prev-wrap">
-      <img id="preview-img" class="prev-img" alt="">
-      <button class="retake" onclick="retakePhoto()">🔄 Neu</button>
-    </div>
-    <div class="alert a-g" style="margin-bottom:12px">✓ Foto bereit</div>
+
+  <div id="tips-card" class="card" style="padding:14px;margin-top:4px">
+    <div class="st" style="margin-bottom:8px">💡 Tipps</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">• Neutraler Untergrund (weiß/grau)<br>• Gleichmäßige Ausleuchtung, kein Blitz<br>• Alle 4 Ränder der Karte sichtbar<br>• Zoom nutzen um Karte genau zu positionieren</div>
   </div>
-  <div id="tips-card" class="card" style="padding:14px">
-    <div class="section-title" style="margin-bottom:8px">💡 Tipps für gute Ergebnisse</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">• Neutraler Untergrund (weiß/grau)<br>• Gleichmäßige Ausleuchtung, kein Blitz<br>• Alle 4 Ränder der Karte sichtbar<br>• Kamera senkrecht von oben</div>
-  </div>
-  <div class="row" style="margin-top:4px">
+  <div class="row" style="margin-top:8px">
     <button class="btn btn-o" onclick="capBack()" style="flex:1">← Zurück</button>
-    <button class="btn btn-r" id="btn-next" onclick="capNext()" style="flex:2" disabled>Weiter →</button>
+    <button class="btn btn-r" id="btn-analyze" onclick="runAnalysis()" style="flex:2" disabled>🔬 Analyse starten</button>
   </div>
 </div>
 </section>
 
-<!-- ══════════ ANALYZING ══════════ -->
+<!-- ANALYZING -->
 <section id="pg-analyzing">
 <div class="page" style="justify-content:center;align-items:center;text-align:center;padding-top:64px">
   <div style="font-size:48px;margin-bottom:20px">🔬</div>
   <div class="spin" style="margin-bottom:24px"></div>
-  <div style="font-family:var(--font-head);font-size:20px;font-weight:700;letter-spacing:.02em;margin-bottom:8px">KI-Analyse läuft</div>
+  <div style="font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:.02em;margin-bottom:8px">KI-Analyse läuft</div>
   <div id="ana-msg" style="font-size:13px;color:var(--mu);min-height:20px;margin-bottom:32px"></div>
   <div style="display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;max-width:340px">
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px;align-items:center"><span>⚖️</span>Zentrierung (PSA 2025 Standards)</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px;align-items:center"><span>🔍</span>Ecken · Whitening-Erkennung</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px;align-items:center"><span>📐</span>Ränder · Chipping & Fraying</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px;align-items:center"><span>✨</span>Oberfläche · Holo · Kratzer</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>🃏</span>Karte wird erkannt (Name, Set, Nummer…)</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>⚖️</span>Zentrierung (PSA 2025)</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>🔍</span>Ecken · Whitening</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>📐</span>Ränder · Oberfläche</div>
   </div>
 </div>
 </section>
 
-<!-- ══════════ RESULTS ══════════ -->
+<!-- CARD DATA REVIEW (after auto-detection) -->
+<section id="pg-carddata">
+<div class="hdr">
+  <button class="ib" onclick="safeNav('pg-capture')">‹</button>
+  <h1>Kartendetails prüfen</h1>
+</div>
+<div class="page">
+  <div class="al al-g" style="margin-bottom:14px">
+    ✓ KI hat die Karte erkannt — bitte prüfen und bei Bedarf korrigieren.
+  </div>
+  <div class="card">
+    <div style="margin-bottom:12px">
+      <label class="ilabel">Kartenname *</label>
+      <input type="text" id="cd-name" placeholder="z.B. Glurak / Charizard">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div>
+        <label class="ilabel">Sprache</label>
+        <input type="text" id="cd-lang" placeholder="Deutsch / EN / JP">
+      </div>
+      <div>
+        <label class="ilabel">HP / Energie</label>
+        <input type="text" id="cd-hp" placeholder="z.B. 120 HP">
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <label class="ilabel">Edition / Set</label>
+      <input type="text" id="cd-set" placeholder="z.B. Basisedition (1999)">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div>
+        <label class="ilabel">Kartennummer</label>
+        <input type="text" id="cd-num" placeholder="z.B. 4/102">
+      </div>
+      <div>
+        <label class="ilabel">Seltenheit</label>
+        <input type="text" id="cd-rar" placeholder="z.B. Holo Rare">
+      </div>
+    </div>
+    <div>
+      <label class="ilabel" style="display:flex;align-items:center;gap:6px">
+        Bezeichnung <span style="font-size:10px;color:var(--hi);text-transform:none;letter-spacing:0;font-weight:400">(links unten auf der Karte)</span>
+      </label>
+      <input type="text" id="cd-cat" placeholder="z.B. Basis-Pokémon · Stufe 2 · Pokémon-ex">
+    </div>
+  </div>
+  <button class="btn btn-r" onclick="confirmCardData()">✓ Bestätigen &amp; Ergebnis anzeigen</button>
+  <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+</div>
+</section>
+
+<!-- RESULTS -->
 <section id="pg-results">
 <div class="hdr">
   <button class="ib" onclick="safeNav('pg-home')">✕</button>
   <h1>Pregrading Ergebnis</h1>
-  <button id="save-btn" onclick="saveGrade()" style="background:var(--goldb);border:1.5px solid var(--goldd);color:var(--gold);padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--font-head);letter-spacing:.04em">💾 SPEICHERN</button>
+  <button id="save-btn" onclick="saveGrade()" style="background:var(--goldb);border:1.5px solid var(--goldd);color:var(--gold);padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.04em">💾 SPEICHERN</button>
 </div>
 <div class="page" id="res-page"></div>
 </section>
 
-<!-- ══════════ COLLECTION ══════════ -->
+<!-- COLLECTION -->
 <section id="pg-collection" class="with-nav">
 <div class="hdr">
   <h1>Meine Sammlung</h1>
   <div id="coll-count" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600"></div>
 </div>
 <div class="page" style="padding-top:10px">
-  <!-- Search -->
   <div style="position:relative;margin-bottom:10px">
     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>
-    <input type="search" id="coll-search" placeholder="Suche nach Name, Set, Nummer…" style="padding-left:38px" oninput="renderCollection()">
+    <input type="search" id="coll-search" placeholder="Name, Set, Nummer…" style="padding-left:38px" oninput="renderColl()">
   </div>
-  <!-- Filter chips -->
-  <div class="filter-row">
-    <button class="f-chip active" data-grade="all" onclick="setFilter(this,'all')">Alle</button>
-    <button class="f-chip" data-grade="10" onclick="setFilter(this,'10')">PSA 10</button>
-    <button class="f-chip" data-grade="9" onclick="setFilter(this,'9')">PSA 9</button>
-    <button class="f-chip" data-grade="8" onclick="setFilter(this,'8')">PSA 8</button>
-    <button class="f-chip" data-grade="7" onclick="setFilter(this,'7')">PSA 7</button>
-    <button class="f-chip" data-grade="low" onclick="setFilter(this,'low')">PSA ≤6</button>
-    <button class="sort-btn" onclick="cycleSortMode()">↕ <span id="sort-lbl">Neueste</span></button>
+  <div class="frow">
+    <button class="fc active" data-g="all" onclick="setF(this,'all')">Alle</button>
+    <button class="fc" data-g="10" onclick="setF(this,'10')">PSA 10</button>
+    <button class="fc" data-g="9" onclick="setF(this,'9')">PSA 9</button>
+    <button class="fc" data-g="8" onclick="setF(this,'8')">PSA 8</button>
+    <button class="fc" data-g="7" onclick="setF(this,'7')">PSA 7</button>
+    <button class="fc" data-g="low" onclick="setF(this,'low')">≤ PSA 6</button>
+    <button class="sort-btn" onclick="cycleSort()">↕ <span id="sort-lbl">Neueste</span></button>
   </div>
   <div id="coll-grid" class="coll-grid"></div>
-  <div id="coll-empty" style="display:none">
-    <div class="empty">
-      <div style="font-size:48px;margin-bottom:14px">🃏</div>
-      <div style="font-size:16px;font-weight:600;margin-bottom:6px;font-family:var(--font-head)">Noch keine Karten</div>
-      <div style="font-size:13px">Grade deine erste Karte und sie erscheint hier.</div>
-    </div>
-  </div>
-  <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+  <div id="coll-empty" style="display:none" class="empty"><div style="font-size:44px;margin-bottom:12px">🃏</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;font-family:var(--fh)">Noch keine Karten</div><div style="font-size:13px">Grade deine erste Karte!</div></div>
+  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
 </div>
 </section>
 
-<!-- ══════════ DETAIL ══════════ -->
+<!-- DETAIL -->
 <section id="pg-detail">
 <div class="hdr">
-  <button class="ib" id="det-back-btn" onclick="safeNav('pg-collection')">‹</button>
+  <button class="ib" id="det-back" onclick="safeNav('pg-collection')">‹</button>
   <h1 id="det-title" style="font-size:15px">Details</h1>
-  <button onclick="deleteEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">🗑 Löschen</button>
+  <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">🗑 Löschen</button>
 </div>
 <div class="page" id="det-page"></div>
 </section>
 
-<!-- ══════════ SETTINGS ══════════ -->
+<!-- SETTINGS -->
 <section id="pg-settings" class="with-nav">
-<div style="background:linear-gradient(180deg,#1a0a0e 0%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 20px;max-width:500px;margin:0 auto;text-align:center">
-  <div style="font-family:var(--font-head);font-size:24px;font-weight:700"><span style="color:var(--red)">Poké</span><span style="color:var(--tx)">Grader</span></div>
+<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 20px;max-width:500px;margin:0 auto;text-align:center">
+  <div style="font-family:var(--fh);font-size:26px;font-weight:700"><span style="color:var(--red)">Poké</span>Grader</div>
   <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">PSA Pre-Grading Tool</div>
 </div>
 <div class="page" style="padding-top:8px">
   <div class="card">
-    <div class="section-title" style="margin-bottom:10px">🔑 Anthropic API-Key</div>
+    <div class="st" style="margin-bottom:10px">🔑 Anthropic API-Key</div>
     <input type="password" id="set-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
     <div id="set-status" style="font-size:11px;color:var(--mu);margin-top:6px"></div>
     <button class="btn btn-r" onclick="saveSettingsKey()" style="margin-top:12px">Key speichern</button>
   </div>
   <div class="card">
-    <div class="section-title" style="margin-bottom:10px">📊 Statistiken</div>
+    <div class="st" style="margin-bottom:10px">📊 Statistiken</div>
     <div id="settings-stats" style="font-size:13px;color:var(--mu);line-height:2"></div>
   </div>
   <div class="card">
-    <div class="section-title" style="margin-bottom:10px">Datenverwaltung</div>
-    <button class="btn btn-o" onclick="confirmClear()" style="color:var(--red);border-color:var(--redd)">🗑 Gesamte Sammlung löschen</button>
+    <div class="st" style="margin-bottom:10px">Rechtliches</div>
+    <button class="btn btn-o" onclick="openLegal('impressum')" style="margin-bottom:8px">📄 Impressum</button>
+    <button class="btn btn-o" onclick="openLegal('datenschutz')">🔒 Datenschutzerklärung</button>
   </div>
   <div class="card">
-    <div class="section-title" style="margin-bottom:8px">Über PokéGrader</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">Version 3.0<br>Entwickelt von <a href="https://netpixel.at" style="color:var(--red)">netpixel.at</a><br>KI-Pregrading nach PSA 2025 Standards<br><span style="color:var(--hi)">Kein offizielles PSA-Produkt</span></div>
+    <div class="st" style="margin-bottom:10px">Datenverwaltung</div>
+    <button class="btn btn-o" onclick="confirmClear()" style="color:var(--red);border-color:var(--redd)">🗑 Sammlung löschen</button>
   </div>
-  <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+  <div class="card">
+    <div class="st" style="margin-bottom:8px">Über PokéGrader</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">Version 4.0<br>Entwickelt von <a href="https://netpixel.at" style="color:var(--red)">netpixel.at</a><br>KI-Pregrading nach PSA 2025 Standards<br><span style="color:var(--hi)">Kein offizielles PSA-Produkt</span></div>
+  </div>
+  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
 </div>
 </section>
 
-<!-- ══════════ SETUP ══════════ -->
+<!-- SETUP -->
 <section id="pg-setup">
-<div style="background:linear-gradient(180deg,#1a0a0e 0%,var(--bg) 60%);min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:24px;max-width:500px;margin:0 auto">
+<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:24px;max-width:500px;margin:0 auto">
   <div style="text-align:center;margin-bottom:28px">
     <div style="font-size:56px;margin-bottom:12px">🃏</div>
-    <div style="font-family:var(--font-head);font-size:32px;font-weight:700;margin-bottom:4px"><span style="color:var(--red)">Poké</span>Grader</div>
+    <div style="font-family:var(--fh);font-size:32px;font-weight:700;margin-bottom:4px"><span style="color:var(--red)">Poké</span>Grader</div>
     <div style="font-size:13px;color:var(--mu);line-height:1.6">PSA Pre-Grading für Pokémon Karten<br>Für die KI-Analyse wird ein API-Key benötigt.</div>
   </div>
   <div class="card" style="margin-bottom:12px">
-    <div class="section-title" style="margin-bottom:10px">🔑 Anthropic API-Key eingeben</div>
+    <div class="st" style="margin-bottom:10px">🔑 Anthropic API-Key</div>
     <input type="password" id="setup-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-    <div id="setup-err" class="alert a-r" style="display:none;margin-top:8px"></div>
+    <div id="setup-err" class="al al-r" style="display:none;margin-top:8px"></div>
     <button class="btn btn-r" onclick="saveSetupKey()" style="margin-top:12px">Starten →</button>
   </div>
   <div class="card" style="padding:14px">
-    <div class="section-title" style="margin-bottom:8px">Key erstellen (kostenlos)</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">
-      1. <a href="https://console.anthropic.com" style="color:var(--red)">console.anthropic.com</a> öffnen<br>
-      2. Registrieren → „API Keys" → „Create Key"<br>
-      3. Key kopieren und oben einfügen<br>
-      <span style="color:var(--hi)">~$5 Startguthaben · ≈ $0.01 pro Analyse</span>
-    </div>
+    <div class="st" style="margin-bottom:8px">Key erstellen</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">1. <a href="https://console.anthropic.com" style="color:var(--red)">console.anthropic.com</a> öffnen<br>2. Registrieren → „API Keys" → „Create Key"<br>3. Key kopieren und oben einfügen<br><span style="color:var(--hi)">~$5 Startguthaben · ≈ $0.01 pro Analyse</span></div>
   </div>
 </div>
 </section>
 
-<!-- ══════════ BOTTOM NAV ══════════ -->
+<!-- BOTTOM NAV -->
 <nav class="bnav" id="bnav">
-  <button class="bn active" id="bn-home" onclick="navTo('pg-home')">
-    <span class="bn-ico">🏠</span><span class="bn-lbl">Analyse</span>
-  </button>
-  <button class="bn" id="bn-coll" onclick="navTo('pg-collection')">
-    <span class="bn-ico">🃏</span><span class="bn-lbl">Sammlung</span>
-  </button>
-  <button class="bn" id="bn-set" onclick="navTo('pg-settings')">
-    <span class="bn-ico">⚙️</span><span class="bn-lbl">Einstellungen</span>
-  </button>
+  <button class="bn active" id="bn-home" onclick="navTo('pg-home')"><span class="bn-ico">🏠</span><span class="bn-lbl">Analyse</span></button>
+  <button class="bn" id="bn-coll" onclick="navTo('pg-collection')"><span class="bn-ico">🃏</span><span class="bn-lbl">Sammlung</span></button>
+  <button class="bn" id="bn-set" onclick="navTo('pg-settings')"><span class="bn-ico">⚙️</span><span class="bn-lbl">Einstellungen</span></button>
 </nav>
-
 <div id="toast"></div>
 
 <script>
 'use strict';
-
-/* ── UTILS ─────────────────────────────────────── */
-const $ = id => document.getElementById(id);
-const sh = el => { if(el) el.style.display='block'; };
-const hi = el => { if(el) el.style.display='none'; };
-
+const $=id=>document.getElementById(id);
+const sh=el=>{if(el)el.style.display='block';};
+const hi=el=>{if(el)el.style.display='none';};
 let _tt;
-function toast(msg,dur){try{const e=$('toast');e.textContent=String(msg).substring(0,80);e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('show'),dur||2800);}catch(e){}}
+function toast(m,d){try{const e=$('toast');e.textContent=String(m).substring(0,80);e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('show'),d||2800);}catch(e){}}
 
-const NAV_SCREENS = ['pg-home','pg-collection','pg-settings'];
+const NAV=['pg-home','pg-collection','pg-settings'];
 function navTo(id){
   try{
     stopCam();
     document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));
-    const sec=$(id);if(sec)sec.classList.add('on');
-    window.scrollTo(0,0);
-    // Bottom nav
+    const sec=$(id);if(sec)sec.classList.add('on');window.scrollTo(0,0);
     const bnav=$('bnav');
-    if(NAV_SCREENS.includes(id)){
+    if(NAV.includes(id)){
       bnav.style.display='flex';
       document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
-      const map={'pg-home':'bn-home','pg-collection':'bn-coll','pg-settings':'bn-set'};
-      if(map[id])$(map[id]).classList.add('active');
+      const m={'pg-home':'bn-home','pg-collection':'bn-coll','pg-settings':'bn-set'};
+      if(m[id])$(m[id]).classList.add('active');
     }else{bnav.style.display='none';}
-    // Load data
-    if(id==='pg-home')     {loadRecent();loadStats();}
-    if(id==='pg-collection'){renderCollection();}
-    if(id==='pg-settings') {initSettings();loadSettingsStats();}
-    // Toast positioning
+    if(id==='pg-home'){loadRecent();loadStats();}
+    if(id==='pg-collection'){renderColl();}
+    if(id==='pg-settings'){initSettings();loadSettingsStats();}
     const t=$('toast');
-    if(NAV_SCREENS.includes(id))t.classList.remove('no-nav');
-    else t.classList.add('no-nav');
-  }catch(e){console.error('navTo',e);}
+    if(NAV.includes(id))t.classList.remove('no-nav');else t.classList.add('no-nav');
+  }catch(e){console.error(e);}
 }
 function safeNav(id){navTo(id);}
 
-/* ── API KEY ─────────────────────────────────── */
-const KID='pg_key_v3';
+/* API KEY */
+const KID='pg_key_v4';
 const getKey=()=>{try{return localStorage.getItem(KID)||'';}catch(e){return '';}};
 const putKey=k=>{try{localStorage.setItem(KID,k);}catch(e){}};
 function saveSetupKey(){
@@ -548,55 +533,129 @@ function saveSettingsKey(){
   $('set-status').textContent='✓ Aktiv: '+k.substring(0,18)+'…';
 }
 
-/* ── STATE ───────────────────────────────────── */
-let CI={name:'',set:'',number:'',hp:'',cat:''};
-const A={step:'front',front:{url:null,b64:null,type:null},back:{url:null,b64:null,type:null},result:null,annF:null,annB:null,cenImg:null,saved:false,detailId:null,fromScreen:'pg-collection'};
-function resetState(){A.step='front';A.front={url:null,b64:null,type:null};A.back={url:null,b64:null,type:null};A.result=null;A.annF=null;A.annB=null;A.cenImg=null;A.saved=false;CI={name:'',set:'',number:'',hp:'',cat:''};}
+/* LEGAL MODAL */
+const IMPRESSUM=`<div class="legal-section">
+<h3>netpixel.at</h3>
+<p><strong>Reinhard Loher</strong><br>Berufsfotograf &amp; Werbeagentur<br>A.-Stifterstrasse 17 – A-4770 Andorf</p>
+<p>Telefon: <a href="tel:+436769397893">0676 / 93 97 8 93</a><br>E-Mail: <a href="mailto:office@netpixel.at">office@netpixel.at</a><br>Web: <a href="https://netpixel.at" target="_blank">www.netpixel.at</a></p>
+</div>
+<div class="legal-section">
+<h3>Unternehmensinformationen</h3>
+<p>Berufsbezeichnung: <strong>Berufsfotograf</strong><br>Mitgliedsstaat: <strong>Österreich</strong><br>Aufsichtsbehörde: <strong>BH-Schärding</strong><br>Kammer: <strong>Wirtschaftskammer OÖ</strong><br>Mitgliedsnummer: <strong>3109982</strong><br>UID: <strong>ATU45290901</strong><br>Gesetze: §340 Abs. 1 Gewerbeordnung 1994</p>
+</div>
+<div class="legal-section">
+<h3>Haftungsausschluss</h3>
+<p>Trotz sorgfältiger inhaltlicher Kontrolle übernehme ich keine Haftung für die Inhalte externer Links. Für den Inhalt der verlinkten Seiten sind ausschließlich deren Betreiber verantwortlich.</p>
+</div>
+<div class="legal-section">
+<h3>Hinweis zu dieser App</h3>
+<p>PokéGrader PSA ist ein inoffizielles Tool. PSA ist eine eingetragene Marke der Professional Sports Authenticator. Diese App steht in keiner Verbindung zu PSA. Alle KI-Bewertungen sind Schätzungen und ersetzen keine offizielle PSA-Begutachtung.</p>
+</div>
+<div class="cr">© 2025 netpixel.at</div>`;
 
-/* ── CARD INFO ───────────────────────────────── */
-function startAnalysis(){if(!getKey()){navTo('pg-setup');return;}resetState();navTo('pg-cardinfo');}
-function skipCardInfo(){navTo('pg-capture');setupSide('front');}
-function confirmCardInfo(){
-  CI.name=($('ci-name').value||'').trim();
-  CI.set=($('ci-set').value||'').trim();
-  CI.number=($('ci-num').value||'').trim();
-  CI.hp=($('ci-hp').value||'').trim();
-  CI.cat=($('ci-cat').value||'').trim();
-  if(!CI.name){$('ci-name').focus();toast('⚠️ Bitte Kartenname eingeben');return;}
-  navTo('pg-capture');setupSide('front');
+const DATENSCHUTZ=`<div class="legal-section">
+<h3>Erklärung zur Informationspflicht (Datenschutzerklärung)</h3>
+<p>Der Schutz Ihrer persönlichen Daten ist uns ein besonderes Anliegen. Wir verarbeiten Ihre Daten ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, TKG 2003).</p>
+</div>
+<div class="legal-section">
+<h3>Datenspeicherung in dieser App</h3>
+<p>PokéGrader PSA speichert alle Daten <strong>ausschließlich lokal auf Ihrem Gerät</strong> (IndexedDB). Es werden keine persönlichen Daten auf externe Server übertragen, außer:</p>
+<ul>
+<li>Fotos der Pokémon-Karten werden zur Analyse an die Anthropic API (claude-sonnet-4-6) übermittelt.</li>
+<li>Ihr Anthropic API-Key wird lokal in localStorage gespeichert und nur für API-Anfragen verwendet.</li>
+<li>Für eBay-Preisabfragen werden Kartendetails (Name, Set, Grade) an die Anthropic API übermittelt, die eine Websuche durchführt.</li>
+</ul>
+</div>
+<div class="legal-section">
+<h3>Drittanbieter</h3>
+<p><strong>Anthropic:</strong> <a href="https://www.anthropic.com/privacy" target="_blank">anthropic.com/privacy</a><br>Die zur Analyse übermittelten Bilder und Texte unterliegen den Datenschutzbestimmungen von Anthropic.</p>
+<p><strong>Google Fonts:</strong> Bei Nutzung der App können Zeichensätze von Google Fonts geladen werden (fonts.googleapis.com).</p>
+</div>
+<div class="legal-section">
+<h3>Ihre Rechte</h3>
+<p>Sie haben jederzeit das Recht, Auskunft über Ihre gespeicherten Daten zu erhalten sowie das Recht auf Berichtigung und Löschung. Alle in dieser App gespeicherten Daten können über Einstellungen → „Sammlung löschen" entfernt werden.</p>
+</div>
+<div class="legal-section">
+<h3>Kontakt</h3>
+<p>Reinhard Loher – netpixel.at<br>A.-Stifterstrasse 17, A-4770 Andorf<br>E-Mail: <a href="mailto:office@netpixel.at">office@netpixel.at</a></p>
+</div>
+<div class="cr">© 2025 netpixel.at · Stand: Mai 2025</div>`;
+
+function openLegal(type){
+  $('legal-title').textContent=type==='impressum'?'Impressum':'Datenschutzerklärung';
+  $('legal-content').innerHTML=type==='impressum'?IMPRESSUM:DATENSCHUTZ;
+  $('legal-modal').classList.add('open');
+}
+function closeLegal(){$('legal-modal').classList.remove('open');}
+
+/* STATE */
+const A={step:'front',front:{url:null,b64:null,type:null},back:{url:null,b64:null,type:null},result:null,detected:null,annF:null,annB:null,cenImg:null,saved:false,detailId:null,fromScreen:'pg-collection'};
+function resetState(){A.step='front';A.front={url:null,b64:null,type:null};A.back={url:null,b64:null,type:null};A.result=null;A.detected=null;A.annF=null;A.annB=null;A.cenImg=null;A.saved=false;}
+
+function startAnalysis(){if(!getKey()){navTo('pg-setup');return;}resetState();navTo('pg-capture');setTimeout(setupCapture,50);}
+
+let _camTarget='front'; // which side is the camera capturing
+
+function setupCapture(){
+  $('cap-title').textContent='Karte fotografieren';
+  $('tips-card').style.display='block';
+  $('btn-analyze').disabled=!A.front.url;
+  // Front zone
+  if(A.front.url){
+    $('prev-img-f').src=A.front.url;
+    sh($('prev-front'));hi($('btn-cam-f'));
+    sh($('back-zone'));// show back option after front is done
+  }else{
+    hi($('prev-front'));sh($('btn-cam-f'));
+    hi($('back-zone'));
+  }
+  // Back zone
+  if(A.back.url){
+    $('prev-img-b').src=A.back.url;
+    sh($('prev-back'));hi($('btn-cam-b'));
+  }else{
+    hi($('prev-back'));
+    if(A.front.url)sh($('btn-cam-b'));
+  }
+}
+function capBack(){stopCam();navTo('pg-home');}
+function openCamFor(side){_camTarget=side;_camSide=side;openCam();}
+function retakeSide(side){
+  if(side==='front'){A.front={url:null,b64:null,type:null};}
+  else{A.back={url:null,b64:null,type:null};}
+  setupCapture();
 }
 
-/* ── CAMERA ──────────────────────────────────── */
-let _stream=null,_facing='environment',_raf=null,_fR=null,_ghost=null;
+/* CAMERA */
+let _str=null,_facing='environment',_raf=null,_fR=null,_ghost=null;
 function openCam(){
   const modal=$('cam-modal');modal.classList.add('open');
-  $('cam-badge').textContent=A.step==='front'?'VORDERSEITE':'RÜCKSEITE';
-  const vid=$('cam-video');vid.style.opacity=0;
+  setZoom(1);
+  $('cam-badge').textContent=(_camTarget==='front')?'VORDERSEITE':'RÜCKSEITE';
+  const vid=$('cam-video');vid.style.opacity=0;$('shutter').disabled=true;
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},audio:false})
-  .then(s=>{_stream=s;vid.srcObject=s;return vid.play();})
-  .then(()=>{vid.style.opacity=1;$('shutter').disabled=false;startOverlay();
+  .then(s=>{_str=s;vid.srcObject=s;return vid.play();})
+  .then(()=>{vid.style.opacity=1;$('shutter').disabled=false;startOvl();
     if(A.step==='back'&&A.front.url){if(!_ghost)_ghost=new Image();_ghost.src=A.front.url;}
   })
-  .catch(()=>{closeCam();sh($('no-cam-hint'));sh($('uz-gal'));hi($('btn-cam'));toast('📱 Kamerazugriff verweigert — Galerie nutzen');});
+  .catch(()=>{closeCam();sh($('no-cam'));sh($('uz-gal'));hi($('btn-cam'));});
 }
 function closeCam(){try{stopCam();$('cam-modal').classList.remove('open');}catch(e){}}
-function stopCam(){try{if(_raf){cancelAnimationFrame(_raf);_raf=null;}if(_stream){_stream.getTracks().forEach(t=>t.stop());_stream=null;}}catch(e){}}
+function stopCam(){try{if(_raf){cancelAnimationFrame(_raf);_raf=null;}if(_str){_str.getTracks().forEach(t=>t.stop());_str=null;}}catch(e){}}
 function flipCam(){_facing=_facing==='environment'?'user':'environment';stopCam();openCam();}
-function startOverlay(){
+function startOvl(){
   const vid=$('cam-video'),cvs=$('cam-canvas');
   function draw(){
     try{
       const vw=vid.clientWidth,vh=vid.clientHeight;
       if(!vw||!vh){_raf=requestAnimationFrame(draw);return;}
       cvs.width=vw;cvs.height=vh;const ctx=cvs.getContext('2d');ctx.clearRect(0,0,vw,vh);
-      const R=63/88;let fw=vw*.84,fh=fw/R;
-      if(fh>vh*.80){fh=vh*.78;fw=fh*R;}
+      const R=63/88;let fw=vw*.84,fh=fw/R;if(fh>vh*.80){fh=vh*.78;fw=fh*R;}
       fw=Math.round(fw);fh=Math.round(fh);
-      const fx=Math.round((vw-fw)/2),fy=Math.round((vh-fh)/2);
-      _fR={fx,fy,fw,fh,vw,vh};
+      const fx=Math.round((vw-fw)/2),fy=Math.round((vh-fh)/2);_fR={fx,fy,fw,fh,vw,vh};
       ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,0,vw,vh);ctx.clearRect(fx,fy,fw,fh);
-      if(A.step==='back'&&_ghost&&_ghost.complete&&_ghost.naturalWidth>0){ctx.globalAlpha=.2;ctx.drawImage(_ghost,fx,fy,fw,fh);ctx.globalAlpha=1;}
-      const CL=Math.min(fw,fh)*.09,col=A.step==='front'?'#e63946':'#60a5fa';
+      if(_camTarget==='back'&&_ghost&&_ghost.complete&&_ghost.naturalWidth>0){ctx.globalAlpha=.2;ctx.drawImage(_ghost,fx,fy,fw,fh);ctx.globalAlpha=1;}
+      const CL=Math.min(fw,fh)*.09,col=(_camTarget==='front')?'#e63946':'#60a5fa';
       ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';
       [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{ctx.beginPath();ctx.moveTo(cx+dx*CL,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx,cy+dy*CL);ctx.stroke();});
       ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=.7;ctx.setLineDash([3,5]);
@@ -604,7 +663,7 @@ function startOverlay(){
       ctx.beginPath();ctx.moveTo(fx+4,fy+fh/2);ctx.lineTo(fx+fw-4,fy+fh/2);ctx.stroke();
       ctx.setLineDash([]);
       ctx.font='bold 11px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.28)';
-      ctx.fillText('Karte hier ausrichten',fx+fw/2,fy+fh-10);
+      ctx.fillText((_camTarget==='back'?'RÜCKSEITE':'VORDERSEITE')+' — hier ausrichten',fx+fw/2,fy+fh-10);
     }catch(e){}
     _raf=requestAnimationFrame(draw);
   }
@@ -613,306 +672,373 @@ function startOverlay(){
 function takeShot(){
   try{
     const vid=$('cam-video');if(!_fR)return;
-    const{fx,fy,fw,fh,vw,vh}=_fR;const scX=vid.videoWidth/vw,scY=vid.videoHeight/vh;
-    const c=document.createElement('canvas');c.width=Math.round(fw*scX);c.height=Math.round(fh*scY);
-    c.getContext('2d').drawImage(vid,fx*scX,fy*scY,fw*scX,fh*scY,0,0,c.width,c.height);
-    c.toBlob(blob=>{if(blob)readBlob(blob,'image/jpeg');},'image/jpeg',.92);
+    const{fx,fy,fw,fh,vw,vh}=_fR;
+    const scX=vid.videoWidth/vw,scY=vid.videoHeight/vh;
+    const z=_zoomLevel||1;
+    // With zoom, the video is CSS-scaled — the actual video region is smaller by 1/z
+    const cx=vw/2,cy=vh/2; // display center
+    // Frame center offset from display center
+    const ofx=(fx+fw/2-cx)/z, ofy=(fy+fh/2-cy)/z;
+    // In video pixels
+    const vcx=vid.videoWidth/2+ofx*scX;
+    const vcy=vid.videoHeight/2+ofy*scY;
+    const vfw=fw*scX/z, vfh=fh*scY/z;
+    const c=document.createElement('canvas');
+    c.width=Math.round(vfw);c.height=Math.round(vfh);
+    c.getContext('2d').drawImage(vid,vcx-vfw/2,vcy-vfh/2,vfw,vfh,0,0,c.width,c.height);
+    c.toBlob(b=>{if(b)readBlob(b,'image/jpeg');},'image/jpeg',.92);
     closeCam();
   }catch(e){toast('❌ Aufnahme fehlgeschlagen');}
 }
-function openGallery(){try{const fi=$('file-in');fi.removeAttribute('capture');fi.click();setTimeout(()=>fi.setAttribute('capture','environment'),500);}catch(e){}}
-function onFile(e){try{const f=e.target.files&&e.target.files[0];if(f)readBlob(f,f.type||'image/jpeg');e.target.value='';}catch(e){toast('❌ Datei konnte nicht gelesen werden');}}
-function readBlob(blob,type){const url=URL.createObjectURL(blob);const rd=new FileReader();rd.onload=()=>storePhoto(url,rd.result.split(',')[1],type);rd.onerror=()=>toast('❌ Bild konnte nicht gelesen werden');rd.readAsDataURL(blob);}
-function storePhoto(url,b64,type){
-  const s=A.step==='front'?A.front:A.back;s.url=url;s.b64=b64;s.type=type;
-  $('preview-img').src=url;sh($('preview-box'));hi($('btn-cam'));hi($('uz-gal'));hi($('no-cam-hint'));
-  $('btn-next').disabled=false;
-}
+function openGallery(){try{const f=$('file-in');f.removeAttribute('capture');f.click();setTimeout(()=>f.setAttribute('capture','environment'),500);}catch(e){}}
+function onFile(e){try{const f=e.target.files&&e.target.files[0];if(f)readBlob(f,f.type||'image/jpeg');e.target.value='';}catch(e){}}
+function readBlob(b,t){const u=URL.createObjectURL(b);const r=new FileReader();r.onload=()=>storePhoto(u,r.result.split(',')[1],t);r.onerror=()=>toast('❌ Bild fehler');r.readAsDataURL(b);}
+function storePhoto(u,b,t){const s=A.step==='front'?A.front:A.back;s.url=u;s.b64=b;s.type=t;$('preview-img').src=u;sh($('preview-box'));hi($('btn-cam'));hi($('uz-gal'));$('btn-next').disabled=false;}
 function retakePhoto(){const s=A.step==='front'?A.front:A.back;s.url=s.b64=s.type=null;hi($('preview-box'));sh($('btn-cam'));$('btn-next').disabled=true;}
 
-/* ── CAPTURE NAV ─────────────────────────────── */
-function setupSide(side){
-  A.step=side;const iF=side==='front';
-  $('cap-title').textContent=iF?'Vorderseite fotografieren':'Rückseite fotografieren';
-  $('step-label').textContent=iF?'Schritt 1 von 2':'Schritt 2 von 2';
-  $('d1').className='dot '+(iF?'cur':'done');
-  $('d2').className='dot '+(iF?'':'cur');
-  $('btn-next').textContent=iF?'Weiter →':'🔬 Analyse starten';
-  $('btn-next').disabled=true;
-  $('tips-card').style.display=iF?'block':'none';
-  $('ghost-hint').style.display=(!iF&&A.front.url)?'block':'none';
-  hi($('preview-box'));hi($('no-cam-hint'));hi($('uz-gal'));sh($('btn-cam'));
-  const cur=iF?A.front:A.back;
-  if(cur.url){$('preview-img').src=cur.url;sh($('preview-box'));hi($('btn-cam'));$('btn-next').disabled=false;}
-}
-function capBack(){stopCam();if(A.step==='front')navTo('pg-cardinfo');else{setupSide('front');}}
-function capNext(){if(A.step==='front'){stopCam();setupSide('back');}else{stopCam();runAnalysis();}}
-
-/* ── ANALYSIS ────────────────────────────────── */
-const MSGS=['Bild wird verarbeitet…','Zentrierung wird gemessen…','Ecken werden analysiert…','Ränder werden geprüft…','Oberfläche wird bewertet…','Defektpositionen kartieren…','Grade wird berechnet…'];
+/* ANALYSIS */
+const MSGS=['Bild wird verarbeitet…','Karte wird erkannt…','Zentrierung wird gemessen…','Ecken werden analysiert…','Oberfläche wird bewertet…','eBay-Preise werden gesucht…','Ergebnis wird erstellt…'];
 async function runAnalysis(){
   navTo('pg-analyzing');let mi=0;$('ana-msg').textContent=MSGS[0];
-  const iv=setInterval(()=>{mi=Math.min(mi+1,MSGS.length-1);$('ana-msg').textContent=MSGS[mi];},1600);
+  const iv=setInterval(()=>{mi=Math.min(mi+1,MSGS.length-1);$('ana-msg').textContent=MSGS[mi];},1800);
   try{
     const key=getKey();if(!key)throw new Error('no-key');
-    if(!A.front.b64||!A.back.b64)throw new Error('Fotos fehlen');
+    if(!A.front.b64)throw new Error('Vorderseitenfoto fehlt');
+    const content=[
+      {type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}},
+    ];
+    if(A.back.b64)content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
+    content.push({type:'text',text:A.back.b64?PSA_BOTH:PSA_FRONT});
+
     const resp=await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,
-        system:'You are a certified PSA card grading expert. Analyze Pokémon cards strictly by PSA 2025 grading standards. Final grade = LOWEST sub-score. Return ONLY valid JSON. No markdown. No backticks.',
-        messages:[{role:'user',content:[
-          {type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}},
-          {type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}},
-          {type:'text',text:PSA_PROMPT}
-        ]}]
+      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,
+        system:'You are a certified PSA card grading expert AND Pokémon card identification specialist. Return ONLY valid JSON. No markdown. No backticks.',
+        messages:[{role:'user',content}]
       })
     });
     if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(eb?.error?.message||'HTTP '+resp.status);}
     const data=await resp.json();
     const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
     A.result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    A.detected=A.result.card_info||{};
     clearInterval(iv);
+
+    // Build annotated images
     const fm=(A.result.markers||[]).filter(m=>m.side==='front');
     const bm=(A.result.markers||[]).filter(m=>m.side==='back');
-    [A.annF,A.annB,A.cenImg]=await Promise.all([annotImg(A.front.url,fm),annotImg(A.back.url,bm),cenDiagram(A.result.centering||{})]);
-    renderRes(A.result,A.annF,A.annB,A.cenImg,false);
-    navTo('pg-results');
+    [A.annF,A.annB,A.cenImg]=await Promise.all([annotImg(A.front.url,fm),annotImg(A.back.url,bm),cenDiag(A.result.centering||{})]);
+
+    // Pre-fill card data review form
+    const d=A.detected;
+    $('cd-name').value=d.card_name||'';$('cd-lang').value=d.language||'';$('cd-hp').value=d.hp||'';
+    $('cd-set').value=d.set_name||'';$('cd-num').value=d.card_number||'';
+    $('cd-rar').value=d.rarity||'';$('cd-cat').value=d.category||'';
+    navTo('pg-carddata');
   }catch(err){
     clearInterval(iv);
     if(err.message==='no-key'){toast('⚠️ Kein API-Key');navTo('pg-settings');}
-    else{toast('❌ '+(err.message||'Analyse fehlgeschlagen'));setupSide('back');navTo('pg-capture');}
+    else{toast('❌ '+(err.message||'Analyse fehlgeschlagen'));navTo('pg-capture');setTimeout(setupCapture,50);}
   }
 }
 
-const PSA_PROMPT=`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
-PSA 2025 centering (front/back): 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
-Centering %=border as % of total border space on that axis. Marker x/y=position in IMAGE coords (0-100). Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST. Be realistic.
-Return ONLY this JSON: {"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`;
+function confirmCardData(){
+  A.detected={
+    card_name:$('cd-name').value.trim()||'Unbekannte Karte',
+    language:$('cd-lang').value.trim(),
+    hp:$('cd-hp').value.trim(),
+    set_name:$('cd-set').value.trim(),
+    card_number:$('cd-num').value.trim(),
+    rarity:$('cd-rar').value.trim(),
+    category:$('cd-cat').value.trim(),
+  };
+  renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
+  navTo('pg-results');
+  // Trigger eBay search in background
+  fetchEbayPrices(A.detected,A.result.final_grade);
+}
 
-/* ── CANVAS ──────────────────────────────────── */
+const PSA_BOTH=`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
+PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
+Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`;
+
+const PSA_FRONT=`Analyze this Pokémon card front for PSA pre-grading (back not provided, estimate where needed).
+Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`;
+
+/* EBAY SEARCH */
+async function fetchEbayPrices(cardInfo,grade){
+  const key=getKey();if(!key)return;
+  const el=$('ebay-section');if(!el)return;
+  el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise <span class="spin-sm"></span></div><div style="font-size:12px;color:var(--mu)">Aktuelle Verkaufspreise werden gesucht…</div>`;
+  try{
+    const q=[cardInfo.card_name,cardInfo.set_name,cardInfo.card_number,'PSA '+grade].filter(Boolean).join(' ');
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',max_tokens:1000,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        system:'Search eBay for recently sold Pokémon cards. Respond ONLY with a JSON array.',
+        messages:[{role:'user',content:`Search eBay.de and eBay.com for recently sold listings of: "${q}". Return a JSON array of 4-5 results: [{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/...","condition":"PSA 9"}]. Only JSON, no other text.`}]
+      })
+    });
+    if(!resp.ok)throw new Error('eBay-Suche fehlgeschlagen');
+    const data=await resp.json();
+    const text=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    let items=[];
+    try{items=JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){items=[];}
+    const ebayUrl=`https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent(q)}&LH_Complete=1&LH_Sold=1`;
+    if(!items||!items.length){
+      el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div>
+        <div class="al al-a">Keine aktuellen Verkäufe gefunden. <a href="${ebayUrl}" target="_blank" style="color:var(--am)">Auf eBay suchen →</a></div>`;
+      return;
+    }
+    el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 Aktuelle eBay Verkaufspreise</div>
+      ${items.map(it=>`<a href="${it.url||ebayUrl}" target="_blank" style="text-decoration:none;display:block">
+        <div class="ebay-item">
+          <div style="flex:1;min-width:0">
+            <div class="ebay-title">${it.title||q}</div>
+            <div class="ebay-date">${it.sold_date||''} · ${it.condition||'PSA '+grade}</div>
+          </div>
+          <div class="ebay-price">${it.price||'–'}</div>
+          <div style="color:var(--mu);font-size:16px">›</div>
+        </div>
+      </a>`).join('')}
+      <a href="${ebayUrl}" target="_blank" style="text-decoration:none">
+        <div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle Ergebnisse auf eBay anzeigen →</div>
+      </a>
+      <div style="font-size:10px;color:var(--hi);padding:4px 0 8px">Preise aus KI-gestützter Web-Suche · können variieren</div>`;
+  }catch(e){
+    const ebayUrl=`https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent([cardInfo.card_name,cardInfo.set_name,'PSA '+grade].filter(Boolean).join(' '))}&LH_Complete=1&LH_Sold=1`;
+    el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div>
+      <a href="${ebayUrl}" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">🔍 Auf eBay suchen</a>`;
+  }
+}
+
+/* CANVAS */
 const MC={whitening:'#fbbf24',corner_damage:'#ef4444',edge_damage:'#f97316',scratch:'#a855f7',print_line:'#3b82f6',holo_damage:'#ec4899',stain:'#84cc16',crease:'#ef4444'};
 const ML={whitening:'Whitening',corner_damage:'Ecken-Schaden',edge_damage:'Rand-Schaden',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo-Schaden',stain:'Fleck',crease:'Knick'};
 const mc=t=>MC[t]||'#ef4444',ml=t=>ML[t]||t;
 function annotImg(url,markers){return new Promise(res=>{if(!url){res(null);return;}const img=new Image();img.onload=()=>{try{const MAX=900,sc=img.width>MAX?MAX/img.width:1,W=Math.round(img.width*sc),H=Math.round(img.height*sc);const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,W,H);(markers||[]).forEach((m,i)=>{const x=W*(m.x_pct/100),y=H*(m.y_pct/100),R=15,col=mc(m.type);ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=6;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.fillStyle=col+'cc';ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=1.8;ctx.stroke();ctx.font='bold 13px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=2;ctx.fillText(String(i+1),x,y+.5);ctx.shadowBlur=0;});res(c.toDataURL('image/jpeg',.88));}catch(e){res(url);}};img.onerror=()=>res(url);img.src=url;});}
-function cenDiagram(cen){return new Promise(res=>{try{const W=700,H=230,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.fillStyle='#13131f';ctx.fillRect(0,0,W,H);const cc=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';const cg=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;const rr=(ctx,x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();};const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;const TH=cw*.15,TV=ch*.12,lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);const lrC=cc(Math.max(lp,rp)),tbC=cc(Math.max(tp,bp));ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();ctx.setLineDash([]);ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);const mx=Math.max(lp,rp,tp,bp),gc2=cc(mx);ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';ctx.fillText('PSA '+cg(mx),cx+cw-16,cy-13);ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);};const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rückseite');const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA ≤5'}];let lx=pad;ctx.font='9px sans-serif';leg.forEach(({c,l})=>{ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);lx+=ctx.measureText(l).width+18;});res(c.toDataURL('image/jpeg',.92));}catch(e){res(null);}});}
+function cenDiag(cen){return new Promise(res=>{try{const W=700,H=230,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.fillStyle='#13131f';ctx.fillRect(0,0,W,H);const cc=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';const cg=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;const rr=(ctx,x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();};const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;const TH=cw*.15,TV=ch*.12,lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);const lrC=cc(Math.max(lp,rp)),tbC=cc(Math.max(tp,bp));ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();ctx.setLineDash([]);ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);const mx=Math.max(lp,rp,tp,bp),gc2=cc(mx);ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';ctx.fillText('PSA '+cg(mx),cx+cw-16,cy-13);ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);};const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rückseite');const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA ≤5'}];let lx=pad;ctx.font='9px sans-serif';leg.forEach(({c,l})=>{ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);lx+=ctx.measureText(l).width+18;});res(c.toDataURL('image/jpeg',.92));}catch(e){res(null);}});}
 
-/* ── GRADE HELPERS ────────────────────────────── */
+/* GRADE HELPERS */
 function gc(g){if(g>=10)return{c:'#f5c842',bg:'rgba(245,200,66,.16)',bd:'rgba(245,200,66,.45)',cls:'g10'};if(g>=9)return{c:'#94e0ff',bg:'rgba(148,224,255,.14)',bd:'rgba(148,224,255,.4)',cls:'g9'};if(g>=7)return{c:'#c084fc',bg:'rgba(192,132,252,.14)',bd:'rgba(192,132,252,.4)',cls:'g'+(g>=8?'8':'7')};if(g>=5)return{c:'#fb923c',bg:'rgba(251,146,60,.14)',bd:'rgba(251,146,60,.4)',cls:'g'+(g>=6?'6':'5')};return{c:'#f87171',bg:'rgba(248,113,113,.14)',bd:'rgba(248,113,113,.4)',cls:'g'+Math.max(g,1)};}
 function sc(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
 function cc(p){return p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';}
-function gradeLabel(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
+function gLbl(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
 function sbar(s,l){const col=sc(s);return`<div class="sb-row"><span style="color:var(--mu)">${l}</span><span style="font-weight:600;color:${col}">${s}/10</span></div><div class="sb-track"><div class="sb-fill" style="width:${s*10}%;background:${col}"></div></div>`;}
 function mleg(arr){if(!arr||!arr.length)return'';return`<div class="mleg">${arr.map((m,i)=>`<div class="mli"><div class="mld" style="background:${mc(m.type)}"></div><b>${i+1}</b>&nbsp;${m.description||ml(m.type)}</div>`).join('')}</div>`;}
-function acc(id,ico,lbl,score,body){const col=sc(score);return`<div><div class="acc-h" onclick="toggleAcc('${id}',this)"><span style="font-size:16px">${ico}</span><span style="font-size:14px;font-weight:500">${lbl}</span><span style="font-size:12px;font-weight:600;color:${col};margin-left:auto;margin-right:8px">${score}/10</span><span class="acc-a">▾</span></div><div id="${id}" style="display:none" class="acc-b">${body}</div></div>`;}
-function toggleAcc(id,hdr){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';hdr.classList.toggle('open',!o);}
+function accv(id,ico,lbl,score,body){const col=sc(score);return`<div><div class="ah" onclick="tAcc('${id}',this)"><span style="font-size:16px">${ico}</span><span style="font-size:14px;font-weight:500">${lbl}</span><span style="font-size:12px;font-weight:600;color:${col};margin-left:auto;margin-right:8px">${score}/10</span><span class="aa">▾</span></div><div id="${id}" style="display:none" class="ab">${body}</div></div>`;}
+function tAcc(id,h){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';h.classList.toggle('open',!o);}
 
-/* ── RENDER RESULTS ──────────────────────────── */
+/* RENDER RESULTS */
 let _fm=[],_bm=[];
-function renderRes(r,af,ab,ci,fromHist,cardInfo){
+function renderResults(r,af,ab,ci,fromHist,det){
   const g=r.final_grade,gclr=gc(g),cen=r.centering||{};
   _fm=(r.markers||[]).filter(m=>m.side==='front');
   _bm=(r.markers||[]).filter(m=>m.side==='back');
   const lo=Math.min(cen.score||10,r.corners?.score||10,r.edges?.score||10,r.surface?.score||10);
-  const ci2=cardInfo||CI;
-  const cardInfoHTML=ci2.name?`
-    <div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1) 0%,rgba(230,57,70,.05) 100%);border-color:rgba(230,57,70,.2)">
-      <div class="section-title" style="margin-bottom:8px">🃏 Kartendetails</div>
-      <div style="font-size:17px;font-weight:700;margin-bottom:6px;font-family:var(--font-head);letter-spacing:.02em">${ci2.name}</div>
-      <div style="display:flex;flex-wrap:wrap">
-        ${ci2.set?`<div class="info-pill">📦 <b>${ci2.set}</b></div>`:''}
-        ${ci2.number?`<div class="info-pill">#<b>${ci2.number}</b></div>`:''}
-        ${ci2.hp?`<div class="info-pill">❤️ <b>${ci2.hp}</b></div>`:''}
-        ${ci2.cat?`<div class="info-pill">🏷 <b>${ci2.cat}</b></div>`:''}
-      </div>
-    </div>`:'';
+  const d=det||A.detected||{};
+  const cardHTML=d.card_name?`<div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1),rgba(230,57,70,.05));border-color:rgba(230,57,70,.2)">
+    <div class="st" style="margin-bottom:6px">🃏 Kartendetails</div>
+    <div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:.02em">${d.card_name}</div>
+    <div style="display:flex;flex-wrap:wrap">
+      ${d.language?`<div class="ipill">🌐 <b>${d.language}</b></div>`:''}
+      ${d.set_name?`<div class="ipill">📦 <b>${d.set_name}</b></div>`:''}
+      ${d.card_number?`<div class="ipill">#<b>${d.card_number}</b></div>`:''}
+      ${d.hp?`<div class="ipill">❤️ <b>${d.hp}</b></div>`:''}
+      ${d.rarity?`<div class="ipill">⭐ <b>${d.rarity}</b></div>`:''}
+      ${d.category?`<div class="ipill">🏷 <b>${d.category}</b></div>`:''}
+    </div>
+  </div>`:'';
   const cenBody=`${ci?`<div style="background:var(--s2);border-radius:var(--rs);padding:10px;margin-bottom:10px"><img src="${ci}" style="width:100%;border-radius:4px;display:block"></div>`:''}
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-      ${[['Vorderseite L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],['Vorderseite T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],['Rückseite L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],['Rückseite T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>`<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${l}</div><div style="font-size:17px;font-weight:700;color:${cc(p)};font-family:var(--font-head)">${v||'–'}</div></div>`).join('')}
+      ${[['VS L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],['VS T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],['RS L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],['RS T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>`<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${l}</div><div style="font-size:17px;font-weight:700;color:${cc(p)};font-family:var(--fh)">${v||'–'}</div></div>`).join('')}
     </div><div style="font-size:12px;color:var(--mu);line-height:1.5">${cen.notes||''}</div>`;
   const corBody=`<div class="cg">${['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return`<div class="cgc"><div class="cgl">${l}</div><div style="font-size:12px">${r.corners?.[k]||'–'}</div></div>`}).join('')}</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.corners?.notes||''}</div>`;
   const edgBody=`${['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return`<div class="dr"><span style="color:var(--mu)">${l}</span><span style="max-width:58%;text-align:right">${r.edges?.[k]||'–'}</span></div>`}).join('')}<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">${r.edges?.notes||''}</div>`;
-  const surBody=`${r.surface?.defects?.length?r.surface.defects.map(d=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">⚠️</span><span style="font-size:12px">${d}</span></div>`).join(''):'<div style="font-size:12px;color:var(--mu);margin-bottom:6px;display:flex;gap:5px"><span style="color:var(--gn)">✓</span>Keine Defekte erkannt</div>'}<div style="font-size:12px;color:var(--mu);line-height:1.5">${r.surface?.notes||''}</div>`;
+  const surBody=`${r.surface?.defects?.length?r.surface.defects.map(d2=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">⚠️</span><span style="font-size:12px">${d2}</span></div>`).join(''):'<div style="font-size:12px;color:var(--mu);margin-bottom:6px;display:flex;gap:5px"><span style="color:#4ade80">✓</span>Keine Defekte erkannt</div>'}<div style="font-size:12px;color:var(--mu);line-height:1.5">${r.surface?.notes||''}</div>`;
   const html=`
-    ${cardInfoHTML}
+    ${cardHTML}
     <div class="card" style="margin-bottom:10px">
       <div style="display:flex;align-items:stretch;gap:14px;margin-bottom:14px">
         <div class="psa-slab">
           <div class="psa-top">PSA</div>
-          <div class="psa-body">
-            <div class="psa-num" style="color:${gclr.c}">${g}</div>
-            <div class="psa-sub">${gradeLabel(g)}</div>
-          </div>
+          <div class="psa-body"><div class="psa-num" style="color:${gclr.c}">${g}</div><div class="psa-sub">${gLbl(g)}</div></div>
         </div>
         <div style="flex:1">
-          <div style="font-family:var(--font-head);font-size:22px;font-weight:700;margin-bottom:6px;color:${gclr.c}">${r.grade_label||gradeLabel(g)}</div>
-          <div style="display:inline-block;background:${gclr.bg};border:1px solid ${gclr.bd};color:${gclr.c};font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--font-head);letter-spacing:.04em">LOWEST SUBGRADE: ${lo}/10</div>
+          <div style="font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:5px;color:${gclr.c}">${r.grade_label||gLbl(g)}</div>
+          <div style="display:inline-block;background:${gclr.bg};border:1px solid ${gclr.bd};color:${gclr.c};font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fh);letter-spacing:.04em">LOWEST: ${lo}/10</div>
           ${r.summary?`<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">${r.summary}</div>`:''}
         </div>
       </div>
       ${sbar(cen.score||0,'Zentrierung')}${sbar(r.corners?.score||0,'Ecken')}${sbar(r.edges?.score||0,'Ränder')}${sbar(r.surface?.score||0,'Oberfläche')}
-      ${r.recommendation?`<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--font-head)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.recommendation}</div></div>`:''}
+      ${r.recommendation?`<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.recommendation}</div></div>`:''}
     </div>
+    <!-- eBay section (loaded async) -->
+    <div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>
     <div class="card" style="padding:14px;margin-bottom:10px">
-      <div class="section-title" style="margin-bottom:10px">📌 Kartenbeschriftung</div>
+      <div class="st" style="margin-bottom:10px">📌 Kartenbeschriftung</div>
       <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Vorderseite</div>
       ${af?`<div class="aw" id="aw-f"><img src="${af}" class="ai" onclick="tapM(event,'f')" style="cursor:crosshair"><div class="mtt" id="tt-f"></div></div>${mleg(_fm)}`:''}
       <div style="font-size:12px;font-weight:500;color:var(--mu);margin:14px 0 6px">Rückseite</div>
       ${ab?`<div class="aw" id="aw-b"><img src="${ab}" class="ai" onclick="tapM(event,'b')" style="cursor:crosshair"><div class="mtt" id="tt-b"></div></div>${mleg(_bm)}`:''}
     </div>
     <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">
-      <div style="padding:12px 16px;border-bottom:1px solid var(--b0)" class="section-title">Detailbewertung</div>
-      ${acc('ac','⚖️','Zentrierung',cen.score||0,cenBody)}
-      ${acc('ae','🔍','Ecken & Whitening',r.corners?.score||0,corBody)}
-      ${acc('ar','📐','Ränder',r.edges?.score||0,edgBody)}
-      ${acc('as','✨','Oberfläche',r.surface?.score||0,surBody)}
+      <div style="padding:12px 16px;border-bottom:1px solid var(--b0)" class="st">Detailbewertung</div>
+      ${accv('ac','⚖️','Zentrierung',cen.score||0,cenBody)}
+      ${accv('ae','🔍','Ecken & Whitening',r.corners?.score||0,corBody)}
+      ${accv('ar','📐','Ränder',r.edges?.score||0,edgBody)}
+      ${accv('as','✨','Oberfläche',r.surface?.score||0,surBody)}
     </div>
     <div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">ℹ️ KI-Einschätzung · kein offizielles PSA-Ergebnis</div>
-    ${fromHist?`<button class="btn btn-s" onclick="safeNav(A.fromScreen||'pg-collection')" style="margin-top:10px">← Zurück zur Sammlung</button>`:`<button class="btn btn-s" onclick="safeNav('pg-home')" style="margin-top:10px">🏠 Startseite</button>`}
-    <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>`;
+    ${fromHist?`<button class="btn btn-s" onclick="safeNav(A.fromScreen||'pg-collection')" style="margin-top:10px">← Zurück</button>`:`<button class="btn btn-s" onclick="safeNav('pg-home')" style="margin-top:10px">🏠 Startseite</button>`}
+    <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>`;
   $(fromHist?'det-page':'res-page').innerHTML=html;
 }
-function tapM(e,s){try{const img=e.target,rect=img.getBoundingClientRect();const xr=((e.clientX-rect.left)/rect.width)*100,yr=((e.clientY-rect.top)/rect.height)*100;const markers=s==='f'?_fm:_bm;const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);const tt=$('tt-'+s);if(!tt)return;if(hit){tt.textContent=`${hit.label||''}: ${hit.description||ml(hit.type)}`;tt.style.display='block';tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';setTimeout(()=>tt.style.display='none',2800);}else{tt.style.display='none';}}catch(e){}}
+function tapM(e,s){try{const img=e.target,rect=img.getBoundingClientRect();const xr=((e.clientX-rect.left)/rect.width)*100,yr=((e.clientY-rect.top)/rect.height)*100;const markers=s==='f'?_fm:_bm;const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);const tt=$('tt-'+s);if(!tt)return;if(hit){tt.textContent=`${hit.label||''}: ${hit.description||ml(hit.type)}`;tt.style.display='block';tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';setTimeout(()=>tt.style.display='none',2800);}else tt.style.display='none';}catch(e){}}
 
-/* ── INDEXEDDB ────────────────────────────────── */
+/* DB */
 let _db=null;
-function openDB(){return new Promise((res,rej)=>{if(_db){res(_db);return;}const r=indexedDB.open('pgDB6',1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=()=>rej(new Error('DB Fehler'));});}
+const openDB=()=>new Promise((res,rej)=>{if(_db){res(_db);return;}const r=indexedDB.open('pgDB7',1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=()=>rej(new Error('DB Fehler'));});
 const dbPut=async e=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').put(e);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Schreiben fehlgeschlagen'));});};
 const dbAll=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readonly'),q=tx.objectStore('g').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(new Error('Lesen fehlgeschlagen'));});};
 const dbDel=async id=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Löschen fehlgeschlagen'));});};
 const dbClear=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Fehler'));});};
 
-/* ── SAVE ─────────────────────────────────────── */
+/* SAVE */
 async function saveGrade(){
   const btn=$('save-btn');if(!A.result||A.saved)return;
-  btn.textContent='⏳ Speichern…';btn.disabled=true;
+  btn.textContent='⏳…';btn.disabled=true;
   try{
+    const d=A.detected||{};
     const entry={id:Date.now().toString(),timestamp:Date.now(),
-      cardName:CI.name||'Unbekannte Karte',cardSet:CI.set,cardNumber:CI.number,cardHP:CI.hp,cardCat:CI.cat,
+      cardName:d.card_name||'Unbekannte Karte',cardLang:d.language,cardSet:d.set_name,
+      cardNumber:d.card_number,cardHP:d.hp,cardRarity:d.rarity,cardCat:d.category,
       grade:A.result.final_grade,label:A.result.grade_label,
       summary:A.result.summary,recommendation:A.result.recommendation,
       centering:A.result.centering,corners:A.result.corners,edges:A.result.edges,surface:A.result.surface,
       markers:A.result.markers||[],annF:A.annF,annB:A.annB,cenImg:A.cenImg};
-    await dbPut(entry);A.saved=true;
-    btn.textContent='✓ Gespeichert';
-    toast('✅ In Sammlung gespeichert');
-  }catch(e){btn.textContent='💾 SPEICHERN';btn.disabled=false;toast('❌ Speichern fehlgeschlagen: '+e.message);}
+    await dbPut(entry);A.saved=true;btn.textContent='✓ Gespeichert';toast('✅ In Sammlung gespeichert');
+  }catch(e){btn.textContent='💾 SPEICHERN';btn.disabled=false;toast('❌ '+e.message);}
 }
 
-/* ── COLLECTION ───────────────────────────────── */
-let _filterGrade='all',_sortMode=0;
-const SORT_MODES=[{l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},{l:'Beste Note',fn:(a,b)=>b.grade-a.grade},{l:'Schwächste',fn:(a,b)=>a.grade-b.grade},{l:'Name A–Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}];
-
-function setFilter(el,grade){document.querySelectorAll('.f-chip').forEach(c=>c.classList.remove('active'));el.classList.add('active');_filterGrade=grade;renderCollection();}
-function cycleSortMode(){_sortMode=(_sortMode+1)%SORT_MODES.length;$('sort-lbl').textContent=SORT_MODES[_sortMode].l;renderCollection();}
-
-async function renderCollection(){
+/* COLLECTION */
+let _fg='all',_sm=0;
+const SORTS=[{l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},{l:'Beste Note',fn:(a,b)=>b.grade-a.grade},{l:'Schwächste',fn:(a,b)=>a.grade-b.grade},{l:'Name A–Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}];
+function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
+function cycleSort(){_sm=(_sm+1)%SORTS.length;$('sort-lbl').textContent=SORTS[_sm].l;renderColl();}
+async function renderColl(){
   const grid=$('coll-grid'),empty=$('coll-empty'),cnt=$('coll-count');
   try{
     let all=await dbAll();
-    // Filter
     const q=($('coll-search').value||'').toLowerCase().trim();
     if(q)all=all.filter(e=>(e.cardName||'').toLowerCase().includes(q)||(e.cardSet||'').toLowerCase().includes(q)||(e.cardNumber||'').toLowerCase().includes(q));
-    if(_filterGrade==='10')all=all.filter(e=>e.grade>=10);
-    else if(_filterGrade==='9')all=all.filter(e=>e.grade===9);
-    else if(_filterGrade==='8')all=all.filter(e=>e.grade===8);
-    else if(_filterGrade==='7')all=all.filter(e=>e.grade===7);
-    else if(_filterGrade==='low')all=all.filter(e=>e.grade<=6);
-    all.sort(SORT_MODES[_sortMode].fn);
-    cnt.textContent=all.length+' Karten';
-    if(!all.length){grid.innerHTML='';sh(empty);return;}
-    hi(empty);
-    grid.innerHTML=all.map(e=>{
-      const gclr=gc(e.grade);
-      return`<div class="coll-card ${gclr.cls}" onclick="showDetail('${e.id}','pg-collection')">
-        <div class="coll-thumb-wrap">
-          ${e.annF?`<img class="coll-thumb" src="${e.annF}" alt="" loading="lazy">`:`<div class="coll-thumb-placeholder">🃏</div>`}
-          <div class="coll-grade-stamp"><div class="cgs-top"></div><div class="cgs-num" style="color:${gclr.c}">${e.grade}</div></div>
-        </div>
-        <div class="coll-info">
-          <div class="coll-name">${e.cardName||'Unbekannt'}</div>
-          <div class="coll-sub">${[e.cardSet,e.cardNumber].filter(Boolean).join(' · ')||'–'}</div>
-          ${e.cardCat?`<div style="font-size:10px;color:var(--hi);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.cardCat}</div>`:''}
-          <div class="coll-tag" style="--gc:${gclr.c};--gcb:${gclr.bg};--gcd:${gclr.bd}">PSA ${e.grade} ${gradeLabel(e.grade)}</div>
-        </div>
-      </div>`;
-    }).join('');
+    if(_fg==='10')all=all.filter(e=>e.grade>=10);else if(_fg==='9')all=all.filter(e=>e.grade===9);else if(_fg==='8')all=all.filter(e=>e.grade===8);else if(_fg==='7')all=all.filter(e=>e.grade===7);else if(_fg==='low')all=all.filter(e=>e.grade<=6);
+    all.sort(SORTS[_sm].fn);cnt.textContent=all.length+' Karten';
+    if(!all.length){grid.innerHTML='';sh(empty);return;}hi(empty);
+    grid.innerHTML=all.map(e=>{const gclr=gc(e.grade);return`<div class="coll-card" onclick="showDetail('${e.id}')">
+      <div class="coll-tw">${e.annF?`<img class="coll-thumb" src="${e.annF}" alt="" loading="lazy">`:`<div class="coll-ph">🃏</div>`}
+      <div class="cgs"><div class="cgs-top"></div><div class="cgs-num" style="color:${gclr.c}">${e.grade}</div></div></div>
+      <div class="coll-info">
+        <div class="coll-name">${e.cardName||'Unbekannt'}</div>
+        <div class="coll-sub">${[e.cardSet,e.cardNumber].filter(Boolean).join(' · ')||'–'}</div>
+        ${e.cardLang?`<div style="font-size:10px;color:var(--hi);margin-top:1px">${e.cardLang}</div>`:''}
+        <div class="coll-tag" style="background:${gclr.bg};color:${gclr.c};border:1px solid ${gclr.bd}">PSA ${e.grade} ${gLbl(e.grade)}</div>
+      </div></div>`;}).join('');
   }catch(e){grid.innerHTML='<div class="empty">Sammlung konnte nicht geladen werden</div>';}
 }
 
-/* ── DETAIL ───────────────────────────────────── */
-async function showDetail(id,fromScreen){
+/* DETAIL */
+async function showDetail(id,from){
   try{
-    A.fromScreen=fromScreen||'pg-collection';
-    const all=await dbAll();const e=all.find(x=>x.id===id);if(!e){toast('❌ Eintrag nicht gefunden');return;}
-    A.detailId=id;
+    A.fromScreen=from||'pg-collection';A.detailId=id;
+    const all=await dbAll();const e=all.find(x=>x.id===id);if(!e){toast('❌ Nicht gefunden');return;}
     $('det-title').textContent=e.cardName||(e.label+' PSA '+e.grade);
-    $('det-back-btn').onclick=()=>safeNav(A.fromScreen);
-    navTo('pg-detail');
+    $('det-back').onclick=()=>safeNav(A.fromScreen);navTo('pg-detail');
     _fm=(e.markers||[]).filter(m=>m.side==='front');
     _bm=(e.markers||[]).filter(m=>m.side==='back');
-    renderRes({...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]},e.annF,e.annB,e.cenImg,true,{name:e.cardName,set:e.cardSet,number:e.cardNumber,hp:e.cardHP,cat:e.cardCat});
-  }catch(e){toast('❌ Fehler: '+e.message);}
+    const det={card_name:e.cardName,language:e.cardLang,hp:e.cardHP,set_name:e.cardSet,card_number:e.cardNumber,rarity:e.cardRarity,category:e.cardCat};
+    renderResults({...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]},e.annF,e.annB,e.cenImg,true,det);
+    // Load eBay for history too
+    setTimeout(()=>fetchEbayPrices(det,e.grade),200);
+  }catch(e){toast('❌ '+e.message);}
 }
-async function deleteEntry(){
-  if(!A.detailId)return;
-  try{await dbDel(A.detailId);A.detailId=null;toast('🗑 Karte gelöscht');safeNav(A.fromScreen||'pg-collection');}
-  catch(e){toast('❌ '+e.message);}
-}
-async function confirmClear(){
-  if(!confirm('Gesamte Sammlung unwiderruflich löschen?'))return;
-  try{await dbClear();toast('🗑 Sammlung geleert');navTo('pg-home');}catch(e){}
-}
+async function delEntry(){if(!A.detailId)return;try{await dbDel(A.detailId);A.detailId=null;toast('🗑 Gelöscht');safeNav(A.fromScreen||'pg-collection');}catch(e){toast('❌ '+e.message);}}
+async function confirmClear(){if(!confirm('Gesamte Sammlung löschen?'))return;try{await dbClear();toast('🗑 Geleert');navTo('pg-home');}catch(e){}}
 
-/* ── STATS & RECENT ───────────────────────────── */
+/* HOME DATA */
 async function loadStats(){
-  try{
-    const all=await dbAll();const cnt=$('home-stats');if(!all.length){cnt.innerHTML='';return;}
-    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
-    const gem=all.filter(e=>e.grade>=10).length;
-    cnt.innerHTML=[
-      {ico:'🃏',val:all.length,lbl:'Karten'},
-      {ico:'⭐',val:avg,lbl:'Ø Note'},
-      {ico:'💎',val:gem,lbl:'Gem Mint'},
-    ].map(({ico,val,lbl})=>`<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:20px">${ico}</div><div style="font-family:var(--font-head);font-size:20px;font-weight:700">${val}</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">${lbl}</div></div>`).join('');
-  }catch(e){}
-}
+  try{const all=await dbAll();const cnt=$('home-stats');if(!all.length){cnt.innerHTML='';return;}
+    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);const gem=all.filter(e=>e.grade>=10).length;
+    cnt.innerHTML=[{ico:'🃏',v:all.length,l:'Karten'},{ico:'⭐',v:avg,l:'Ø Note'},{ico:'💎',v:gem,l:'Gem Mint'}]
+      .map(({ico,v,l})=>`<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:20px">${ico}</div><div style="font-family:var(--fh);font-size:20px;font-weight:700">${v}</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">${l}</div></div>`).join('');}catch(e){}}
 async function loadRecent(){
   const el=$('recent-list');
-  try{
-    const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);
-    if(!all.length){el.innerHTML='';return;}
-    el.innerHTML='<div class="section-title" style="margin-bottom:8px">Zuletzt bewertet</div>'
-      +all.slice(0,4).map(e=>{const gclr=gc(e.grade);const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
+  try{const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);if(!all.length){el.innerHTML='';return;}
+    el.innerHTML='<div class="st" style="margin-bottom:8px">Zuletzt bewertet</div>'
+      +all.slice(0,3).map(e=>{const gclr=gc(e.grade);const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
         return`<div class="hi" onclick="showDetail('${e.id}','pg-home')">
           ${e.annF?`<img class="hth" src="${e.annF}" alt="">`:`<div class="hth" style="display:flex;align-items:center;justify-content:center;font-size:20px">🃏</div>`}
           <div style="flex:1;min-width:0">
             <div style="font-size:14px;font-weight:600;margin-bottom:1px">${e.cardName||'Unbekannte Karte'}</div>
-            <div style="font-size:11px;color:var(--mu);margin-bottom:3px">${e.cardSet?e.cardSet+' · ':''} ${d}</div>
-            ${e.cardCat?`<div style="font-size:10px;color:var(--hi)">${e.cardCat}</div>`:''}
+            <div style="font-size:11px;color:var(--mu)">${e.cardSet?e.cardSet+' · ':''} ${d}</div>
           </div>
-          <div class="psa-slab" style="transform:scale(.8);transform-origin:right center">
+          <div class="psa-slab" style="transform:scale(.75);transform-origin:right center">
             <div class="psa-top">PSA</div>
-            <div class="psa-body"><div class="psa-num" style="color:${gclr.c}">${e.grade}</div><div class="psa-sub">${gradeLabel(e.grade).split(' ')[0]}</div></div>
+            <div class="psa-body"><div class="psa-num" style="color:${gclr.c}">${e.grade}</div><div class="psa-sub">${gLbl(e.grade).split(' ')[0]}</div></div>
           </div>
-        </div>`;
-      }).join('')
-      +`<button class="btn btn-s" onclick="navTo('pg-collection')" style="margin-top:4px;font-size:13px">Alle Karten anzeigen →</button>`;
-  }catch(e){el.innerHTML='';}
+        </div>`;}).join('')
+      +`<button class="btn btn-s" onclick="navTo('pg-collection')" style="margin-top:4px;font-size:13px">Alle Karten anzeigen →</button>`;}catch(e){el.innerHTML='';}
 }
 async function loadSettingsStats(){
-  try{const all=await dbAll();const el=$('settings-stats');if(!el)return;if(!all.length){el.textContent='Noch keine Karten bewertet';return;}const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);el.innerHTML=`Gesamt: <b>${all.length} Karten</b><br>Durchschnittsnote: <b>${avg}</b><br>Gem Mint (10): <b>${all.filter(e=>e.grade>=10).length}</b><br>Mint (9): <b>${all.filter(e=>e.grade===9).length}</b>`;}catch(e){}
+  try{const all=await dbAll();const el=$('settings-stats');if(!el)return;if(!all.length){el.textContent='Noch keine Karten bewertet';return;}const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);el.innerHTML=`Gesamt: <b>${all.length} Karten</b><br>Durchschnittsnote: <b>${avg}</b><br>Gem Mint (PSA 10): <b>${all.filter(e=>e.grade>=10).length}</b><br>Mint (PSA 9): <b>${all.filter(e=>e.grade===9).length}</b>`;}catch(e){}}
+
+/* CAMERA ZOOM */
+let _zoomLevel=1,_ptDist=null,_camSide='front';
+function stepZoom(d){setZoom(_zoomLevel+d);}
+function setZoom(v){
+  _zoomLevel=Math.max(1,Math.min(5,v));
+  const vid=$('cam-video');
+  if(vid)vid.style.transform=`scale(${_zoomLevel})`;
+  const lbl=$('zoom-lbl');
+  if(lbl)lbl.textContent=_zoomLevel.toFixed(1)+'×';
+  // Try hardware zoom if available
+  if(_str){
+    const track=_str.getVideoTracks()[0];
+    if(track){
+      const caps=track.getCapabilities&&track.getCapabilities();
+      if(caps&&caps.zoom){
+        const z=Math.max(caps.zoom.min,Math.min(caps.zoom.max,_zoomLevel*(caps.zoom.max/5)));
+        track.applyConstraints({advanced:[{zoom:z}]}).catch(()=>{});
+      }
+    }
+  }
+}
+function initPinch(){
+  const modal=$('cam-modal');if(!modal)return;
+  modal.addEventListener('touchstart',e=>{
+    if(e.touches.length===2)_ptDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+  },{passive:true});
+  modal.addEventListener('touchmove',e=>{
+    if(e.touches.length!==2||!_ptDist)return;
+    e.preventDefault();
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    setZoom(_zoomLevel*(d/_ptDist));
+    _ptDist=d;
+  },{passive:false});
+  modal.addEventListener('touchend',()=>{_ptDist=null;},{passive:true});
 }
 
-/* ── SW + INIT ────────────────────────────────── */
+/* SW + INIT */
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-
+initPinch();
 (function init(){
-  try{
-    const p=new URLSearchParams(window.location.search);
-    if(p.get('action')==='new'&&getKey()){startAnalysis();return;}
-    if(getKey()){navTo('pg-home');}else{navTo('pg-setup');}
-  }catch(e){navTo('pg-home');}
+  try{if(getKey())navTo('pg-home');else navTo('pg-setup');}catch(e){navTo('pg-home');}
 })();
 </script>
 </body>
