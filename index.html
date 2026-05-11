@@ -26,6 +26,15 @@
   --fh:'Rajdhani',system-ui,sans-serif;
   --fb:'Inter',system-ui,sans-serif;
 }
+[data-theme="light"]{
+  --bg:#f4f5f8;--s1:#fff;--s2:#eef0f5;--s3:#e2e6ed;
+  --b0:rgba(0,0,0,.07);--b1:rgba(0,0,0,.13);
+  --tx:#16172a;--mu:#5a6478;--hi:#9fa8b8;
+  --redb:rgba(230,57,70,.1);--redd:rgba(230,57,70,.25);
+  --goldb:rgba(245,200,66,.12);--goldd:rgba(245,200,66,.3);
+  --blb:rgba(59,130,246,.1);--bld:rgba(59,130,246,.25);
+}
+[data-theme="light"] .bnav{background:rgba(244,245,248,.95)}
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{height:100%;background:var(--bg);color:var(--tx);font-family:var(--fb);font-size:15px;overflow-x:hidden;-webkit-font-smoothing:antialiased}
 section{display:none;flex-direction:column;min-height:100svh}
@@ -44,23 +53,16 @@ section.on{display:flex}
 .btn-s{background:var(--s2);color:var(--tx);border:1px solid var(--b1)}
 .btn-o{background:transparent;color:var(--tx);border:1px solid var(--b1)}
 .row{display:flex;gap:8px}
-/* Bottom nav */
+.pill{display:inline-flex;align-items:center;gap:4px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:none;white-space:nowrap}
 .bnav{position:fixed;bottom:0;left:0;right:0;height:calc(var(--nav-h) + env(safe-area-inset-bottom));background:rgba(14,14,26,.96);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid var(--b1);display:flex;align-items:stretch;z-index:50;padding-bottom:env(safe-area-inset-bottom)}
 .bn{flex:1;background:none;border:none;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 4px;color:var(--mu)}
 .bn.active{color:var(--red)}
 .bn-ico{font-size:22px;line-height:1}
 .bn-lbl{font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
-/* Form */
 .ilabel{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:6px;display:block}
 input[type=text],input[type=password],input[type=search]{width:100%;background:var(--s2);border:1.5px solid var(--b1);border-radius:var(--rs);color:var(--tx);padding:12px 14px;font-size:14px;font-family:var(--fb);outline:none;-webkit-appearance:none;transition:border-color .2s}
 input:focus{border-color:var(--red)}
 input::placeholder{color:var(--hi)}
-/* Steps */
-.steps{display:flex;align-items:center;justify-content:center;gap:6px;padding:10px 0 2px}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--s3);transition:all .2s}
-.dot.cur{background:var(--red);width:24px;border-radius:4px}
-.dot.done{background:var(--red);opacity:.45}
-/* Camera modal */
 #cam-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#000;display:none;flex-direction:column}
 #cam-modal.open{display:flex}
 #cam-video{width:100%;flex:1;object-fit:cover;min-height:0;display:block;transform-origin:center center;transition:transform .15s}
@@ -72,25 +74,27 @@ input::placeholder{color:var(--hi)}
 .shutter:disabled{opacity:.4;pointer-events:none}
 .cpill{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 16px;border-radius:24px;font-size:13px;cursor:pointer;font-weight:500}
 #cam-badge{position:absolute;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:5px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:var(--fh)}
-/* Preview */
+#zoom-bar{position:absolute;bottom:115px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.5);padding:6px 14px;border-radius:24px;backdrop-filter:blur(8px)}
+.zb-btn{background:none;border:none;color:#fff;font-size:22px;cursor:pointer;line-height:1;padding:0 4px;width:32px}
+#scan-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#000;display:none;flex-direction:column}
+#scan-modal.open{display:flex}
+#scan-video{width:100%;flex:1;object-fit:cover;min-height:0}
+.scan-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-60%);width:65vw;height:65vw;border:2px solid #f5c842;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)}
 .prev-wrap{position:relative;margin-bottom:12px;border-radius:var(--rs);overflow:hidden;background:var(--s2)}
 .prev-img{width:100%;display:block;max-height:300px;object-fit:contain}
 .retake{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:20px;font-size:12px;cursor:pointer;font-weight:500}
-.uz{border:2px dashed var(--b1);border-radius:var(--r);min-height:130px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:20px;text-align:center;background:var(--s1)}
+.uz{border:2px dashed var(--b1);border-radius:var(--r);min-height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;cursor:pointer;padding:20px;text-align:center;background:var(--s1)}
 .uz:active{border-color:var(--red);background:var(--redb)}
-/* Score */
 .sb-row{display:flex;justify-content:space-between;margin-bottom:4px;font-size:12px}
 .sb-track{height:5px;background:var(--s3);border-radius:3px;overflow:hidden;margin-bottom:8px}
 .sb-fill{height:100%;border-radius:3px}
-/* PSA Slab */
 .psa-slab{display:flex;flex-direction:column;align-items:center;border-radius:8px;overflow:hidden;flex-shrink:0;box-shadow:0 4px 20px rgba(0,0,0,.5)}
 .psa-top{background:var(--red);color:#fff;font-size:9px;font-weight:800;letter-spacing:.14em;padding:3px 0;width:100%;text-align:center;font-family:var(--fh)}
 .psa-body{background:#fff;padding:4px 10px 6px;text-align:center;min-width:56px}
 .psa-num{font-size:28px;font-weight:800;color:#111;line-height:1;font-family:var(--fh)}
 .psa-sub{font-size:8px;font-weight:600;color:#555;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-/* Collection */
 .coll-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
-.coll-card{background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);overflow:hidden;cursor:pointer;transition:border-color .15s,transform .1s;position:relative}
+.coll-card{background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);overflow:hidden;cursor:pointer;position:relative}
 .coll-card:active{transform:scale(.97);border-color:var(--b1)}
 .coll-tw{position:relative;aspect-ratio:3/4;background:var(--s2);overflow:hidden}
 .coll-thumb{width:100%;height:100%;object-fit:cover;display:block}
@@ -102,148 +106,94 @@ input::placeholder{color:var(--hi)}
 .coll-name{font-size:13px;font-weight:600;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coll-sub{font-size:10px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .coll-tag{display:inline-block;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;margin-top:4px;font-family:var(--fh);letter-spacing:.04em}
-/* Filter */
 .frow{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
 .frow::-webkit-scrollbar{display:none}
-.fc{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--fh);letter-spacing:.04em}
+.fc{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:var(--fh)}
 .fc.active{background:var(--redb);border-color:var(--redd);color:var(--red)}
 .sort-btn{background:var(--s2);border:1.5px solid var(--b1);color:var(--mu);padding:6px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:5px;flex-shrink:0}
-/* Accordion */
 .ah{display:flex;align-items:center;gap:10px;padding:13px 16px;cursor:pointer;border-bottom:1px solid var(--b0)}
 .aa{margin-left:auto;font-size:11px;color:var(--mu);transition:transform .2s;flex-shrink:0}
 .ah.open .aa{transform:rotate(180deg)}
 .ab{padding:12px 16px 14px;border-bottom:1px solid var(--b0);background:rgba(0,0,0,.15)}
-/* History */
 .hi{display:flex;align-items:center;gap:12px;background:var(--s1);border-radius:var(--r);border:1px solid var(--b0);padding:10px;margin-bottom:8px;cursor:pointer}
 .hi:active{border-color:var(--b1)}
 .hth{width:52px;height:52px;border-radius:8px;object-fit:cover;background:var(--s2);flex-shrink:0}
-/* Corner grid */
-.cg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
-.cgc{background:var(--s2);border-radius:var(--rs);padding:8px 10px}
-.cgl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
-/* Annotation */
 .aw{position:relative;border-radius:var(--rs);overflow:hidden;margin-bottom:8px;background:var(--s2)}
 .ai{width:100%;display:block}
-.mtt{position:absolute;background:rgba(14,14,26,.97);border:1px solid var(--b1);border-radius:8px;padding:7px 11px;font-size:12px;pointer-events:none;display:none;z-index:5;max-width:210px;line-height:1.4;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.mtt{position:absolute;background:rgba(14,14,26,.97);border:1px solid var(--b1);border-radius:8px;padding:7px 11px;font-size:12px;pointer-events:none;display:none;z-index:5;max-width:210px;line-height:1.4}
 .mleg{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
 .mli{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--mu);background:var(--s2);padding:3px 8px;border-radius:5px}
 .mld{width:10px;height:10px;border-radius:50%;flex-shrink:0}
-/* Alert */
 .al{border-radius:var(--rs);padding:11px 14px;font-size:13px;margin-bottom:10px;line-height:1.5;border-width:1px;border-style:solid}
 .al-r{background:var(--redb);color:var(--red);border-color:var(--redd)}
 .al-b{background:var(--blb);color:var(--bl);border-color:var(--bld)}
 .al-g{background:var(--gnb);color:#4ade80;border-color:rgba(74,222,128,.3)}
 .al-a{background:rgba(251,146,60,.13);color:var(--am);border-color:rgba(251,146,60,.3)}
-/* Loader */
 .spin{width:50px;height:50px;border-radius:50%;border:3px solid var(--s3);border-top-color:var(--red);animation:rot .8s linear infinite;margin:0 auto}
-.spin-sm{width:20px;height:20px;border-radius:50%;border:2px solid var(--s3);border-top-color:var(--bl);animation:rot .8s linear infinite;display:inline-block}
+.spin-sm{width:18px;height:18px;border-radius:50%;border:2px solid var(--s3);border-top-color:var(--bl);animation:rot .8s linear infinite;display:inline-block;vertical-align:middle}
 @keyframes rot{to{transform:rotate(360deg)}}
-/* Toast */
 #toast{position:fixed;bottom:calc(var(--nav-h) + 16px);left:50%;transform:translateX(-50%);background:var(--s2);color:var(--tx);padding:10px 20px;border-radius:24px;font-size:13px;z-index:300;opacity:0;transition:opacity .2s;pointer-events:none;border:1px solid var(--b1);white-space:nowrap;max-width:90vw;overflow:hidden;text-overflow:ellipsis}
 #toast.show{opacity:1}
 #toast.no-nav{bottom:28px}
-/* Copyright */
 .cr{text-align:center;padding:16px 0 calc(16px + env(safe-area-inset-bottom));font-size:11px;color:var(--hi)}
 .cr a{color:var(--mu);text-decoration:none}
-/* Info pill */
 .ipill{display:inline-flex;align-items:center;gap:5px;background:var(--s2);border:1px solid var(--b1);border-radius:8px;padding:5px 10px;font-size:11px;color:var(--mu);margin:3px 3px 3px 0}
 .ipill b{color:var(--tx)}
-/* eBay price cards */
-.ebay-item{background:var(--s2);border-radius:var(--rs);border:1px solid var(--b1);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:border-color .15s}
+.ebay-item{background:var(--s2);border-radius:var(--rs);border:1px solid var(--b1);padding:10px 12px;margin-bottom:8px;display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
 .ebay-item:active{border-color:var(--b1)}
 .ebay-price{font-family:var(--fh);font-size:18px;font-weight:700;color:#4ade80;flex-shrink:0;min-width:70px;text-align:right}
-.ebay-title{font-size:12px;color:var(--tx);flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.ebay-title{font-size:12px;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .ebay-date{font-size:10px;color:var(--mu);margin-top:2px}
-/* Section title */
-.st{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:var(--fh)}
+.pw-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:8px}
+.pw-hit{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.pw-miss{background:var(--redb);color:var(--red);border:1px solid var(--redd)}
+.pw-set{background:var(--s2);color:var(--mu);border:1px solid var(--b1)}
+.cg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px}
+.cgc{background:var(--s2);border-radius:var(--rs);padding:8px 10px}
+.cgl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
 .dr{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--b0);font-size:12px}
 .dr:last-child{border-bottom:none}
-/* Hero */
-.hero{background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(24px + env(safe-area-inset-top)) 16px 20px;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.2) 0%,transparent 70%);pointer-events:none}
-.hero::after{content:'';position:absolute;bottom:-40px;left:-20px;width:150px;height:150px;background:radial-gradient(circle,rgba(245,200,66,.1) 0%,transparent 70%);pointer-events:none}
-/* Grade scale viz */
-.grade-scale{display:flex;gap:3px;margin:12px 0}
-.gs-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px}
-.gs-fill{width:100%;border-radius:3px;transition:opacity .2s}
-.gs-num{font-size:9px;font-weight:700;font-family:var(--fh);opacity:.7}
-/* Card stack illustration */
-.card-stack{position:relative;width:70px;height:98px;flex-shrink:0}
-.cs-card{position:absolute;width:56px;height:78px;border-radius:5px;border:1.5px solid rgba(255,255,255,.15)}
-.cs-c1{background:linear-gradient(135deg,#2a1a3e,#1a2a3e);transform:rotate(-8deg) translate(-8px,6px);top:10px;left:7px}
-.cs-c2{background:linear-gradient(135deg,#1a2a3e,#0a1a2e);transform:rotate(-3deg) translate(-3px,3px);top:7px;left:4px}
-.cs-c3{background:linear-gradient(135deg,#1e1e32,#261826);top:5px;left:1px}
-/* Detected field pill */
-.det-pill{display:inline-flex;align-items:center;gap:5px;background:var(--gnb);border:1px solid rgba(74,222,128,.25);border-radius:6px;padding:2px 8px;font-size:10px;color:#4ade80;margin-bottom:4px}
-/* Impressum / legal */
+.st{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;font-family:var(--fh)}
+.empty{text-align:center;padding:48px 20px;color:var(--mu)}
 .legal-section{margin-bottom:16px}
 .legal-section h3{font-family:var(--fh);font-size:14px;font-weight:600;margin-bottom:8px;color:var(--tx)}
 .legal-section p,.legal-section li{font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:6px}
 .legal-section a{color:var(--red)}
-/* Modal overlay for legal */
-#legal-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
+#legal-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:var(--bg);display:none;flex-direction:column}
 #legal-modal.open{display:flex}
-.empty{text-align:center;padding:48px 20px;color:var(--mu)}
-
-/* ── LIGHT MODE ── */
-[data-theme="light"]{
-  --bg:#f4f5f8;--s1:#ffffff;--s2:#eef0f5;--s3:#e2e6ed;
-  --b0:rgba(0,0,0,.07);--b1:rgba(0,0,0,.13);
-  --tx:#16172a;--mu:#5a6478;--hi:#9fa8b8;
-  --redb:rgba(230,57,70,.1);--redd:rgba(230,57,70,.25);
-  --goldb:rgba(245,200,66,.12);--goldd:rgba(245,200,66,.3);
-  --blb:rgba(59,130,246,.1);--bld:rgba(59,130,246,.25);
-}
-[data-theme="light"] .bnav{background:rgba(244,245,248,.95)}
-[data-theme="light"] .card{box-shadow:0 1px 4px rgba(0,0,0,.08)}
-[data-theme="light"] input[type=text],[data-theme="light"] input[type=password],[data-theme="light"] input[type=search]{background:#fff;border-color:rgba(0,0,0,.15)}
-[data-theme="light"] .hero{background:linear-gradient(160deg,#3a0a14 0%,#1a2060 50%,#f4f5f8 100%)}
-[data-theme="light"] .cs-card{border-color:rgba(0,0,0,.15)}
-/* ── COMPARE SCREEN ── */
-.cmp-col{flex:1;min-width:0;padding:8px}
-.cmp-mini-slab{display:inline-flex;flex-direction:column;align-items:center;border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.4)}
-.cmp-slab-top{background:var(--red);color:#fff;font-size:7px;font-weight:800;letter-spacing:.1em;padding:2px 0;width:100%;text-align:center;font-family:var(--fh)}
-.cmp-slab-body{background:#fff;padding:2px 6px 4px;text-align:center}
-.cmp-slab-num{font-size:18px;font-weight:800;line-height:1;font-family:var(--fh)}
-/* ── PRICE WATCH ── */
-.pw-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:8px}
-.pw-hit{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
-.pw-miss{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
-.pw-set{background:var(--s2);color:var(--mu);border:1px solid var(--b1)}
-/* ── SCANNER ── */
-#scan-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#000;display:none;flex-direction:column}
-#scan-modal.open{display:flex}
-#scan-video{width:100%;flex:1;object-fit:cover;min-height:0}
-.scan-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:65vw;height:65vw;border:2px solid #f5c842;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)}
-.scan-frame::before,.scan-frame::after{content:'';position:absolute;width:20px;height:20px;border-color:#f5c842;border-style:solid}
-.scan-frame::before{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
-.scan-frame::after{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
-/* ── EDIT MODAL ── */
 #edit-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:180;background:rgba(0,0,0,.7);display:none;align-items:flex-end}
 #edit-modal.open{display:flex}
-.edit-sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:500px;margin:0 auto;max-height:85vh;overflow-y:auto}
+.edit-sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:500px;margin:0 auto;max-height:88vh;overflow-y:auto}
 .edit-handle{width:36px;height:4px;background:var(--s3);border-radius:2px;margin:0 auto 16px}
-/* ── EXPORT BADGE ── */
-.export-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
-
+/* hero */
+.hero-wrap{background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 16px;max-width:500px;margin:0 auto;width:100%;position:relative;overflow:hidden}
+.hero-wrap::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:radial-gradient(circle,rgba(230,57,70,.2),transparent 70%);pointer-events:none}
+.grade-scale{display:flex;gap:3px;margin:12px 0}
+.gs-bar{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:default}
+.gs-fill{width:100%;border-radius:3px}
+.gs-num{font-size:9px;font-weight:700;font-family:var(--fh)}
+.card-stack{position:relative;width:70px;height:90px;flex-shrink:0}
+.cs-card{position:absolute;width:56px;height:78px;border-radius:5px;border:1.5px solid rgba(255,255,255,.15)}
+.cs-c1{background:linear-gradient(135deg,#2a1a3e,#1a2a3e);transform:rotate(-8deg) translate(-8px,6px);top:6px;left:7px}
+.cs-c2{background:linear-gradient(135deg,#1a2a3e,#0a1a2e);transform:rotate(-3deg) translate(-3px,3px);top:4px;left:4px}
+.cs-c3{background:linear-gradient(135deg,#1e1e32,#261826);top:2px;left:1px;display:flex;flex-direction:column;padding:4px}
+.cmp-col{flex:1;min-width:0;padding:8px}
 </style>
 </head>
 <body>
-
 <!-- CAMERA MODAL -->
 <div id="cam-modal">
   <video id="cam-video" autoplay playsinline muted></video>
   <canvas id="cam-canvas"></canvas>
-  <div id="cam-badge" class="cam-badge">VORDERSEITE</div>
+  <div id="cam-badge" class="cam-badge" style="position:absolute;top:calc(12px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);background:var(--red);color:#fff;padding:5px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;font-family:var(--fh)">VORDERSEITE</div>
+  <div id="zoom-bar">
+    <button class="zb-btn" onclick="stepZoom(-0.5)">−</button>
+    <div id="zoom-lbl" style="font-size:13px;font-weight:600;color:#fff;min-width:40px;text-align:center">1.0×</div>
+    <button class="zb-btn" onclick="stepZoom(0.5)">+</button>
+  </div>
   <div class="cam-top">
     <button class="cpill" onclick="closeCam()">✕ Abbrechen</button>
     <button class="cpill" onclick="flipCam()">🔄 Flip</button>
-  </div>
-  <!-- Zoom bar -->
-  <div id="zoom-bar" style="position:absolute;bottom:112px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:10px;background:rgba(0,0,0,.5);padding:6px 14px;border-radius:24px;backdrop-filter:blur(8px)">
-    <button onclick="stepZoom(-0.5)" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0 4px">−</button>
-    <div id="zoom-lbl" style="font-size:13px;font-weight:600;color:#fff;min-width:40px;text-align:center">1.0×</div>
-    <button onclick="stepZoom(0.5)" style="background:none;border:none;color:#fff;font-size:20px;cursor:pointer;line-height:1;padding:0 4px">+</button>
   </div>
   <div class="cam-bot">
     <button class="cpill" onclick="openGallery()">🖼 Galerie</button>
@@ -252,292 +202,22 @@ input::placeholder{color:var(--hi)}
   </div>
 </div>
 
-<!-- LEGAL MODAL -->
-<div id="legal-modal">
-  <div class="hdr">
-    <button class="ib" onclick="closeLegal()">✕</button>
-    <h1 id="legal-title">Impressum</h1>
-  </div>
-  <div class="page" id="legal-content" style="overflow-y:auto"></div>
-</div>
-
-<!-- HOME -->
-<section id="pg-home" class="with-nav">
-<div class="hero" style="max-width:500px;margin:0 auto;width:100%">
-  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
-    <div>
-      <div style="font-family:var(--fh);font-size:32px;font-weight:700;line-height:1;letter-spacing:-.5px">
-        <span style="color:var(--red)">Poké</span><span style="color:var(--tx)">Grader</span>
-      </div>
-      <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:3px">PSA Pre-Grading · KI-gestützt</div>
-    </div>
-    <div class="card-stack">
-      <div class="cs-card cs-c1">
-        <div style="margin:6px;height:30px;background:rgba(255,255,255,.08);border-radius:3px"></div>
-        <div style="margin:4px;flex:1;background:rgba(255,255,255,.04);border-radius:2px;height:28px"></div>
-      </div>
-      <div class="cs-card cs-c2"></div>
-      <div class="cs-card cs-c3" style="display:flex;flex-direction:column;padding:5px">
-        <div style="height:26px;background:rgba(230,57,70,.3);border-radius:3px;margin-bottom:3px"></div>
-        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px"></div>
-        <div style="height:8px;background:rgba(245,200,66,.2);border-radius:2px;margin-top:3px"></div>
-      </div>
-    </div>
-  </div>
-  <!-- Grade scale -->
-  <div class="grade-scale">
-    ${[{n:1,c:'#ef4444'},{n:2,c:'#f87171'},{n:3,c:'#fb923c'},{n:4,c:'#fbbf24'},{n:5,c:'#facc15'},{n:6,c:'#a3e635'},{n:7,c:'#4ade80'},{n:8,c:'#34d399'},{n:9,c:'#60a5fa'},{n:10,c:'#f5c842'}].map(({n,c})=>`<div class="gs-bar"><div class="gs-fill" style="height:${20+n*4}px;background:${c};opacity:.8"></div><div class="gs-num" style="color:${c}">${n}</div></div>`).join('')}
-  </div>
-  <div style="font-size:10px;color:var(--hi);display:flex;justify-content:space-between;margin-top:-4px;padding:0 2px">
-    <span>POOR</span><span>GEM MINT</span>
-  </div>
-</div>
-<div class="page" style="padding-top:8px">
-  <div id="home-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"></div>
-  <button class="btn btn-r" onclick="startAnalysis()" style="margin-bottom:14px;font-size:16px;padding:16px">
-    <span style="font-size:22px">📷</span> Karte bewerten
-  </button>
-  <div id="recent-list"></div>
-  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
-</div>
-</section>
-
-<!-- CAPTURE -->
-<section id="pg-capture">
-<div class="hdr">
-  <button class="ib" onclick="capBack()">‹</button>
-  <h1 id="cap-title">Vorderseite</h1>
-</div>
-<div class="page">
-  <div id="no-cam" class="al al-a" style="display:none">📱 Kamera nicht verfügbar — bitte Galerie verwenden.</div>
-  <div id="ghost-hint" class="al al-b" style="display:none">💡 Vorderseite wird eingeblendet — Karte gleich positionieren.</div>
-
-  <!-- Front photo area -->
-  <div id="front-zone">
-    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Vorderseite *</div>
-    <button class="btn btn-r" id="btn-cam-f" onclick="openCamFor('front')" style="margin-bottom:8px">📷 Vorderseite fotografieren</button>
-    <div id="prev-front" style="display:none">
-      <div class="prev-wrap"><img id="prev-img-f" class="prev-img" alt=""><button class="retake" onclick="retakeSide('front')">🔄 Neu</button></div>
-    </div>
-  </div>
-
-  <!-- Back photo area (optional) -->
-  <div id="back-zone" style="display:none">
-    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:8px">
-      Rückseite <span style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:2px 8px;border-radius:10px;font-size:10px;text-transform:none;letter-spacing:0;font-weight:400">optional – verbessert Zentrierungsanalyse</span>
-    </div>
-    <button class="btn btn-o" id="btn-cam-b" onclick="openCamFor('back')" style="margin-bottom:8px">📷 Rückseite hinzufügen</button>
-    <div id="prev-back" style="display:none">
-      <div class="prev-wrap"><img id="prev-img-b" class="prev-img" alt=""><button class="retake" onclick="retakeSide('back')">🔄 Neu</button></div>
-    </div>
-  </div>
-
-  <input type="file" id="file-in" accept="image/*" capture="environment" style="display:none" onchange="onFile(event)">
-  <div class="uz" id="uz-gal" onclick="openGallery()" style="display:none;margin-bottom:12px">
-    <div style="font-size:38px">🖼</div><div style="font-size:14px;font-weight:600">Galerie</div>
-  </div>
-
-  <div id="tips-card" class="card" style="padding:14px;margin-top:4px">
-    <div class="st" style="margin-bottom:8px">💡 Tipps</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">• Neutraler Untergrund (weiß/grau)<br>• Gleichmäßige Ausleuchtung, kein Blitz<br>• Alle 4 Ränder der Karte sichtbar<br>• Zoom nutzen um Karte genau zu positionieren</div>
-  </div>
-  <div class="row" style="margin-top:8px">
-    <button class="btn btn-o" onclick="capBack()" style="flex:1">← Zurück</button>
-    <button class="btn btn-r" id="btn-analyze" onclick="runAnalysis()" style="flex:2" disabled>🔬 Analyse starten</button>
-  </div>
-</div>
-</section>
-
-<!-- ANALYZING -->
-<section id="pg-analyzing">
-<div class="page" style="justify-content:center;align-items:center;text-align:center;padding-top:64px">
-  <div style="font-size:48px;margin-bottom:20px">🔬</div>
-  <div class="spin" style="margin-bottom:24px"></div>
-  <div style="font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:.02em;margin-bottom:8px">KI-Analyse läuft</div>
-  <div id="ana-msg" style="font-size:13px;color:var(--mu);min-height:20px;margin-bottom:32px"></div>
-  <div style="display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;max-width:340px">
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>🃏</span>Karte wird erkannt (Name, Set, Nummer…)</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>⚖️</span>Zentrierung (PSA 2025)</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>🔍</span>Ecken · Whitening</div>
-    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>📐</span>Ränder · Oberfläche</div>
-  </div>
-</div>
-</section>
-
-<!-- CARD DATA REVIEW (after auto-detection) -->
-<section id="pg-carddata">
-<div class="hdr">
-  <button class="ib" onclick="safeNav('pg-capture')">‹</button>
-  <h1>Kartendetails prüfen</h1>
-</div>
-<div class="page">
-  <div class="al al-g" style="margin-bottom:14px">
-    ✓ KI hat die Karte erkannt — bitte prüfen und bei Bedarf korrigieren.
-  </div>
-  <div class="card">
-    <div style="margin-bottom:12px">
-      <label class="ilabel">Kartenname *</label>
-      <input type="text" id="cd-name" placeholder="z.B. Glurak / Charizard">
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div>
-        <label class="ilabel">Sprache</label>
-        <input type="text" id="cd-lang" placeholder="Deutsch / EN / JP">
-      </div>
-      <div>
-        <label class="ilabel">HP / Energie</label>
-        <input type="text" id="cd-hp" placeholder="z.B. 120 HP">
-      </div>
-    </div>
-    <div style="margin-bottom:12px">
-      <label class="ilabel">Edition / Set</label>
-      <input type="text" id="cd-set" placeholder="z.B. Basisedition (1999)">
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
-      <div>
-        <label class="ilabel">Kartennummer</label>
-        <input type="text" id="cd-num" placeholder="z.B. 4/102">
-      </div>
-      <div>
-        <label class="ilabel">Seltenheit</label>
-        <input type="text" id="cd-rar" placeholder="z.B. Holo Rare">
-      </div>
-    </div>
-    <div>
-      <label class="ilabel" style="display:flex;align-items:center;gap:6px">
-        Bezeichnung <span style="font-size:10px;color:var(--hi);text-transform:none;letter-spacing:0;font-weight:400">(links unten auf der Karte)</span>
-      </label>
-      <input type="text" id="cd-cat" placeholder="z.B. Basis-Pokémon · Stufe 2 · Pokémon-ex">
-    </div>
-  </div>
-  <button class="btn btn-r" onclick="confirmCardData()">✓ Bestätigen &amp; Ergebnis anzeigen</button>
-  <div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
-</div>
-</section>
-
-<!-- RESULTS -->
-<section id="pg-results">
-<div class="hdr">
-  <button class="ib" onclick="safeNav('pg-home')">✕</button>
-  <h1>Pregrading Ergebnis</h1>
-  <button id="save-btn" onclick="saveGrade()" style="background:var(--goldb);border:1.5px solid var(--goldd);color:var(--gold);padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.04em">💾 SPEICHERN</button>
-</div>
-<div class="page" id="res-page"></div>
-</section>
-
-<!-- COLLECTION -->
-<section id="pg-collection" class="with-nav">
-<div class="hdr">
-  <h1>Meine Sammlung</h1>
-  <div id="coll-count" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600"></div>
-</div>
-<div class="page" style="padding-top:10px">
-  <div style="position:relative;margin-bottom:10px">
-    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">🔍</span>
-    <input type="search" id="coll-search" placeholder="Name, Set, Nummer…" style="padding-left:38px" oninput="renderColl()">
-  </div>
-  <div class="frow">
-    <button class="fc active" data-g="all" onclick="setF(this,'all')">Alle</button>
-    <button class="fc" data-g="10" onclick="setF(this,'10')">PSA 10</button>
-    <button class="fc" data-g="9" onclick="setF(this,'9')">PSA 9</button>
-    <button class="fc" data-g="8" onclick="setF(this,'8')">PSA 8</button>
-    <button class="fc" data-g="7" onclick="setF(this,'7')">PSA 7</button>
-    <button class="fc" data-g="low" onclick="setF(this,'low')">≤ PSA 6</button>
-    <button class="sort-btn" onclick="cycleSort()">↕ <span id="sort-lbl">Neueste</span></button>
-  </div>
-  <div id="coll-grid" class="coll-grid"></div>
-  <div id="coll-empty" style="display:none" class="empty"><div style="font-size:44px;margin-bottom:12px">🃏</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;font-family:var(--fh)">Noch keine Karten</div><div style="font-size:13px">Grade deine erste Karte!</div></div>
-  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
-</div>
-</section>
-
-<!-- DETAIL -->
-<section id="pg-detail">
-<div class="hdr">
-  <button class="ib" id="det-back" onclick="safeNav('pg-collection')">‹</button>
-  <h1 id="det-title" style="font-size:15px">Details</h1>
-  <button onclick="openEditModal()" style="background:none;border:none;color:var(--bl);font-size:12px;cursor:pointer;font-weight:600;margin-right:4px">✏️</button>
-  <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">🗑</button>
-</div>
-<div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
-  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">📤 Export PNG</button>
-  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">⚖️ Vergleichen</button>
-  <button onclick="openEditModal()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">⏰ Zielpreis</button>
-</div>
-<div class="page" id="det-page"></div>
-</section>
-
-<!-- SETTINGS -->
-<section id="pg-settings" class="with-nav">
-<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 20px;max-width:500px;margin:0 auto;text-align:center">
-  <div style="font-family:var(--fh);font-size:26px;font-weight:700"><span style="color:var(--red)">Poké</span>Grader</div>
-  <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">PSA Pre-Grading Tool</div>
-</div>
-<div class="page" style="padding-top:8px">
-  <div class="card">
-    <div class="st" style="margin-bottom:10px">🔑 Anthropic API-Key</div>
-    <input type="password" id="set-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-    <div id="set-status" style="font-size:11px;color:var(--mu);margin-top:6px"></div>
-    <button class="btn btn-r" onclick="saveSettingsKey()" style="margin-top:12px">Key speichern</button>
-  </div>
-  <div class="card">
-    <div class="st" style="margin-bottom:10px">📊 Statistiken</div>
-    <div id="settings-stats" style="font-size:13px;color:var(--mu);line-height:2"></div>
-  </div>
-  <div class="card">
-    <div class="st" style="margin-bottom:10px">Darstellung &amp; Tools</div>
-    <button class="btn btn-s" onclick="toggleTheme()" id="theme-btn" style="margin-bottom:8px">☀️ Light Mode aktivieren</button>
-    <button class="btn btn-s" onclick="openScanner()" style="margin-bottom:8px">📷 QR-Code / Barcode scannen</button>
-    <button class="btn btn-s" onclick="exportCSV()">📊 Sammlung als CSV exportieren</button>
-  </div>
-  <div class="card">
-    <div class="st" style="margin-bottom:10px">Rechtliches</div>
-    <button class="btn btn-o" onclick="openLegal('impressum')" style="margin-bottom:8px">📄 Impressum</button>
-    <button class="btn btn-o" onclick="openLegal('datenschutz')">🔒 Datenschutzerklärung</button>
-  </div>
-  <div class="card">
-    <div class="st" style="margin-bottom:10px">Datenverwaltung</div>
-    <button class="btn btn-o" onclick="confirmClear()" style="color:var(--red);border-color:var(--redd)">🗑 Sammlung löschen</button>
-  </div>
-  <div class="card">
-    <div class="st" style="margin-bottom:8px">Über PokéGrader</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">Version 4.0<br>Entwickelt von <a href="https://netpixel.at" style="color:var(--red)">netpixel.at</a><br>KI-Pregrading nach PSA 2025 Standards<br><span style="color:var(--hi)">Kein offizielles PSA-Produkt</span></div>
-  </div>
-  <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
-</div>
-</section>
-
-<!-- SETUP -->
-<section id="pg-setup">
-<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:24px;max-width:500px;margin:0 auto">
-  <div style="text-align:center;margin-bottom:28px">
-    <div style="font-size:56px;margin-bottom:12px">🃏</div>
-    <div style="font-family:var(--fh);font-size:32px;font-weight:700;margin-bottom:4px"><span style="color:var(--red)">Poké</span>Grader</div>
-    <div style="font-size:13px;color:var(--mu);line-height:1.6">PSA Pre-Grading für Pokémon Karten<br>Für die KI-Analyse wird ein API-Key benötigt.</div>
-  </div>
-  <div class="card" style="margin-bottom:12px">
-    <div class="st" style="margin-bottom:10px">🔑 Anthropic API-Key</div>
-    <input type="password" id="setup-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
-    <div id="setup-err" class="al al-r" style="display:none;margin-top:8px"></div>
-    <button class="btn btn-r" onclick="saveSetupKey()" style="margin-top:12px">Starten →</button>
-  </div>
-  <div class="card" style="padding:14px">
-    <div class="st" style="margin-bottom:8px">Key erstellen</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.9">1. <a href="https://console.anthropic.com" style="color:var(--red)">console.anthropic.com</a> öffnen<br>2. Registrieren → „API Keys" → „Create Key"<br>3. Key kopieren und oben einfügen<br><span style="color:var(--hi)">~$5 Startguthaben · ≈ $0.01 pro Analyse</span></div>
-  </div>
-</div>
-</section>
-
 <!-- QR SCANNER MODAL -->
 <div id="scan-modal">
   <video id="scan-video" autoplay playsinline muted></video>
-  <div class="scan-frame" id="scan-frame"></div>
+  <div class="scan-frame"></div>
   <div style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:space-between;padding:0 16px">
     <button class="cpill" onclick="closeScanner()">✕ Abbrechen</button>
     <div style="background:rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.4);color:#f5c842;padding:9px 16px;border-radius:24px;font-size:12px;font-weight:600">🔍 QR-Code scannen</div>
-    <div style="width:80px"></div>
+    <div style="width:90px"></div>
   </div>
   <div id="scan-status" style="position:absolute;bottom:calc(32px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:13px;color:rgba(255,255,255,.7)">QR-Code in den Rahmen halten</div>
+</div>
+
+<!-- LEGAL MODAL -->
+<div id="legal-modal">
+  <div class="hdr"><button class="ib" onclick="closeLegal()">✕</button><h1 id="legal-title">Impressum</h1></div>
+  <div class="page" id="legal-content" style="overflow-y:auto"></div>
 </div>
 
 <!-- EDIT CARD MODAL -->
@@ -555,91 +235,369 @@ input::placeholder{color:var(--hi)}
     <div><label class="ilabel">Kartennummer</label><input type="text" id="em-num"></div>
     <div><label class="ilabel">Seltenheit</label><input type="text" id="em-rar"></div>
   </div>
-  <div style="margin-bottom:14px"><label class="ilabel">Bezeichnung</label><input type="text" id="em-cat"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-    <div><label class="ilabel">Zielpreis (€)</label><input type="text" id="em-watch" placeholder="z.B. 45.00"></div>
     <div><label class="ilabel">Holo-Typ</label><input type="text" id="em-holo" placeholder="z.B. Holo Rare"></div>
+    <div><label class="ilabel">Zielpreis (&#8364;)</label><input type="text" id="em-watch" placeholder="z.B. 45.00"></div>
   </div>
+  <div style="margin-bottom:14px"><label class="ilabel">Bezeichnung</label><input type="text" id="em-cat"></div>
   <div class="row">
     <button class="btn btn-o" onclick="closeEdit()" style="flex:1">Abbrechen</button>
-    <button class="btn btn-r" onclick="saveEdit()" style="flex:2">💾 Speichern</button>
+    <button class="btn btn-r" onclick="saveEdit()" style="flex:2">&#128190; Speichern</button>
   </div>
 </div>
 </div>
-
-<!-- COMPARE SCREEN -->
+<!-- HOME -->
+<section id="pg-home" class="with-nav">
+<div class="hero-wrap">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div>
+      <div style="font-family:var(--fh);font-size:32px;font-weight:700;line-height:1;letter-spacing:-.5px">
+        <span style="color:var(--red)">Poké</span><span style="color:var(--tx)">Grader</span>
+      </div>
+      <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:3px">PSA Pre-Grading &#183; KI-gestützt</div>
+    </div>
+    <div class="card-stack">
+      <div class="cs-card cs-c1"></div>
+      <div class="cs-card cs-c2"></div>
+      <div class="cs-card cs-c3">
+        <div style="height:26px;background:rgba(230,57,70,.3);border-radius:3px;margin-bottom:3px"></div>
+        <div style="flex:1;background:rgba(255,255,255,.06);border-radius:2px"></div>
+        <div style="height:8px;background:rgba(245,200,66,.2);border-radius:2px;margin-top:3px"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Grade scale (generated by JS) -->
+  <div class="grade-scale" id="grade-scale-bars"></div>
+  <div style="font-size:10px;color:var(--hi);display:flex;justify-content:space-between;margin-top:-2px;padding:0 2px">
+    <span>POOR</span><span>GEM MINT</span>
+  </div>
+</div>
+<div class="page" style="padding-top:8px">
+  <div id="home-stats" style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px"></div>
+  <button class="btn btn-r" onclick="startAnalysis()" style="margin-bottom:14px;font-size:16px;padding:16px">
+    &#128247; Karte bewerten
+  </button>
+  <div id="recent-list"></div>
+  <div class="cr">
+    <a href="#" onclick="openLegal('impressum');return false">Impressum</a> &#183;
+    <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> &#183;
+    <a href="https://netpixel.at" target="_blank">netpixel.at</a>
+  </div>
+</div>
+</section>
+<!-- CAPTURE -->
+<section id="pg-capture">
+<div class="hdr"><button class="ib" onclick="capBack()">&#8249;</button><h1>Karte fotografieren</h1></div>
+<div class="page" style="padding-top:10px">
+  <div id="no-cam" class="al al-a" style="display:none">&#128241; Kamera nicht verfügbar &#8212; bitte Galerie verwenden.</div>
+  <div id="ghost-hint" class="al al-b" style="display:none">&#128161; Vorderseite wird eingeblendet &#8212; Karte umdrehen, gleiche Position halten.</div>
+  <!-- Front photo -->
+  <div id="front-zone">
+    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px">Vorderseite *</div>
+    <button class="btn btn-r" id="btn-cam-f" onclick="openCamFor('front')" style="margin-bottom:8px">&#128247; Vorderseite fotografieren</button>
+    <div id="prev-front" style="display:none">
+      <div class="prev-wrap"><img id="prev-img-f" class="prev-img" alt=""><button class="retake" onclick="retakeSide('front')">&#128260; Neu</button></div>
+    </div>
+  </div>
+  <!-- Back photo (optional) -->
+  <div id="back-zone" style="display:none">
+    <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;display:flex;align-items:center;gap:8px">
+      Rückseite <span style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:2px 8px;border-radius:10px;font-size:10px;text-transform:none;letter-spacing:0;font-weight:400">optional</span>
+    </div>
+    <button class="btn btn-o" id="btn-cam-b" onclick="openCamFor('back')" style="margin-bottom:8px">&#128247; Rückseite hinzufügen</button>
+    <div id="prev-back" style="display:none">
+      <div class="prev-wrap"><img id="prev-img-b" class="prev-img" alt=""><button class="retake" onclick="retakeSide('back')">&#128260; Neu</button></div>
+    </div>
+  </div>
+  <input type="file" id="file-in" accept="image/*" capture="environment" style="display:none" onchange="onFile(event)">
+  <div class="uz" id="uz-gal" onclick="openGallery()" style="display:none;margin-bottom:12px">
+    <div style="font-size:38px">&#128444;</div><div style="font-size:14px;font-weight:600">Galerie</div>
+  </div>
+  <div class="card" style="padding:14px;margin-top:4px">
+    <div class="st" style="margin-bottom:8px">&#128161; Tipps</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">&#8226; Neutraler Untergrund (weiss/grau)<br>&#8226; Gleichmässige Ausleuchtung, kein Blitz<br>&#8226; Alle 4 Ränder der Karte sichtbar<br>&#8226; Zoom nutzen für exakte Positionierung</div>
+  </div>
+  <div class="row" style="margin-top:8px">
+    <button class="btn btn-o" onclick="capBack()" style="flex:1">&#8592; Zurück</button>
+    <button class="btn btn-r" id="btn-analyze" onclick="runAnalysis()" style="flex:2" disabled>&#128300; Analyse starten</button>
+  </div>
+</div>
+</section>
+<!-- ANALYZING -->
+<section id="pg-analyzing">
+<div class="page" style="justify-content:center;align-items:center;text-align:center;padding-top:64px">
+  <div style="font-size:48px;margin-bottom:20px">&#128300;</div>
+  <div class="spin" style="margin-bottom:24px"></div>
+  <div style="font-family:var(--fh);font-size:20px;font-weight:700;letter-spacing:.02em;margin-bottom:8px">KI-Analyse läuft</div>
+  <div id="ana-msg" style="font-size:13px;color:var(--mu);min-height:20px;margin-bottom:32px"></div>
+  <div style="display:flex;flex-direction:column;gap:6px;text-align:left;width:100%;max-width:340px">
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>&#127183;</span>Karte wird erkannt (Name, Set, Sprache…)</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>&#9878;</span>Zentrierung (PSA 2025)</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>&#128269;</span>Ecken &#183; Whitening</div>
+    <div style="background:var(--s1);border-radius:var(--rs);padding:10px 14px;font-size:12px;color:var(--mu);display:flex;gap:8px"><span>&#128208;</span>Ränder &#183; Oberfläche</div>
+  </div>
+</div>
+</section>
+<!-- CARD DATA REVIEW -->
+<section id="pg-carddata">
+<div class="hdr"><button class="ib" onclick="safeNav('pg-capture')">&#8249;</button><h1>Kartendetails prüfen</h1></div>
+<div class="page">
+  <div class="al al-g" style="margin-bottom:14px">&#10003; KI hat die Karte erkannt &#8212; bitte prüfen und bei Bedarf korrigieren.</div>
+  <div class="card">
+    <div style="margin-bottom:10px"><label class="ilabel">Kartenname *</label><input type="text" id="cd-name" placeholder="z.B. Glurak / Charizard"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><label class="ilabel">Sprache</label><input type="text" id="cd-lang" placeholder="Deutsch / EN / JP"></div>
+      <div><label class="ilabel">HP</label><input type="text" id="cd-hp" placeholder="z.B. 120 HP"></div>
+    </div>
+    <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="cd-set" placeholder="z.B. Basisedition (1999)"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><label class="ilabel">Kartennummer</label><input type="text" id="cd-num" placeholder="z.B. 4/102"></div>
+      <div><label class="ilabel">Seltenheit</label><input type="text" id="cd-rar" placeholder="z.B. Holo Rare"></div>
+    </div>
+    <div style="margin-bottom:0"><label class="ilabel" style="display:flex;align-items:center;gap:6px">Bezeichnung <span style="font-size:10px;color:var(--hi);text-transform:none;letter-spacing:0;font-weight:400">(links unten auf der Karte)</span></label><input type="text" id="cd-cat" placeholder="z.B. Basis-Pokémon &#183; Stufe 2"></div>
+  </div>
+  <button class="btn btn-r" onclick="confirmCardData()">&#10003; Bestätigen</button>
+</div>
+</section>
+<!-- RESULTS -->
+<section id="pg-results">
+<div class="hdr">
+  <button class="ib" onclick="safeNav('pg-home')">✕</button>
+  <h1>Pregrading Ergebnis</h1>
+  <button id="save-btn" onclick="saveGrade()" style="background:var(--goldb);border:1.5px solid var(--goldd);color:var(--gold);padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.04em">&#128190; SPEICHERN</button>
+</div>
+<div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
+  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG Export</button>
+  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergleichen</button>
+  <button onclick="openEditForResult()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Bearbeiten</button>
+</div>
+<div class="page" id="res-page"></div>
+</section>
+<!-- COLLECTION -->
+<section id="pg-collection" class="with-nav">
+<div class="hdr">
+  <h1>Meine Sammlung</h1>
+  <div id="coll-count" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600"></div>
+</div>
+<div class="page" style="padding-top:10px">
+  <div style="position:relative;margin-bottom:10px">
+    <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">&#128269;</span>
+    <input type="search" id="coll-search" placeholder="Name, Set, Nummer…" style="padding-left:38px" oninput="renderColl()">
+  </div>
+  <div class="frow">
+    <button class="fc active" data-g="all" onclick="setF(this,'all')">Alle</button>
+    <button class="fc" data-g="10" onclick="setF(this,'10')">PSA 10</button>
+    <button class="fc" data-g="9" onclick="setF(this,'9')">PSA 9</button>
+    <button class="fc" data-g="8" onclick="setF(this,'8')">PSA 8</button>
+    <button class="fc" data-g="7" onclick="setF(this,'7')">PSA 7</button>
+    <button class="fc" data-g="low" onclick="setF(this,'low')">&#8804; PSA 6</button>
+    <button class="sort-btn" onclick="cycleSort()">&#8597; <span id="sort-lbl">Neueste</span></button>
+  </div>
+  <div id="coll-grid" class="coll-grid"></div>
+  <div id="coll-empty" style="display:none" class="empty"><div style="font-size:44px;margin-bottom:12px">&#127183;</div><div style="font-size:16px;font-weight:600;margin-bottom:6px;font-family:var(--fh)">Noch keine Karten</div><div style="font-size:13px">Grade deine erste Karte!</div></div>
+  <div class="cr"><a href="#" onclick="openLegal('impressum');return false">Impressum</a> &#183; <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> &#183; <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+</div>
+</section>
+<!-- DETAIL -->
+<section id="pg-detail">
+<div class="hdr">
+  <button class="ib" id="det-back" onclick="safeNav('pg-collection')">&#8249;</button>
+  <h1 id="det-title" style="font-size:15px">Details</h1>
+  <button onclick="openEditModal()" style="background:none;border:none;color:var(--bl);font-size:12px;cursor:pointer;font-weight:600;margin-right:4px">&#9998;</button>
+  <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">&#128465;</button>
+</div>
+<div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
+  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG Export</button>
+  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergleichen</button>
+  <button onclick="openEditModal()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Bearbeiten</button>
+</div>
+<div class="page" id="det-page"></div>
+</section>
+<!-- COMPARE -->
 <section id="pg-compare">
 <div class="hdr">
-  <button class="ib" onclick="safeNav('pg-collection')">‹</button>
+  <button class="ib" onclick="safeNav('pg-collection')">&#8249;</button>
   <h1>Kartenvergleich</h1>
   <button onclick="clearCompare()" style="background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer">Neue Auswahl</button>
 </div>
-<div class="page" id="cmp-page" style="padding-top:12px">
-  <div class="al al-b" style="margin-bottom:12px">Tippe in der Sammlung auf <b>Vergleichen</b>, um Karten auszuwählen.</div>
-  <div style="display:flex;gap:0" id="cmp-content"></div>
+<div class="page" style="padding-top:12px">
+  <div id="cmp-info" class="al al-b" style="margin-bottom:12px">Tippe in der Sammlung auf <b>Vergleichen</b>, um Karten auszuwählen.</div>
+  <div id="cmp-content" style="display:flex;gap:0"></div>
 </div>
 </section>
-
-<!-- BOTTOM NAV -->
+<!-- SETTINGS -->
+<section id="pg-settings" class="with-nav">
+<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);padding:calc(20px + env(safe-area-inset-top)) 16px 20px;max-width:500px;margin:0 auto;text-align:center">
+  <div style="font-family:var(--fh);font-size:26px;font-weight:700"><span style="color:var(--red)">Poké</span>Grader</div>
+  <div style="font-size:11px;color:var(--mu);letter-spacing:.1em;text-transform:uppercase;margin-top:2px">PSA Pre-Grading Tool v4.0</div>
+</div>
+<div class="page" style="padding-top:8px">
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">&#128273; Anthropic API-Key</div>
+    <input type="password" id="set-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+    <div id="set-status" style="font-size:11px;color:var(--mu);margin-top:6px"></div>
+    <button class="btn btn-r" onclick="saveSettingsKey()" style="margin-top:12px">Key speichern</button>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">&#128307; Statistiken</div>
+    <div id="settings-stats" style="font-size:13px;color:var(--mu);line-height:2"></div>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">Darstellung &amp; Tools</div>
+    <button class="btn btn-s" onclick="toggleTheme()" id="theme-btn" style="margin-bottom:8px">&#9728; Light Mode aktivieren</button>
+    <button class="btn btn-s" onclick="openScanner()" style="margin-bottom:8px">&#128247; QR-Code / Barcode scannen</button>
+    <button class="btn btn-s" onclick="exportCSV()">&#128202; Sammlung als CSV exportieren</button>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">Rechtliches</div>
+    <button class="btn btn-o" onclick="openLegal('impressum')" style="margin-bottom:8px">&#128196; Impressum</button>
+    <button class="btn btn-o" onclick="openLegal('datenschutz')">&#128274; Datenschutzerklärung</button>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">Datenverwaltung</div>
+    <button class="btn btn-o" onclick="confirmClear()" style="color:var(--red);border-color:var(--redd)">&#128465; Sammlung löschen</button>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:8px">Über</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">Version 4.0 &#183; <a href="https://netpixel.at" style="color:var(--red)">netpixel.at</a><br>Kein offizielles PSA-Produkt</div>
+  </div>
+  <div class="cr"><a href="#" onclick="openLegal('impressum');return false">Impressum</a> &#183; <a href="#" onclick="openLegal('datenschutz');return false">Datenschutz</a> &#183; <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>
+</div>
+</section>
+<!-- SETUP -->
+<section id="pg-setup">
+<div style="background:linear-gradient(160deg,#1a0814 0%,#0a0e28 50%,var(--bg) 100%);min-height:100svh;display:flex;flex-direction:column;justify-content:center;padding:24px;max-width:500px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:28px">
+    <div style="font-size:56px;margin-bottom:12px">&#127183;</div>
+    <div style="font-family:var(--fh);font-size:32px;font-weight:700;margin-bottom:4px"><span style="color:var(--red)">Poké</span>Grader</div>
+    <div style="font-size:13px;color:var(--mu);line-height:1.6">PSA Pre-Grading für Pokémon Karten<br>Für die KI-Analyse wird ein API-Key benötigt.</div>
+  </div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="st" style="margin-bottom:10px">&#128273; Anthropic API-Key</div>
+    <input type="password" id="setup-key" placeholder="sk-ant-api03-…" autocomplete="off" spellcheck="false">
+    <div id="setup-err" class="al al-r" style="display:none;margin-top:8px"></div>
+    <button class="btn btn-r" onclick="saveSetupKey()" style="margin-top:12px">Starten &#8594;</button>
+  </div>
+  <div class="card" style="padding:14px">
+    <div class="st" style="margin-bottom:8px">Key erstellen</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9">1. <a href="https://console.anthropic.com" style="color:var(--red)">console.anthropic.com</a><br>2. Registrieren &#8594; API Keys &#8594; Create Key<br>3. Key kopieren und oben einfügen<br><span style="color:var(--hi)">~$5 Startguthaben &#183; ca. $0.013 pro Analyse</span></div>
+  </div>
+</div>
+</section>
+<!-- NAV + TOAST -->
 <nav class="bnav" id="bnav">
-  <button class="bn active" id="bn-home" onclick="navTo('pg-home')"><span class="bn-ico">🏠</span><span class="bn-lbl">Analyse</span></button>
-  <button class="bn" id="bn-coll" onclick="navTo('pg-collection')"><span class="bn-ico">🃏</span><span class="bn-lbl">Sammlung</span></button>
-  <button class="bn" id="bn-set" onclick="navTo('pg-settings')"><span class="bn-ico">⚙️</span><span class="bn-lbl">Einstellungen</span></button>
+  <button class="bn active" id="bn-home" onclick="navTo('pg-home')"><span class="bn-ico">&#127968;</span><span class="bn-lbl">Analyse</span></button>
+  <button class="bn" id="bn-coll" onclick="navTo('pg-collection')"><span class="bn-ico">&#127183;</span><span class="bn-lbl">Sammlung</span></button>
+  <button class="bn" id="bn-set" onclick="navTo('pg-settings')"><span class="bn-ico">&#9881;</span><span class="bn-lbl">Einstellungen</span></button>
 </nav>
 <div id="toast"></div>
 
 <script>
 'use strict';
-const $=id=>document.getElementById(id);
-const sh=el=>{if(el)el.style.display='block';};
-const hi=el=>{if(el)el.style.display='none';};
-let _tt;
-function toast(m,d){try{const e=$('toast');e.textContent=String(m).substring(0,80);e.classList.add('show');clearTimeout(_tt);_tt=setTimeout(()=>e.classList.remove('show'),d||2800);}catch(e){}}
 
+// ── UTILS ──────────────────────────────────────
+const $ = id => document.getElementById(id);
+const sh = el => { if(el) el.style.display='block'; };
+const hi = el => { if(el) el.style.display='none'; };
+
+let _tt;
+function toast(msg, dur) {
+  try {
+    const e=$('toast');
+    e.textContent=String(msg).substring(0,80);
+    e.classList.add('show');
+    clearTimeout(_tt);
+    _tt=setTimeout(()=>e.classList.remove('show'), dur||2800);
+  } catch(e) {}
+}
+
+// ── GRADE SCALE (built by JS, not template literal in HTML) ──
+function buildGradeScale() {
+  const el=$('grade-scale-bars');
+  if(!el) return;
+  const grades=[
+    {n:1,c:'#ef4444'},{n:2,c:'#f87171'},{n:3,c:'#fb923c'},
+    {n:4,c:'#fbbf24'},{n:5,c:'#facc15'},{n:6,c:'#a3e635'},
+    {n:7,c:'#4ade80'},{n:8,c:'#34d399'},{n:9,c:'#60a5fa'},{n:10,c:'#f5c842'}
+  ];
+  el.innerHTML = grades.map(({n,c}) =>
+    '<div class="gs-bar">' +
+      '<div class="gs-fill" style="height:'+((20+n*4))+'px;background:'+c+';opacity:.85"></div>' +
+      '<div class="gs-num" style="color:'+c+'">'+n+'</div>' +
+    '</div>'
+  ).join('');
+}
+
+// ── NAVIGATION ──────────────────────────────────
 const NAV=['pg-home','pg-collection','pg-settings'];
-function navTo(id){
-  try{
+function navTo(id) {
+  try {
     stopCam();
     document.querySelectorAll('section').forEach(s=>s.classList.remove('on'));
-    const sec=$(id);if(sec)sec.classList.add('on');window.scrollTo(0,0);
+    const sec=$(id);
+    if(sec) sec.classList.add('on');
+    window.scrollTo(0,0);
     const bnav=$('bnav');
-    if(NAV.includes(id)){
+    if(NAV.includes(id)) {
       bnav.style.display='flex';
       document.querySelectorAll('.bn').forEach(b=>b.classList.remove('active'));
       const m={'pg-home':'bn-home','pg-collection':'bn-coll','pg-settings':'bn-set'};
-      if(m[id])$(m[id]).classList.add('active');
-    }else{bnav.style.display='none';}
-    if(id==='pg-home'){loadRecent();loadStats();}
-    if(id==='pg-collection'){renderColl();}
-    if(id==='pg-settings'){initSettings();loadSettingsStats();}
+      if(m[id]) $(m[id]).classList.add('active');
+    } else {
+      bnav.style.display='none';
+    }
+    if(id==='pg-home')    { loadRecent(); loadStats(); }
+    if(id==='pg-collection') { renderColl(); }
+    if(id==='pg-settings')   { initSettings(); loadSettingsStats(); }
     const t=$('toast');
-    if(NAV.includes(id))t.classList.remove('no-nav');else t.classList.add('no-nav');
-  }catch(e){console.error(e);}
+    if(NAV.includes(id)) t.classList.remove('no-nav');
+    else t.classList.add('no-nav');
+  } catch(e) { console.error('navTo',e); }
 }
-function safeNav(id){navTo(id);}
+function safeNav(id) { navTo(id); }
 
-/* API KEY */
-const KID='pg_key_v4';
-const getKey=()=>{try{return localStorage.getItem(KID)||'';}catch(e){return '';}};
-const putKey=k=>{try{localStorage.setItem(KID,k);}catch(e){}};
-function saveSetupKey(){
-  const k=($('setup-key').value||'').trim();const err=$('setup-err');
-  if(!k){err.textContent='Bitte API-Key eingeben.';sh(err);return;}
-  if(!k.startsWith('sk-ant')){err.textContent='Ungültiger Key — muss mit sk-ant beginnen.';sh(err);return;}
-  hi(err);putKey(k);toast('✅ API-Key gespeichert');navTo('pg-home');
+// ── API KEY ──────────────────────────────────────
+const KID='pg_key_v5';
+const getKey = () => { try { return localStorage.getItem(KID)||''; } catch(e) { return ''; } };
+const putKey = k => { try { localStorage.setItem(KID,k); } catch(e) {} };
+
+function saveSetupKey() {
+  const k=($('setup-key').value||'').trim();
+  const err=$('setup-err');
+  if(!k) { err.textContent='Bitte API-Key eingeben.'; sh(err); return; }
+  if(!k.startsWith('sk-ant')) { err.textContent='Ungültiger Key — muss mit sk-ant beginnen.'; sh(err); return; }
+  hi(err); putKey(k);
+  toast('✅ API-Key gespeichert');
+  navTo('pg-home');
 }
-function initSettings(){
-  const k=getKey();$('set-key').value=k;
+function initSettings() {
+  const k=getKey();
+  $('set-key').value=k;
   $('set-status').textContent=k?'✓ Aktiv: '+k.substring(0,18)+'…':'Kein Key gespeichert';
 }
-function saveSettingsKey(){
+function saveSettingsKey() {
   const k=($('set-key').value||'').trim();
-  if(!k.startsWith('sk-ant')){toast('❌ Ungültiger Key');return;}
-  putKey(k);toast('✅ Key gespeichert');
+  if(!k.startsWith('sk-ant')) { toast('❌ Ungültiger Key'); return; }
+  putKey(k); toast('✅ Key gespeichert');
   $('set-status').textContent='✓ Aktiv: '+k.substring(0,18)+'…';
 }
 
-/* LEGAL MODAL */
+// ── THEME ──────────────────────────────────────
+function toggleTheme() {
+  const isDark=document.body.getAttribute('data-theme')!=='light';
+  document.body.setAttribute('data-theme',isDark?'light':'dark');
+  localStorage.setItem('pg_theme',isDark?'light':'dark');
+  const btn=$('theme-btn');
+  if(btn) btn.textContent=isDark?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+}
+function applyTheme() {
+  const t=localStorage.getItem('pg_theme')||'dark';
+  document.body.setAttribute('data-theme',t);
+  const btn=$('theme-btn');
+  if(btn) btn.textContent=t==='light'?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+}
+
+// ── LEGAL ──────────────────────────────────────
 const IMPRESSUM=`<div class="legal-section">
 <h3>netpixel.at</h3>
 <p><strong>Reinhard Loher</strong><br>Berufsfotograf &amp; Werbeagentur<br>A.-Stifterstrasse 17 – A-4770 Andorf</p>
@@ -658,7 +616,6 @@ const IMPRESSUM=`<div class="legal-section">
 <p>PokéGrader PSA ist ein inoffizielles Tool. PSA ist eine eingetragene Marke der Professional Sports Authenticator. Diese App steht in keiner Verbindung zu PSA. Alle KI-Bewertungen sind Schätzungen und ersetzen keine offizielle PSA-Begutachtung.</p>
 </div>
 <div class="cr">© 2025 netpixel.at</div>`;
-
 const DATENSCHUTZ=`<div class="legal-section">
 <h3>Erklärung zur Informationspflicht (Datenschutzerklärung)</h3>
 <p>Der Schutz Ihrer persönlichen Daten ist uns ein besonderes Anliegen. Wir verarbeiten Ihre Daten ausschließlich auf Grundlage der gesetzlichen Bestimmungen (DSGVO, TKG 2003).</p>
@@ -687,604 +644,831 @@ const DATENSCHUTZ=`<div class="legal-section">
 </div>
 <div class="cr">© 2025 netpixel.at · Stand: Mai 2025</div>`;
 
-function openLegal(type){
+function openLegal(type) {
   $('legal-title').textContent=type==='impressum'?'Impressum':'Datenschutzerklärung';
   $('legal-content').innerHTML=type==='impressum'?IMPRESSUM:DATENSCHUTZ;
   $('legal-modal').classList.add('open');
 }
-function closeLegal(){$('legal-modal').classList.remove('open');}
+function closeLegal() { $('legal-modal').classList.remove('open'); }
 
-/* STATE */
-const A={step:'front',front:{url:null,b64:null,type:null},back:{url:null,b64:null,type:null},result:null,detected:null,annF:null,annB:null,cenImg:null,saved:false,detailId:null,fromScreen:'pg-collection'};
-function resetState(){A.step='front';A.front={url:null,b64:null,type:null};A.back={url:null,b64:null,type:null};A.result=null;A.detected=null;A.annF=null;A.annB=null;A.cenImg=null;A.saved=false;}
+// ── STATE ──────────────────────────────────────
+const A = {
+  front:{url:null,b64:null,type:null},
+  back: {url:null,b64:null,type:null},
+  result:null, detected:null,
+  annF:null, annB:null, cenImg:null,
+  saved:false, detailId:null, fromScreen:'pg-collection'
+};
+function resetState() {
+  A.front={url:null,b64:null,type:null};
+  A.back ={url:null,b64:null,type:null};
+  A.result=null; A.detected=null;
+  A.annF=null; A.annB=null; A.cenImg=null; A.saved=false;
+}
 
-function startAnalysis(){if(!getKey()){navTo('pg-setup');return;}resetState();navTo('pg-capture');setTimeout(setupCapture,50);}
+function startAnalysis() {
+  if(!getKey()) { navTo('pg-setup'); return; }
+  resetState();
+  navTo('pg-capture');
+  setTimeout(setupCapture, 50);
+}
 
-let _camTarget='front'; // which side is the camera capturing
-
-function setupCapture(){
-  $('cap-title').textContent='Karte fotografieren';
-  $('tips-card').style.display='block';
-  $('btn-analyze').disabled=!A.front.url;
-  // Front zone
-  if(A.front.url){
+function setupCapture() {
+  $('btn-analyze').disabled = !A.front.url;
+  if(A.front.url) {
     $('prev-img-f').src=A.front.url;
-    sh($('prev-front'));hi($('btn-cam-f'));
-    sh($('back-zone'));// show back option after front is done
-  }else{
-    hi($('prev-front'));sh($('btn-cam-f'));
+    sh($('prev-front')); hi($('btn-cam-f'));
+    sh($('back-zone'));
+  } else {
+    hi($('prev-front')); sh($('btn-cam-f'));
     hi($('back-zone'));
   }
-  // Back zone
-  if(A.back.url){
+  if(A.back.url) {
     $('prev-img-b').src=A.back.url;
-    sh($('prev-back'));hi($('btn-cam-b'));
-  }else{
+    sh($('prev-back')); hi($('btn-cam-b'));
+  } else {
     hi($('prev-back'));
-    if(A.front.url)sh($('btn-cam-b'));
+    if(A.front.url) sh($('btn-cam-b'));
   }
+  $('ghost-hint').style.display=A.back.url?'block':'none';
 }
-function capBack(){stopCam();navTo('pg-home');}
-function openCamFor(side){_camTarget=side;_camSide=side;openCam();}
-function retakeSide(side){
-  if(side==='front'){A.front={url:null,b64:null,type:null};}
-  else{A.back={url:null,b64:null,type:null};}
+
+function capBack() { stopCam(); navTo('pg-home'); }
+function openCamFor(side) { _camTarget=side; openCam(); }
+function retakeSide(side) {
+  if(side==='front') { A.front={url:null,b64:null,type:null}; }
+  else               { A.back ={url:null,b64:null,type:null}; }
   setupCapture();
 }
 
-/* CAMERA */
-let _str=null,_facing='environment',_raf=null,_fR=null,_ghost=null;
-function openCam(){
-  const modal=$('cam-modal');modal.classList.add('open');
+// ── CAMERA ──────────────────────────────────────
+let _str=null, _facing='environment', _raf=null, _fR=null, _ghost=null;
+let _camTarget='front', _zoomLevel=1, _ptDist=null;
+
+function openCam() {
+  const modal=$('cam-modal');
+  modal.classList.add('open');
   setZoom(1);
-  $('cam-badge').textContent=(_camTarget==='front')?'VORDERSEITE':'RÜCKSEITE';
-  const vid=$('cam-video');vid.style.opacity=0;$('shutter').disabled=true;
-  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},audio:false})
-  .then(s=>{_str=s;vid.srcObject=s;return vid.play();})
-  .then(()=>{vid.style.opacity=1;$('shutter').disabled=false;startOvl();
-    if(_camTarget==='back'&&A.front.url){if(!_ghost)_ghost=new Image();_ghost.src=A.front.url;}
-  })
-  .catch(()=>{closeCam();sh($('no-cam'));sh($('uz-gal'));hi($('btn-cam'));});
-}
-function closeCam(){try{stopCam();$('cam-modal').classList.remove('open');}catch(e){}}
-function stopCam(){try{if(_raf){cancelAnimationFrame(_raf);_raf=null;}if(_str){_str.getTracks().forEach(t=>t.stop());_str=null;}}catch(e){}}
-function flipCam(){_facing=_facing==='environment'?'user':'environment';stopCam();openCam();}
-function startOvl(){
-  const vid=$('cam-video'),cvs=$('cam-canvas');
-  function draw(){
-    try{
-      const vw=vid.clientWidth,vh=vid.clientHeight;
-      if(!vw||!vh){_raf=requestAnimationFrame(draw);return;}
-      cvs.width=vw;cvs.height=vh;const ctx=cvs.getContext('2d');ctx.clearRect(0,0,vw,vh);
-      const R=63/88;let fw=vw*.84,fh=fw/R;if(fh>vh*.80){fh=vh*.78;fw=fh*R;}
-      fw=Math.round(fw);fh=Math.round(fh);
-      const fx=Math.round((vw-fw)/2),fy=Math.round((vh-fh)/2);_fR={fx,fy,fw,fh,vw,vh};
-      ctx.fillStyle='rgba(0,0,0,.48)';ctx.fillRect(0,0,vw,vh);ctx.clearRect(fx,fy,fw,fh);
-      if(_camTarget==='back'&&_ghost&&_ghost.complete&&_ghost.naturalWidth>0){ctx.globalAlpha=.2;ctx.drawImage(_ghost,fx,fy,fw,fh);ctx.globalAlpha=1;}
-      const CL=Math.min(fw,fh)*.09,col=(_camTarget==='front')?'#e63946':'#60a5fa';
-      ctx.strokeStyle=col;ctx.lineWidth=3;ctx.lineCap='round';
-      [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{ctx.beginPath();ctx.moveTo(cx+dx*CL,cy);ctx.lineTo(cx,cy);ctx.lineTo(cx,cy+dy*CL);ctx.stroke();});
-      ctx.strokeStyle='rgba(255,255,255,.1)';ctx.lineWidth=.7;ctx.setLineDash([3,5]);
-      ctx.beginPath();ctx.moveTo(fx+fw/2,fy+4);ctx.lineTo(fx+fw/2,fy+fh-4);ctx.stroke();
-      ctx.beginPath();ctx.moveTo(fx+4,fy+fh/2);ctx.lineTo(fx+fw-4,fy+fh/2);ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.font='bold 11px -apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle='rgba(255,255,255,.28)';
-      ctx.fillText((_camTarget==='back'?'RÜCKSEITE':'VORDERSEITE')+' — hier ausrichten',fx+fw/2,fy+fh-10);
-    }catch(e){}
-    _raf=requestAnimationFrame(draw);
-  }
-  draw();
-}
-function takeShot(){
-  try{
-    const vid=$('cam-video');if(!_fR)return;
-    const{fx,fy,fw,fh,vw,vh}=_fR;
-    const scX=vid.videoWidth/vw,scY=vid.videoHeight/vh;
-    const z=_zoomLevel||1;
-    // With zoom, the video is CSS-scaled — the actual video region is smaller by 1/z
-    const cx=vw/2,cy=vh/2; // display center
-    // Frame center offset from display center
-    const ofx=(fx+fw/2-cx)/z, ofy=(fy+fh/2-cy)/z;
-    // In video pixels
-    const vcx=vid.videoWidth/2+ofx*scX;
-    const vcy=vid.videoHeight/2+ofy*scY;
-    const vfw=fw*scX/z, vfh=fh*scY/z;
-    const c=document.createElement('canvas');
-    c.width=Math.round(vfw);c.height=Math.round(vfh);
-    c.getContext('2d').drawImage(vid,vcx-vfw/2,vcy-vfh/2,vfw,vfh,0,0,c.width,c.height);
-    c.toBlob(b=>{if(b)readBlob(b,'image/jpeg');},'image/jpeg',.92);
-    closeCam();
-  }catch(e){toast('❌ Aufnahme fehlgeschlagen');}
-}
-function openGallery(){try{const f=$('file-in');f.removeAttribute('capture');f.click();setTimeout(()=>f.setAttribute('capture','environment'),500);}catch(e){}}
-function onFile(e){try{const f=e.target.files&&e.target.files[0];if(f)readBlob(f,f.type||'image/jpeg');e.target.value='';}catch(e){}}
-function readBlob(b,t){const u=URL.createObjectURL(b);const r=new FileReader();r.onload=()=>storePhoto(u,r.result.split(',')[1],t);r.onerror=()=>toast('❌ Bild fehler');r.readAsDataURL(b);}
-function storePhoto(u,b,t){const side=_camTarget||'front';const s=side==='front'?A.front:A.back;s.url=u;s.b64=b;s.type=t;setupCapture();}
-function retakePhoto(){/* legacy - use retakeSide() */}
-
-/* ANALYSIS */
-const MSGS=['Bild wird verarbeitet…','Karte wird erkannt…','Zentrierung wird gemessen…','Ecken werden analysiert…','Oberfläche wird bewertet…','eBay-Preise werden gesucht…','Ergebnis wird erstellt…'];
-async function runAnalysis(){
-  if(!checkOnline())return;
-  navTo('pg-analyzing');let mi=0;$('ana-msg').textContent=MSGS[0];
-  const iv=setInterval(()=>{mi=Math.min(mi+1,MSGS.length-1);$('ana-msg').textContent=MSGS[mi];},1800);
-  try{
-    const key=getKey();if(!key)throw new Error('no-key');
-    if(!A.front.b64)throw new Error('Vorderseitenfoto fehlt');
-    const content=[
-      {type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}},
-    ];
-    if(A.back.b64)content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
-    content.push({type:'text',text:A.back.b64?PSA_BOTH:PSA_FRONT});
-
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2000,
-        system:'You are a certified PSA card grading expert AND Pokémon card identification specialist. Return ONLY valid JSON. No markdown. No backticks.',
-        messages:[{role:'user',content}]
-      })
-    });
-    if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(eb?.error?.message||'HTTP '+resp.status);}
-    const data=await resp.json();
-    const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
-    A.result=JSON.parse(raw.replace(/```json|```/g,'').trim());
-    A.detected=A.result.card_info||{};
-    clearInterval(iv);
-
-    // Build annotated images
-    const fm=(A.result.markers||[]).filter(m=>m.side==='front');
-    const bm=(A.result.markers||[]).filter(m=>m.side==='back');
-    [A.annF,A.annB,A.cenImg]=await Promise.all([annotImg(A.front.url,fm),annotImg(A.back.url,bm),cenDiag(A.result.centering||{})]);
-
-    // Pre-fill card data review form
-    const d=A.detected;
-    $('cd-name').value=d.card_name||'';$('cd-lang').value=d.language||'';$('cd-hp').value=d.hp||'';
-    $('cd-set').value=d.set_name||'';$('cd-num').value=d.card_number||'';
-    $('cd-rar').value=d.rarity||'';$('cd-cat').value=d.category||'';
-    navTo('pg-carddata');
-  }catch(err){
-    clearInterval(iv);
-    if(err.message==='no-key'){toast('⚠️ Kein API-Key');navTo('pg-settings');}
-    else{toast('❌ '+(err.message||'Analyse fehlgeschlagen'));navTo('pg-capture');setTimeout(setupCapture,50);}
-  }
-}
-
-function confirmCardData(){
-  A.detected={
-    card_name:$('cd-name').value.trim()||'Unbekannte Karte',
-    language:$('cd-lang').value.trim(),
-    hp:$('cd-hp').value.trim(),
-    set_name:$('cd-set').value.trim(),
-    card_number:$('cd-num').value.trim(),
-    rarity:$('cd-rar').value.trim(),
-    category:$('cd-cat').value.trim(),
-    holo_type:A.result?.card_info?.holo_type||'',
-  };
-  renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
-  navTo('pg-results');
-  // Trigger eBay AFTER renderResults created the div
-  setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),100);
-}
-
-const PSA_BOTH=`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
-PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
-Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`;
-
-const PSA_FRONT=`Analyze this Pokémon card front for PSA pre-grading (back not provided, estimate where needed).
-Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`;
-
-/* EBAY SEARCH */
-async function fetchEbayPrices(cardInfo,grade){
-  const key=getKey();if(!key)return;
-  const el=$('ebay-section');if(!el)return;
-  el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise <span class="spin-sm"></span></div><div style="font-size:12px;color:var(--mu)">Aktuelle Verkaufspreise werden gesucht…</div>`;
-  try{
-    const q=[cardInfo.card_name,cardInfo.set_name,cardInfo.card_number,'PSA '+grade].filter(Boolean).join(' ');
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6',max_tokens:1000,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        system:'Search eBay for recently sold Pokémon cards. Respond ONLY with a JSON array.',
-        messages:[{role:'user',content:`Search eBay.de and eBay.com for recently sold listings of: "${q}". Return a JSON array of 4-5 results: [{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/...","condition":"PSA 9"}]. Only JSON, no other text.`}]
-      })
-    });
-    if(!resp.ok)throw new Error('eBay-Suche fehlgeschlagen');
-    const data=await resp.json();
-    const text=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
-    let items=[];
-    try{items=JSON.parse(text.replace(/```json|```/g,'').trim());}catch(e){items=[];}
-    const ebayUrl=`https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent(q)}&LH_Complete=1&LH_Sold=1`;
-    if(!items||!items.length){
-      el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div>
-        <div class="al al-a">Keine aktuellen Verkäufe gefunden. <a href="${ebayUrl}" target="_blank" style="color:var(--am)">Auf eBay suchen →</a></div>`;
-      return;
-    }
-    el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 Aktuelle eBay Verkaufspreise</div>
-      ${items.map(it=>`<a href="${it.url||ebayUrl}" target="_blank" style="text-decoration:none;display:block">
-        <div class="ebay-item">
-          <div style="flex:1;min-width:0">
-            <div class="ebay-title">${it.title||q}</div>
-            <div class="ebay-date">${it.sold_date||''} · ${it.condition||'PSA '+grade}</div>
-          </div>
-          <div class="ebay-price">${it.price||'–'}</div>
-          <div style="color:var(--mu);font-size:16px">›</div>
-        </div>
-      </a>`).join('')}
-      <a href="${ebayUrl}" target="_blank" style="text-decoration:none">
-        <div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle Ergebnisse auf eBay anzeigen →</div>
-      </a>
-      <div style="font-size:10px;color:var(--hi);padding:4px 0 8px">Preise aus KI-gestützter Web-Suche · können variieren</div>`;
-    // Update price watch
-    if(A.detailId){const all2=await dbAll();const ew=all2.find(x=>x.id===A.detailId);if(ew)updatePriceWatchUI(ew,items);}
-  }catch(e){
-    const ebayUrl=`https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent([cardInfo.card_name,cardInfo.set_name,'PSA '+grade].filter(Boolean).join(' '))}&LH_Complete=1&LH_Sold=1`;
-    el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div>
-      <a href="${ebayUrl}" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">🔍 Auf eBay suchen</a>`;
-  }
-}
-
-/* CANVAS */
-const MC={whitening:'#fbbf24',corner_damage:'#ef4444',edge_damage:'#f97316',scratch:'#a855f7',print_line:'#3b82f6',holo_damage:'#ec4899',stain:'#84cc16',crease:'#ef4444'};
-const ML={whitening:'Whitening',corner_damage:'Ecken-Schaden',edge_damage:'Rand-Schaden',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo-Schaden',stain:'Fleck',crease:'Knick'};
-const mc=t=>MC[t]||'#ef4444',ml=t=>ML[t]||t;
-function annotImg(url,markers){return new Promise(res=>{if(!url){res(null);return;}const img=new Image();img.onload=()=>{try{const MAX=900,sc=img.width>MAX?MAX/img.width:1,W=Math.round(img.width*sc),H=Math.round(img.height*sc);const c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,W,H);(markers||[]).forEach((m,i)=>{const x=W*(m.x_pct/100),y=H*(m.y_pct/100),R=15,col=mc(m.type);ctx.shadowColor='rgba(0,0,0,.6)';ctx.shadowBlur=6;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.fillStyle=col+'cc';ctx.fill();ctx.shadowBlur=0;ctx.beginPath();ctx.arc(x,y,R,0,Math.PI*2);ctx.strokeStyle='#fff';ctx.lineWidth=1.8;ctx.stroke();ctx.font='bold 13px -apple-system,sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,.5)';ctx.shadowBlur=2;ctx.fillText(String(i+1),x,y+.5);ctx.shadowBlur=0;});res(c.toDataURL('image/jpeg',.88));}catch(e){res(url);}};img.onerror=()=>res(url);img.src=url;});}
-function cenDiag(cen){return new Promise(res=>{try{const W=700,H=230,c=document.createElement('canvas');c.width=W;c.height=H;const ctx=c.getContext('2d');ctx.fillStyle='#13131f';ctx.fillRect(0,0,W,H);const cc=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';const cg=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;const rr=(ctx,x,y,w,h,r)=>{ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();};const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;const TH=cw*.15,TV=ch*.12,lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);const lrC=cc(Math.max(lp,rp)),tbC=cc(Math.max(tp,bp));ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();ctx.setLineDash([]);ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);const mx=Math.max(lp,rp,tp,bp),gc2=cc(mx);ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';ctx.fillText('PSA '+cg(mx),cx+cw-16,cy-13);ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);};const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rückseite');const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA ≤5'}];let lx=pad;ctx.font='9px sans-serif';leg.forEach(({c,l})=>{ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);lx+=ctx.measureText(l).width+18;});res(c.toDataURL('image/jpeg',.92));}catch(e){res(null);}});}
-
-/* GRADE HELPERS */
-function gc(g){if(g>=10)return{c:'#f5c842',bg:'rgba(245,200,66,.16)',bd:'rgba(245,200,66,.45)',cls:'g10'};if(g>=9)return{c:'#94e0ff',bg:'rgba(148,224,255,.14)',bd:'rgba(148,224,255,.4)',cls:'g9'};if(g>=7)return{c:'#c084fc',bg:'rgba(192,132,252,.14)',bd:'rgba(192,132,252,.4)',cls:'g'+(g>=8?'8':'7')};if(g>=5)return{c:'#fb923c',bg:'rgba(251,146,60,.14)',bd:'rgba(251,146,60,.4)',cls:'g'+(g>=6?'6':'5')};return{c:'#f87171',bg:'rgba(248,113,113,.14)',bd:'rgba(248,113,113,.4)',cls:'g'+Math.max(g,1)};}
-function sc(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
-function cc(p){return p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';}
-function gLbl(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
-function sbar(s,l){const col=sc(s);return`<div class="sb-row"><span style="color:var(--mu)">${l}</span><span style="font-weight:600;color:${col}">${s}/10</span></div><div class="sb-track"><div class="sb-fill" style="width:${s*10}%;background:${col}"></div></div>`;}
-function mleg(arr){if(!arr||!arr.length)return'';return`<div class="mleg">${arr.map((m,i)=>`<div class="mli"><div class="mld" style="background:${mc(m.type)}"></div><b>${i+1}</b>&nbsp;${m.description||ml(m.type)}</div>`).join('')}</div>`;}
-function accv(id,ico,lbl,score,body){const col=sc(score);return`<div><div class="ah" onclick="tAcc('${id}',this)"><span style="font-size:16px">${ico}</span><span style="font-size:14px;font-weight:500">${lbl}</span><span style="font-size:12px;font-weight:600;color:${col};margin-left:auto;margin-right:8px">${score}/10</span><span class="aa">▾</span></div><div id="${id}" style="display:none" class="ab">${body}</div></div>`;}
-function tAcc(id,h){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';h.classList.toggle('open',!o);}
-
-/* RENDER RESULTS */
-let _fm=[],_bm=[];
-function renderResults(r,af,ab,ci,fromHist,det){
-  const g=r.final_grade,gclr=gc(g),cen=r.centering||{};
-  _fm=(r.markers||[]).filter(m=>m.side==='front');
-  _bm=(r.markers||[]).filter(m=>m.side==='back');
-  const lo=Math.min(cen.score||10,r.corners?.score||10,r.edges?.score||10,r.surface?.score||10);
-  const d=det||A.detected||{};
-  const cardHTML=d.card_name?`<div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1),rgba(230,57,70,.05));border-color:rgba(230,57,70,.2)">
-    <div class="st" style="margin-bottom:6px">🃏 Kartendetails</div>
-    <div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:.02em">${d.card_name}</div>
-    <div style="display:flex;flex-wrap:wrap">
-      ${d.language?`<div class="ipill">🌐 <b>${d.language}</b></div>`:''}
-      ${d.set_name?`<div class="ipill">📦 <b>${d.set_name}</b></div>`:''}
-      ${d.card_number?`<div class="ipill">#<b>${d.card_number}</b></div>`:''}
-      ${d.hp?`<div class="ipill">❤️ <b>${d.hp}</b></div>`:''}
-      ${d.rarity?`<div class="ipill">⭐ <b>${d.rarity}</b></div>`:''}
-      ${d.category?`<div class="ipill">🏷 <b>${d.category}</b></div>`:''}
-    </div>
-  </div>`:'';
-  const cenBody=`${ci?`<div style="background:var(--s2);border-radius:var(--rs);padding:10px;margin-bottom:10px"><img src="${ci}" style="width:100%;border-radius:4px;display:block"></div>`:''}
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">
-      ${[['VS L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],['VS T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],['RS L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],['RS T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>`<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">${l}</div><div style="font-size:17px;font-weight:700;color:${cc(p)};font-family:var(--fh)">${v||'–'}</div></div>`).join('')}
-    </div><div style="font-size:12px;color:var(--mu);line-height:1.5">${cen.notes||''}</div>`;
-  const corBody=`<div class="cg">${['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return`<div class="cgc"><div class="cgl">${l}</div><div style="font-size:12px">${r.corners?.[k]||'–'}</div></div>`}).join('')}</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.corners?.notes||''}</div>`;
-  const edgBody=`${['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return`<div class="dr"><span style="color:var(--mu)">${l}</span><span style="max-width:58%;text-align:right">${r.edges?.[k]||'–'}</span></div>`}).join('')}<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">${r.edges?.notes||''}</div>`;
-  const surBody=`${r.surface?.defects?.length?r.surface.defects.map(d2=>`<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">⚠️</span><span style="font-size:12px">${d2}</span></div>`).join(''):'<div style="font-size:12px;color:var(--mu);margin-bottom:6px;display:flex;gap:5px"><span style="color:#4ade80">✓</span>Keine Defekte erkannt</div>'}<div style="font-size:12px;color:var(--mu);line-height:1.5">${r.surface?.notes||''}</div>`;
-  const html=`
-    ${cardHTML}
-    <div class="card" style="margin-bottom:10px">
-      <div style="display:flex;align-items:stretch;gap:14px;margin-bottom:14px">
-        <div class="psa-slab">
-          <div class="psa-top">PSA</div>
-          <div class="psa-body"><div class="psa-num" style="color:${gclr.c}">${g}</div><div class="psa-sub">${gLbl(g)}</div></div>
-        </div>
-        <div style="flex:1">
-          <div style="font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:5px;color:${gclr.c}">${r.grade_label||gLbl(g)}</div>
-          <div style="display:inline-block;background:${gclr.bg};border:1px solid ${gclr.bd};color:${gclr.c};font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fh);letter-spacing:.04em">LOWEST: ${lo}/10</div>
-          ${r.summary?`<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">${r.summary}</div>`:''}
-        </div>
-      </div>
-      ${sbar(cen.score||0,'Zentrierung')}${sbar(r.corners?.score||0,'Ecken')}${sbar(r.edges?.score||0,'Ränder')}${sbar(r.surface?.score||0,'Oberfläche')}
-      ${r.recommendation?`<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.recommendation}</div></div>`:''}
-    </div>
-    <!-- Price watch indicator -->
-    <div id="pw-indicator" style="margin-bottom:6px"></div>
-    <!-- eBay section (loaded async) -->
-    <div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>
-    <div class="card" style="padding:14px;margin-bottom:10px">
-      <div class="st" style="margin-bottom:10px">📌 Kartenbeschriftung</div>
-      <div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Vorderseite</div>
-      ${af?`<div class="aw" id="aw-f"><img src="${af}" class="ai" onclick="tapM(event,'f')" style="cursor:crosshair"><div class="mtt" id="tt-f"></div></div>${mleg(_fm)}`:''}
-      <div style="font-size:12px;font-weight:500;color:var(--mu);margin:14px 0 6px">Rückseite</div>
-      ${ab?`<div class="aw" id="aw-b"><img src="${ab}" class="ai" onclick="tapM(event,'b')" style="cursor:crosshair"><div class="mtt" id="tt-b"></div></div>${mleg(_bm)}`:''}
-    </div>
-    <div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">
-      <div style="padding:12px 16px;border-bottom:1px solid var(--b0)" class="st">Detailbewertung</div>
-      ${accv('ac','⚖️','Zentrierung',cen.score||0,cenBody)}
-      ${accv('ae','🔍','Ecken & Whitening',r.corners?.score||0,corBody)}
-      ${accv('ar','📐','Ränder',r.edges?.score||0,edgBody)}
-      ${accv('as','✨','Oberfläche',r.surface?.score||0,surBody)}
-    </div>
-    <div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">ℹ️ KI-Einschätzung · kein offizielles PSA-Ergebnis</div>
-    ${fromHist?`<button class="btn btn-s" onclick="safeNav(A.fromScreen||'pg-collection')" style="margin-top:10px">← Zurück</button>`:`<button class="btn btn-s" onclick="safeNav('pg-home')" style="margin-top:10px">🏠 Startseite</button>`}
-    <div class="cr">© <a href="#" onclick="openLegal('impressum');return false">Impressum</a> · <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>`;
-  $(fromHist?'det-page':'res-page').innerHTML=html;
-}
-function tapM(e,s){try{const img=e.target,rect=img.getBoundingClientRect();const xr=((e.clientX-rect.left)/rect.width)*100,yr=((e.clientY-rect.top)/rect.height)*100;const markers=s==='f'?_fm:_bm;const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);const tt=$('tt-'+s);if(!tt)return;if(hit){tt.textContent=`${hit.label||''}: ${hit.description||ml(hit.type)}`;tt.style.display='block';tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';setTimeout(()=>tt.style.display='none',2800);}else tt.style.display='none';}catch(e){}}
-
-/* DB */
-let _db=null;
-const openDB=()=>new Promise((res,rej)=>{if(_db){res(_db);return;}const r=indexedDB.open('pgDB7',1);r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};r.onsuccess=e=>{_db=e.target.result;res(_db);};r.onerror=()=>rej(new Error('DB Fehler'));});
-const dbPut=async e=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').put(e);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Schreiben fehlgeschlagen'));});};
-const dbAll=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readonly'),q=tx.objectStore('g').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(new Error('Lesen fehlgeschlagen'));});};
-const dbDel=async id=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Löschen fehlgeschlagen'));});};
-const dbClear=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Fehler'));});};
-
-/* SAVE */
-async function saveGrade(){
-  const btn=$('save-btn');if(!A.result||A.saved)return;
-  btn.textContent='⏳…';btn.disabled=true;
-  try{
-    const d=A.detected||{};
-    const entry={id:Date.now().toString(),timestamp:Date.now(),
-      cardName:d.card_name||'Unbekannte Karte',cardLang:d.language,cardSet:d.set_name,cardHolo:d.holo_type||'',
-      cardNumber:d.card_number,cardHP:d.hp,cardRarity:d.rarity,cardCat:d.category,
-      grade:A.result.final_grade,label:A.result.grade_label,
-      summary:A.result.summary,recommendation:A.result.recommendation,
-      centering:A.result.centering,corners:A.result.corners,edges:A.result.edges,surface:A.result.surface,
-      markers:A.result.markers||[],annF:A.annF,annB:A.annB,cenImg:A.cenImg};
-    await dbPut(entry);A.saved=true;btn.textContent='✓ Gespeichert';toast('✅ In Sammlung gespeichert');
-  }catch(e){btn.textContent='💾 SPEICHERN';btn.disabled=false;toast('❌ '+e.message);}
-}
-
-/* COLLECTION */
-let _fg='all',_sm=0;
-const SORTS=[{l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},{l:'Beste Note',fn:(a,b)=>b.grade-a.grade},{l:'Schwächste',fn:(a,b)=>a.grade-b.grade},{l:'Name A–Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}];
-function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
-function cycleSort(){_sm=(_sm+1)%SORTS.length;$('sort-lbl').textContent=SORTS[_sm].l;renderColl();}
-async function renderColl(){
-  const grid=$('coll-grid'),empty=$('coll-empty'),cnt=$('coll-count');
-  try{
-    let all=await dbAll();
-    const q=($('coll-search').value||'').toLowerCase().trim();
-    if(q)all=all.filter(e=>(e.cardName||'').toLowerCase().includes(q)||(e.cardSet||'').toLowerCase().includes(q)||(e.cardNumber||'').toLowerCase().includes(q));
-    if(_fg==='10')all=all.filter(e=>e.grade>=10);else if(_fg==='9')all=all.filter(e=>e.grade===9);else if(_fg==='8')all=all.filter(e=>e.grade===8);else if(_fg==='7')all=all.filter(e=>e.grade===7);else if(_fg==='low')all=all.filter(e=>e.grade<=6);
-    all.sort(SORTS[_sm].fn);cnt.textContent=all.length+' Karten';
-    if(!all.length){grid.innerHTML='';sh(empty);return;}hi(empty);
-    grid.innerHTML=all.map(e=>{const gclr=gc(e.grade);return`<div class="coll-card" onclick="showDetail('${e.id}')">
-      <div class="coll-tw">${e.annF?`<img class="coll-thumb" src="${e.annF}" alt="" loading="lazy">`:`<div class="coll-ph">🃏</div>`}
-      <div class="cgs"><div class="cgs-top"></div><div class="cgs-num" style="color:${gclr.c}">${e.grade}</div></div></div>
-      <div class="coll-info">
-        <div class="coll-name">${e.cardName||'Unbekannt'}</div>
-        <div class="coll-sub">${[e.cardSet,e.cardNumber].filter(Boolean).join(' · ')||'–'}</div>
-        ${e.cardLang?`<div style="font-size:10px;color:var(--hi);margin-top:1px">${e.cardLang}</div>`:''}
-        <div class="coll-tag" style="background:${gclr.bg};color:${gclr.c};border:1px solid ${gclr.bd}">PSA ${e.grade} ${gLbl(e.grade)}</div>
-      </div></div>`;}).join('');
-  }catch(e){grid.innerHTML='<div class="empty">Sammlung konnte nicht geladen werden</div>';}
-}
-
-/* DETAIL */
-async function showDetail(id,from){
-  try{
-    A.fromScreen=from||'pg-collection';A.detailId=id;
-    const all=await dbAll();const e=all.find(x=>x.id===id);if(!e){toast('❌ Nicht gefunden');return;}
-    $('det-title').textContent=e.cardName||(e.label+' PSA '+e.grade);
-    $('det-back').onclick=()=>safeNav(A.fromScreen);navTo('pg-detail');
-    _fm=(e.markers||[]).filter(m=>m.side==='front');
-    _bm=(e.markers||[]).filter(m=>m.side==='back');
-    const det={card_name:e.cardName,language:e.cardLang,hp:e.cardHP,set_name:e.cardSet,card_number:e.cardNumber,rarity:e.cardRarity,category:e.cardCat};
-    renderResults({...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]},e.annF,e.annB,e.cenImg,true,det);
-    // Load eBay for history too
-    setTimeout(()=>fetchEbayPrices(det,e.grade),200);
-  }catch(e){toast('❌ '+e.message);}
-}
-async function delEntry(){if(!A.detailId)return;try{await dbDel(A.detailId);A.detailId=null;toast('🗑 Gelöscht');safeNav(A.fromScreen||'pg-collection');}catch(e){toast('❌ '+e.message);}}
-async function confirmClear(){if(!confirm('Gesamte Sammlung löschen?'))return;try{await dbClear();toast('🗑 Geleert');navTo('pg-home');}catch(e){}}
-
-/* HOME DATA */
-async function loadStats(){
-  try{const all=await dbAll();const cnt=$('home-stats');if(!all.length){cnt.innerHTML='';return;}
-    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);const gem=all.filter(e=>e.grade>=10).length;
-    cnt.innerHTML=[{ico:'🃏',v:all.length,l:'Karten'},{ico:'⭐',v:avg,l:'Ø Note'},{ico:'💎',v:gem,l:'Gem Mint'}]
-      .map(({ico,v,l})=>`<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:20px">${ico}</div><div style="font-family:var(--fh);font-size:20px;font-weight:700">${v}</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">${l}</div></div>`).join('');}catch(e){}}
-async function loadRecent(){
-  const el=$('recent-list');
-  try{const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);if(!all.length){el.innerHTML='';return;}
-    el.innerHTML='<div class="st" style="margin-bottom:8px">Zuletzt bewertet</div>'
-      +all.slice(0,3).map(e=>{const gclr=gc(e.grade);const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
-        return`<div class="hi" onclick="showDetail('${e.id}','pg-home')">
-          ${e.annF?`<img class="hth" src="${e.annF}" alt="">`:`<div class="hth" style="display:flex;align-items:center;justify-content:center;font-size:20px">🃏</div>`}
-          <div style="flex:1;min-width:0">
-            <div style="font-size:14px;font-weight:600;margin-bottom:1px">${e.cardName||'Unbekannte Karte'}</div>
-            <div style="font-size:11px;color:var(--mu)">${e.cardSet?e.cardSet+' · ':''} ${d}</div>
-          </div>
-          <div class="psa-slab" style="transform:scale(.75);transform-origin:right center">
-            <div class="psa-top">PSA</div>
-            <div class="psa-body"><div class="psa-num" style="color:${gclr.c}">${e.grade}</div><div class="psa-sub">${gLbl(e.grade).split(' ')[0]}</div></div>
-          </div>
-        </div>`;}).join('')
-      +`<button class="btn btn-s" onclick="navTo('pg-collection')" style="margin-top:4px;font-size:13px">Alle Karten anzeigen →</button>`;}catch(e){el.innerHTML='';}
-}
-async function loadSettingsStats(){
-  try{const all=await dbAll();const el=$('settings-stats');if(!el)return;if(!all.length){el.textContent='Noch keine Karten bewertet';return;}const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);el.innerHTML=`Gesamt: <b>${all.length} Karten</b><br>Durchschnittsnote: <b>${avg}</b><br>Gem Mint (PSA 10): <b>${all.filter(e=>e.grade>=10).length}</b><br>Mint (PSA 9): <b>${all.filter(e=>e.grade===9).length}</b>`;}catch(e){}}
-
-/* CAMERA ZOOM */
-let _zoomLevel=1,_ptDist=null,_camSide='front';
-function stepZoom(d){setZoom(_zoomLevel+d);}
-function setZoom(v){
-  _zoomLevel=Math.max(1,Math.min(5,v));
+  $('cam-badge').textContent=_camTarget==='front'?'VORDERSEITE':'RÜCKSEITE';
   const vid=$('cam-video');
-  if(vid)vid.style.transform=`scale(${_zoomLevel})`;
+  vid.style.opacity=0;
+  $('shutter').disabled=true;
+  navigator.mediaDevices.getUserMedia({
+    video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},
+    audio:false
+  }).then(s=>{
+    _str=s; vid.srcObject=s; return vid.play();
+  }).then(()=>{
+    vid.style.opacity=1;
+    $('shutter').disabled=false;
+    startOvl();
+    if(_camTarget==='back' && A.front.url) {
+      if(!_ghost) _ghost=new Image();
+      _ghost.src=A.front.url;
+    }
+  }).catch(()=>{
+    closeCam();
+    sh($('no-cam')); sh($('uz-gal')); hi($('btn-cam-f')); hi($('btn-cam-b'));
+    toast('📱 Kamerazugriff verweigert');
+  });
+}
+function closeCam() {
+  try { stopCam(); $('cam-modal').classList.remove('open'); } catch(e) {}
+}
+function stopCam() {
+  try {
+    if(_raf) { cancelAnimationFrame(_raf); _raf=null; }
+    if(_str) { _str.getTracks().forEach(t=>t.stop()); _str=null; }
+  } catch(e) {}
+}
+function flipCam() { _facing=_facing==='environment'?'user':'environment'; stopCam(); openCam(); }
+
+function setZoom(v) {
+  _zoomLevel=Math.max(1, Math.min(5, v));
+  const vid=$('cam-video');
+  if(vid) vid.style.transform='scale('+_zoomLevel+')';
   const lbl=$('zoom-lbl');
-  if(lbl)lbl.textContent=_zoomLevel.toFixed(1)+'×';
-  // Try hardware zoom if available
-  if(_str){
+  if(lbl) lbl.textContent=_zoomLevel.toFixed(1)+'×';
+  if(_str) {
     const track=_str.getVideoTracks()[0];
-    if(track){
-      const caps=track.getCapabilities&&track.getCapabilities();
-      if(caps&&caps.zoom){
-        const z=Math.max(caps.zoom.min,Math.min(caps.zoom.max,_zoomLevel*(caps.zoom.max/5)));
+    if(track && track.getCapabilities) {
+      const caps=track.getCapabilities();
+      if(caps.zoom) {
+        const z=Math.max(caps.zoom.min, Math.min(caps.zoom.max, _zoomLevel*(caps.zoom.max/5)));
         track.applyConstraints({advanced:[{zoom:z}]}).catch(()=>{});
       }
     }
   }
 }
-function initPinch(){
-  const modal=$('cam-modal');if(!modal)return;
-  modal.addEventListener('touchstart',e=>{
-    if(e.touches.length===2)_ptDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
-  },{passive:true});
-  modal.addEventListener('touchmove',e=>{
-    if(e.touches.length!==2||!_ptDist)return;
+function stepZoom(d) { setZoom(_zoomLevel+d); }
+
+function startOvl() {
+  const vid=$('cam-video'), cvs=$('cam-canvas');
+  function draw() {
+    try {
+      const vw=vid.clientWidth, vh=vid.clientHeight;
+      if(!vw||!vh) { _raf=requestAnimationFrame(draw); return; }
+      cvs.width=vw; cvs.height=vh;
+      const ctx=cvs.getContext('2d');
+      ctx.clearRect(0,0,vw,vh);
+      const R=63/88;
+      let fw=vw*.84, fh=fw/R;
+      if(fh>vh*.80) { fh=vh*.78; fw=fh*R; }
+      fw=Math.round(fw); fh=Math.round(fh);
+      const fx=Math.round((vw-fw)/2), fy=Math.round((vh-fh)/2);
+      _fR={fx,fy,fw,fh,vw,vh};
+      ctx.fillStyle='rgba(0,0,0,.48)';
+      ctx.fillRect(0,0,vw,vh);
+      ctx.clearRect(fx,fy,fw,fh);
+      if(_camTarget==='back' && _ghost && _ghost.complete && _ghost.naturalWidth>0) {
+        ctx.globalAlpha=.2;
+        ctx.drawImage(_ghost,fx,fy,fw,fh);
+        ctx.globalAlpha=1;
+      }
+      const CL=Math.min(fw,fh)*.09;
+      const col=_camTarget==='front'?'#e63946':'#60a5fa';
+      ctx.strokeStyle=col; ctx.lineWidth=3; ctx.lineCap='round';
+      [[fx,fy,1,1],[fx+fw,fy,-1,1],[fx,fy+fh,1,-1],[fx+fw,fy+fh,-1,-1]].forEach(([cx,cy,dx,dy])=>{
+        ctx.beginPath(); ctx.moveTo(cx+dx*CL,cy); ctx.lineTo(cx,cy); ctx.lineTo(cx,cy+dy*CL); ctx.stroke();
+      });
+      ctx.strokeStyle='rgba(255,255,255,.1)'; ctx.lineWidth=.7; ctx.setLineDash([3,5]);
+      ctx.beginPath(); ctx.moveTo(fx+fw/2,fy+4); ctx.lineTo(fx+fw/2,fy+fh-4); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(fx+4,fy+fh/2); ctx.lineTo(fx+fw-4,fy+fh/2); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.font='bold 11px -apple-system,sans-serif';
+      ctx.textAlign='center';
+      ctx.fillStyle='rgba(255,255,255,.28)';
+      ctx.fillText('Karte hier ausrichten', fx+fw/2, fy+fh-10);
+    } catch(e) {}
+    _raf=requestAnimationFrame(draw);
+  }
+  draw();
+}
+
+function initPinch() {
+  const modal=$('cam-modal');
+  if(!modal) return;
+  modal.addEventListener('touchstart', e=>{
+    if(e.touches.length===2)
+      _ptDist=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
+  }, {passive:true});
+  modal.addEventListener('touchmove', e=>{
+    if(e.touches.length!==2 || !_ptDist) return;
     e.preventDefault();
-    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX,e.touches[0].clientY-e.touches[1].clientY);
+    const d=Math.hypot(e.touches[0].clientX-e.touches[1].clientX, e.touches[0].clientY-e.touches[1].clientY);
     setZoom(_zoomLevel*(d/_ptDist));
     _ptDist=d;
-  },{passive:false});
-  modal.addEventListener('touchend',()=>{_ptDist=null;},{passive:true});
+  }, {passive:false});
+  modal.addEventListener('touchend', ()=>{ _ptDist=null; }, {passive:true});
 }
 
-
-/* ══════════ THEME TOGGLE ══════════ */
-function toggleTheme(){
-  const isDark=document.body.getAttribute('data-theme')!=='light';
-  document.body.setAttribute('data-theme',isDark?'light':'dark');
-  localStorage.setItem('pg_theme',isDark?'light':'dark');
-  const btn=$('theme-btn');
-  if(btn)btn.textContent=isDark?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+function takeShot() {
+  try {
+    const vid=$('cam-video');
+    if(!_fR) return;
+    const {fx,fy,fw,fh,vw,vh}=_fR;
+    const scX=vid.videoWidth/vw, scY=vid.videoHeight/vh;
+    const z=_zoomLevel||1;
+    const ofx=(fx+fw/2-vw/2)/z, ofy=(fy+fh/2-vh/2)/z;
+    const vcx=vid.videoWidth/2+ofx*scX;
+    const vcy=vid.videoHeight/2+ofy*scY;
+    const vfw=fw*scX/z, vfh=fh*scY/z;
+    const c=document.createElement('canvas');
+    c.width=Math.round(vfw); c.height=Math.round(vfh);
+    c.getContext('2d').drawImage(vid, vcx-vfw/2, vcy-vfh/2, vfw, vfh, 0, 0, c.width, c.height);
+    c.toBlob(blob=>{ if(blob) readBlob(blob,'image/jpeg'); }, 'image/jpeg', .92);
+    closeCam();
+  } catch(e) { toast('❌ Aufnahme fehlgeschlagen'); }
 }
-function applyTheme(){
-  const t=localStorage.getItem('pg_theme')||'dark';
-  document.body.setAttribute('data-theme',t);
-  const btn=$('theme-btn');
-  if(btn)btn.textContent=t==='light'?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+
+function openGallery() {
+  try {
+    const fi=$('file-in');
+    fi.removeAttribute('capture');
+    fi.click();
+    setTimeout(()=>fi.setAttribute('capture','environment'), 500);
+  } catch(e) {}
+}
+function onFile(e) {
+  try {
+    const f=e.target.files && e.target.files[0];
+    if(f) readBlob(f, f.type||'image/jpeg');
+    e.target.value='';
+  } catch(e2) {}
+}
+function readBlob(blob, type) {
+  const url=URL.createObjectURL(blob);
+  const rd=new FileReader();
+  rd.onload=()=>storePhoto(url, rd.result.split(',')[1], type);
+  rd.onerror=()=>toast('❌ Bild konnte nicht gelesen werden');
+  rd.readAsDataURL(blob);
+}
+function storePhoto(url, b64, type) {
+  // BUG FIX: use _camTarget, NOT A.step
+  const side=_camTarget||'front';
+  const s=side==='front'?A.front:A.back;
+  s.url=url; s.b64=b64; s.type=type;
+  setupCapture();
 }
 
-/* ══════════ EDIT CARD MODAL ══════════ */
+// ── QR SCANNER ──────────────────────────────────
+let _scanStr=null, _scanIv=null;
+function openScanner() {
+  const modal=$('scan-modal');
+  modal.classList.add('open');
+  const vid=$('scan-video');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
+  .then(s=>{ _scanStr=s; vid.srcObject=s; vid.play(); startBarcodeDetect(vid); })
+  .catch(()=>{ closeScanner(); toast('📱 Kamera nicht verfügbar'); });
+}
+function closeScanner() {
+  try {
+    if(_scanIv) { clearInterval(_scanIv); _scanIv=null; }
+    if(_scanStr) { _scanStr.getTracks().forEach(t=>t.stop()); _scanStr=null; }
+    $('scan-modal').classList.remove('open');
+  } catch(e) {}
+}
+function startBarcodeDetect(vid) {
+  if(!('BarcodeDetector' in window)) {
+    $('scan-status').textContent='QR-Scanner nicht unterstützt — manuell eingeben';
+    return;
+  }
+  const det=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128']});
+  _scanIv=setInterval(async()=>{
+    if(!vid.videoWidth) return;
+    try {
+      const codes=await det.detect(vid);
+      if(codes && codes.length>0) {
+        clearInterval(_scanIv); _scanIv=null;
+        closeScanner();
+        handleBarcodeResult(codes[0].rawValue);
+      }
+    } catch(e) {}
+  }, 400);
+}
+function handleBarcodeResult(val) {
+  toast('✅ Code: '+val.substring(0,30));
+  if(val.startsWith('http')) {
+    if(confirm('QR-Link öffnen?\n'+val.substring(0,60))) window.open(val,'_blank');
+  } else {
+    resetState();
+    navTo('pg-capture');
+    setTimeout(()=>{ setupCapture(); }, 50);
+  }
+}
+
+// ── ANALYSIS ──────────────────────────────────────
+const MSGS=['Bild wird verarbeitet…','Karte wird erkannt…','Zentrierung wird gemessen…','Ecken werden analysiert…','Ränder werden geprüft…','Defektpositionen kartieren…','Grade wird berechnet…'];
+
+function checkOnline() {
+  if(!navigator.onLine) { toast('⚠️ Keine Internetverbindung', 4000); return false; }
+  return true;
+}
+
+async function runAnalysis() {
+  if(!checkOnline()) return;
+  navTo('pg-analyzing');
+  let mi=0;
+  $('ana-msg').textContent=MSGS[0];
+  const iv=setInterval(()=>{ mi=Math.min(mi+1,MSGS.length-1); $('ana-msg').textContent=MSGS[mi]; }, 1800);
+  try {
+    const key=getKey();
+    if(!key) throw new Error('no-key');
+    if(!A.front.b64) throw new Error('Vorderseitenfoto fehlt');
+    const content=[
+      {type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}},
+    ];
+    if(A.back.b64) content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
+    content.push({type:'text',text:A.back.b64?`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
+PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
+Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`:`Analyze this Pokémon card front for PSA pre-grading (back not provided, estimate where needed).
+Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`});
+
+    const resp=await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:1500,
+        system:'You are a certified PSA card grading expert AND Pokémon card identification specialist. Return ONLY valid JSON. No markdown. No backticks.',
+        messages:[{role:'user',content}]
+      })
+    });
+    if(!resp.ok) {
+      const eb=await resp.json().catch(()=>({}));
+      throw new Error(eb?.error?.message||'HTTP '+resp.status);
+    }
+    const data=await resp.json();
+    const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    A.result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    clearInterval(iv);
+    const fm=(A.result.markers||[]).filter(m=>m.side==='front');
+    const bm=(A.result.markers||[]).filter(m=>m.side==='back');
+    [A.annF, A.annB, A.cenImg]=await Promise.all([
+      annotImg(A.front.url, fm),
+      annotImg(A.back.url,  bm),
+      cenDiag(A.result.centering||{})
+    ]);
+    const d=A.result.card_info||{};
+    $('cd-name').value=d.card_name||'';
+    $('cd-lang').value=d.language||'';
+    $('cd-hp').value=d.hp||'';
+    $('cd-set').value=d.set_name||'';
+    $('cd-num').value=d.card_number||'';
+    $('cd-rar').value=d.rarity||'';
+    $('cd-cat').value=d.category||'';
+    navTo('pg-carddata');
+  } catch(err) {
+    clearInterval(iv);
+    if(err.message==='no-key') { toast('⚠️ Kein API-Key'); navTo('pg-settings'); }
+    else { toast('❌ '+(err.message||'Analyse fehlgeschlagen')); navTo('pg-capture'); setTimeout(setupCapture,50); }
+  }
+}
+
+function confirmCardData() {
+  A.detected={
+    card_name:    $('cd-name').value.trim()||'Unbekannte Karte',
+    language:     $('cd-lang').value.trim(),
+    hp:           $('cd-hp').value.trim(),
+    set_name:     $('cd-set').value.trim(),
+    card_number:  $('cd-num').value.trim(),
+    rarity:       $('cd-rar').value.trim(),
+    category:     $('cd-cat').value.trim(),
+    holo_type:    A.result?.card_info?.holo_type||'',
+  };
+  renderResults(A.result, A.annF, A.annB, A.cenImg, false, A.detected);
+  navTo('pg-results');
+  setTimeout(()=>fetchEbayPrices(A.detected, A.result.final_grade), 150);
+}
+
+// ── EBAY ──────────────────────────────────────
+async function fetchEbayPrices(cardInfo, grade) {
+  const key=getKey();
+  if(!key) return;
+  const el=$('ebay-section');
+  if(!el) return;
+  el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise <span class="spin-sm"></span></div><div style="font-size:12px;color:var(--mu)">Suche läuft…</div>';
+  try {
+    const q=[cardInfo.card_name,cardInfo.set_name,cardInfo.card_number,'PSA '+grade].filter(Boolean).join(' ');
+    const resp=await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        'x-api-key':key,
+        'anthropic-version':'2023-06-01',
+        'anthropic-dangerous-direct-browser-access':'true'
+      },
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6', max_tokens:800,
+        tools:[{type:'web_search_20250305',name:'web_search'}],
+        system:'Search eBay for sold Pokémon cards. Respond ONLY with a JSON array.',
+        messages:[{role:'user',content:'Search eBay.de for recently sold: "'+q+'". Return JSON array of 4 results: [{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/...","condition":"PSA '+grade+'"}]. Only JSON.'}]
+      })
+    });
+    if(!resp.ok) throw new Error('eBay HTTP '+resp.status);
+    const data=await resp.json();
+    const text=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    let items=[];
+    try { items=JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e) {}
+    const ebayUrl='https://www.ebay.de/sch/i.html?_nkw='+encodeURIComponent(q)+'&LH_Complete=1&LH_Sold=1';
+    if(!items||!items.length) {
+      el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div><div class="al al-a">Keine Ergebnisse. <a href="'+ebayUrl+'" target="_blank" style="color:var(--am)">Auf eBay suchen →</a></div>';
+      return;
+    }
+    el.innerHTML='<div class="st" style="margin-bottom:8px">💰 Aktuelle eBay Verkaufspreise</div>'
+      +items.map(it=>'<a href="'+(it.url||ebayUrl)+'" target="_blank" class="ebay-item"><div style="flex:1;min-width:0"><div class="ebay-title">'+it.title+'</div><div class="ebay-date">'+(it.sold_date||'')+' · '+(it.condition||'')+'</div></div><div class="ebay-price">'+(it.price||'–')+'</div><div style="color:var(--mu);font-size:16px">›</div></a>').join('')
+      +'<a href="'+ebayUrl+'" target="_blank" style="text-decoration:none"><div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle auf eBay anzeigen →</div></a>'
+      +'<div style="font-size:10px;color:var(--hi);padding:4px 0 8px">KI-gestützte Websuche · Preise können variieren</div>';
+    // Price watch
+    if(A.detailId) {
+      const all2=await dbAll();
+      const ew=all2.find(x=>x.id===A.detailId);
+      if(ew) updatePriceWatchUI(ew, items);
+    }
+  } catch(e) {
+    const fallback='https://www.ebay.de/sch/i.html?_nkw='+encodeURIComponent((cardInfo.card_name||'')+' PSA '+grade);
+    el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div><a href="'+fallback+'" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">🔍 Auf eBay suchen</a>';
+  }
+}
+
+function updatePriceWatchUI(entry, ebayItems) {
+  const wp=entry?.watchPrice;
+  const el=$('pw-indicator');
+  if(!el) return;
+  if(!wp) { el.innerHTML=''; return; }
+  if(!ebayItems||!ebayItems.length) {
+    el.innerHTML='<div class="pw-badge pw-set">⏰ Zielpreis: €'+wp.toFixed(2)+'</div>';
+    return;
+  }
+  const prices=ebayItems.map(i=>{ const m=String(i.price||'').replace(',','.').match(/[\d.]+/); return m?parseFloat(m[0]):null; }).filter(Boolean);
+  if(!prices.length) return;
+  const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const hit=avg<=wp;
+  el.innerHTML='<div class="pw-badge '+(hit?'pw-hit':'pw-miss')+'">'+
+    (hit?'🟢':'🔴')+' Zielpreis €'+wp.toFixed(2)+' · Ø eBay €'+avg.toFixed(2)+' '+(hit?'✓ Im Zielbereich':'↑ Über Zielpreis')+'</div>';
+}
+
+// ── CANVAS ANNOTATION ──────────────────────────
+const MC={whitening:'#fbbf24',corner_damage:'#ef4444',edge_damage:'#f97316',scratch:'#a855f7',print_line:'#3b82f6',holo_damage:'#ec4899',stain:'#84cc16',crease:'#ef4444'};
+const ML={whitening:'Whitening',corner_damage:'Ecken-Schaden',edge_damage:'Rand-Schaden',scratch:'Kratzer',print_line:'Drucklinie',holo_damage:'Holo-Schaden',stain:'Fleck',crease:'Knick'};
+const mc=t=>MC[t]||'#ef4444';
+const ml=t=>ML[t]||t;
+
+function annotImg(url, markers) {
+  return new Promise(res=>{
+    if(!url) { res(null); return; }
+    const img=new Image();
+    img.onload=()=>{
+      try {
+        const MAX=900, sc=img.width>MAX?MAX/img.width:1;
+        const W=Math.round(img.width*sc), H=Math.round(img.height*sc);
+        const c=document.createElement('canvas'); c.width=W; c.height=H;
+        const ctx=c.getContext('2d'); ctx.drawImage(img,0,0,W,H);
+        (markers||[]).forEach((m,i)=>{
+          const x=W*(m.x_pct/100), y=H*(m.y_pct/100), R=15, col=mc(m.type);
+          ctx.shadowColor='rgba(0,0,0,.6)'; ctx.shadowBlur=6;
+          ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.fillStyle=col+'cc'; ctx.fill();
+          ctx.shadowBlur=0;
+          ctx.beginPath(); ctx.arc(x,y,R,0,Math.PI*2); ctx.strokeStyle='#fff'; ctx.lineWidth=1.8; ctx.stroke();
+          ctx.font='bold 13px -apple-system,sans-serif';
+          ctx.textAlign='center'; ctx.textBaseline='middle';
+          ctx.fillStyle='#fff'; ctx.shadowColor='rgba(0,0,0,.5)'; ctx.shadowBlur=2;
+          ctx.fillText(String(i+1), x, y+.5); ctx.shadowBlur=0;
+        });
+        res(c.toDataURL('image/jpeg',.88));
+      } catch(e) { res(url); }
+    };
+    img.onerror=()=>res(url);
+    img.src=url;
+  });
+}
+
+function cenDiag(cen) {
+  return new Promise(res=>{
+    try {
+      const W=700, H=230;
+      const c=document.createElement('canvas'); c.width=W; c.height=H;
+      const ctx=c.getContext('2d');
+      ctx.fillStyle='#13131f'; ctx.fillRect(0,0,W,H);
+      const cgC=p=>p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';
+      const cgG=p=>p<=55?10:p<=60?9:p<=65?8:p<=70?7:p<=80?6:p<=85?5:4;
+      const rr=(ctx,x,y,w,h,r)=>{
+        ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);
+        ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);
+        ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);
+        ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);
+        ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+      };
+      const ds=(cx,cy,cw,ch,lp,rp,tp,bp,lbl)=>{
+        lp=lp||50;rp=rp||50;tp=tp||50;bp=bp||50;
+        const TH=cw*.15,TV=ch*.12;
+        const lW=TH*(lp/100),rW=TH*(rp/100),tH=TV*(tp/100),bH=TV*(bp/100);
+        const lrC=cgC(Math.max(lp,rp)),tbC=cgC(Math.max(tp,bp));
+        ctx.fillStyle='#1e1e32';rr(ctx,cx,cy,cw,ch,5);ctx.fill();
+        ctx.fillStyle=lrC+'22';ctx.fillRect(cx,cy,lW,ch);ctx.fillRect(cx+cw-rW,cy,rW,ch);
+        ctx.fillStyle=tbC+'22';ctx.fillRect(cx+lW,cy,cw-lW-rW,tH);ctx.fillRect(cx+lW,cy+ch-bH,cw-lW-rW,bH);
+        ctx.fillStyle='#0e0e1a';rr(ctx,cx+lW,cy+tH,cw-lW-rW,ch-tH-bH,3);ctx.fill();
+        ctx.strokeStyle='rgba(255,255,255,.08)';ctx.lineWidth=.8;rr(ctx,cx,cy,cw,ch,5);ctx.stroke();
+        ctx.strokeStyle='rgba(255,255,255,.08)';ctx.setLineDash([3,4]);
+        ctx.beginPath();ctx.moveTo(cx+cw/2,cy+2);ctx.lineTo(cx+cw/2,cy+ch-2);ctx.stroke();
+        ctx.beginPath();ctx.moveTo(cx+2,cy+ch/2);ctx.lineTo(cx+cw-2,cy+ch/2);ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.font='bold 10px monospace';ctx.textAlign='center';ctx.textBaseline='middle';
+        if(lW>16){ctx.fillStyle=lrC;ctx.fillText(lp+'%',cx+lW/2,cy+ch/2);}
+        if(rW>16){ctx.fillStyle=lrC;ctx.fillText(rp+'%',cx+cw-rW/2,cy+ch/2);}
+        if(tH>10){ctx.fillStyle=tbC;ctx.fillText(tp+'%',cx+cw/2,cy+tH/2);}
+        if(bH>10){ctx.fillStyle=tbC;ctx.fillText(bp+'%',cx+cw/2,cy+ch-bH/2);}
+        ctx.font='9px sans-serif';ctx.fillStyle='rgba(255,255,255,.35)';
+        ctx.textAlign='left';ctx.fillText('L/R '+lp+'/'+rp,cx,cy+ch+13);
+        ctx.textAlign='right';ctx.fillText('T/B '+tp+'/'+bp,cx+cw,cy+ch+13);
+        const mx=Math.max(lp,rp,tp,bp),gc2=cgC(mx);
+        ctx.fillStyle=gc2+'1e';rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.fill();
+        ctx.strokeStyle=gc2+'44';ctx.lineWidth=.8;rr(ctx,cx+cw-30,cy-22,28,18,4);ctx.stroke();
+        ctx.font='bold 9px sans-serif';ctx.fillStyle=gc2;ctx.textAlign='center';
+        ctx.fillText('PSA '+cgG(mx),cx+cw-16,cy-13);
+        ctx.font='bold 10px sans-serif';ctx.fillStyle='rgba(255,255,255,.28)';
+        ctx.textAlign='center';ctx.fillText(lbl,cx+cw/2,cy-10);
+      };
+      const pad=32,gap=18,cH=H-58,cW=(W-pad*2-gap)/2;
+      ds(pad,30,cW,cH,cen.front_left_pct,cen.front_right_pct,cen.front_top_pct,cen.front_bottom_pct,'Vorderseite');
+      ds(pad+cW+gap,30,cW,cH,cen.back_left_pct,cen.back_right_pct,cen.back_top_pct,cen.back_bottom_pct,'Rückseite');
+      const leg=[{c:'#f5c842',l:'PSA 10'},{c:'#94e0ff',l:'PSA 9'},{c:'#c084fc',l:'PSA 8'},{c:'#fb923c',l:'PSA 6-7'},{c:'#ef4444',l:'PSA ≤5'}];
+      let lx=pad;
+      ctx.font='9px sans-serif';
+      leg.forEach(({c,l})=>{
+        ctx.fillStyle=c;ctx.fillRect(lx,H-15,6,6);
+        ctx.fillStyle='rgba(255,255,255,.3)';ctx.textAlign='left';ctx.fillText(l,lx+9,H-10);
+        lx+=ctx.measureText(l).width+18;
+      });
+      res(c.toDataURL('image/jpeg',.92));
+    } catch(e) { res(null); }
+  });
+}
+
+// ── GRADE HELPERS ──────────────────────────────
+function gc(g){
+  if(g>=10) return{c:'#f5c842',bg:'rgba(245,200,66,.16)',bd:'rgba(245,200,66,.45)'};
+  if(g>=9)  return{c:'#94e0ff',bg:'rgba(148,224,255,.14)',bd:'rgba(148,224,255,.4)'};
+  if(g>=7)  return{c:'#c084fc',bg:'rgba(192,132,252,.14)',bd:'rgba(192,132,252,.4)'};
+  if(g>=5)  return{c:'#fb923c',bg:'rgba(251,146,60,.14)',bd:'rgba(251,146,60,.4)'};
+  return      {c:'#f87171',bg:'rgba(248,113,113,.14)',bd:'rgba(248,113,113,.4)'};
+}
+function sc(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
+function cc(p){return p<=55?'#f5c842':p<=60?'#94e0ff':p<=65?'#c084fc':p<=70?'#7c4dff':p<=80?'#fb923c':p<=85?'#f87171':'#ef4444';}
+function gLbl(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
+function sbar(s,l){const col=sc(s);return '<div class="sb-row"><span style="color:var(--mu)">'+l+'</span><span style="font-weight:600;color:'+col+'">'+s+'/10</span></div><div class="sb-track"><div class="sb-fill" style="width:'+(s*10)+'%;background:'+col+'"></div></div>';}
+function mleg(arr){if(!arr||!arr.length)return'';return '<div class="mleg">'+arr.map((m,i)=>'<div class="mli"><div class="mld" style="background:'+mc(m.type)+'"></div><b>'+(i+1)+'</b>&nbsp;'+(m.description||ml(m.type))+'</div>').join('')+'</div>';}
+function accv(id,ico,lbl,score,body){const col=sc(score);return '<div><div class="ah" onclick="tAcc(\''+id+'\',this)"><span style="font-size:16px">'+ico+'</span><span style="font-size:14px;font-weight:500">'+lbl+'</span><span style="font-size:12px;font-weight:600;color:'+col+';margin-left:auto;margin-right:8px">'+score+'/10</span><span class="aa">▾</span></div><div id="'+id+'" style="display:none" class="ab">'+body+'</div></div>';}
+function tAcc(id,h){const el=$(id);const o=el.style.display!=='none';el.style.display=o?'none':'block';h.classList.toggle('open',!o);}
+
+// ── RENDER RESULTS ──────────────────────────────
+let _fm=[], _bm=[];
+function renderResults(r, af, ab, ci, fromHist, det) {
+  const g=r.final_grade, gclr=gc(g), cen=r.centering||{};
+  _fm=(r.markers||[]).filter(m=>m.side==='front');
+  _bm=(r.markers||[]).filter(m=>m.side==='back');
+  const lo=Math.min(cen.score||10,r.corners?.score||10,r.edges?.score||10,r.surface?.score||10);
+  const d=det||A.detected||{};
+
+  const cardHTML=d.card_name?'<div class="card" style="margin-bottom:10px;background:linear-gradient(135deg,var(--s1),rgba(230,57,70,.05));border-color:rgba(230,57,70,.2)"><div class="st" style="margin-bottom:6px">🃏 Kartendetails</div><div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:6px;letter-spacing:.02em">'+d.card_name+'</div><div style="display:flex;flex-wrap:wrap">'
+    +(d.language?'<div class="ipill">🌐 <b>'+d.language+'</b></div>':'')
+    +(d.set_name?'<div class="ipill">📦 <b>'+d.set_name+'</b></div>':'')
+    +(d.card_number?'<div class="ipill">#<b>'+d.card_number+'</b></div>':'')
+    +(d.hp?'<div class="ipill">❤️ <b>'+d.hp+'</b></div>':'')
+    +(d.rarity?'<div class="ipill">⭐ <b>'+d.rarity+'</b></div>':'')
+    +(d.holo_type?'<div class="ipill">✨ <b>'+d.holo_type+'</b></div>':'')
+    +(d.category?'<div class="ipill">🏷 <b>'+d.category+'</b></div>':'')
+    +'</div></div>':'';
+
+  const cenBody='<div style="background:var(--s2);border-radius:var(--rs);padding:10px;margin-bottom:10px">'+(ci?'<img src="'+ci+'" style="width:100%;border-radius:4px;display:block">':'')+'</div>'
+    +'<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px">'
+    +[['VS L/R',cen.front_ratio_lr,Math.max(cen.front_left_pct||50,cen.front_right_pct||50)],
+      ['VS T/B',cen.front_ratio_tb,Math.max(cen.front_top_pct||50,cen.front_bottom_pct||50)],
+      ['RS L/R',cen.back_ratio_lr,Math.max(cen.back_left_pct||50,cen.back_right_pct||50)],
+      ['RS T/B',cen.back_ratio_tb,Math.max(cen.back_top_pct||50,cen.back_bottom_pct||50)]].map(([l,v,p])=>
+      '<div style="background:var(--s2);border-radius:var(--rs);padding:9px;text-align:center"><div style="font-size:9px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px">'+l+'</div><div style="font-size:17px;font-weight:700;color:'+cc(p)+';font-family:var(--fh)">'+(v||'–')+'</div></div>').join('')
+    +'</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+(cen.notes||'')+'</div>';
+
+  const corBody='<div class="cg">'
+    +['top_left:Oben links','top_right:Oben rechts','bottom_left:Unten links','bottom_right:Unten rechts'].map(p=>{const[k,l]=p.split(':');return '<div class="cgc"><div class="cgl">'+l+'</div><div style="font-size:12px">'+(r.corners?.[k]||'–')+'</div></div>';}).join('')
+    +'</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+(r.corners?.notes||'')+'</div>';
+
+  const edgBody=['top:Oben','right:Rechts','bottom:Unten','left:Links'].map(p=>{const[k,l]=p.split(':');return '<div class="dr"><span style="color:var(--mu)">'+l+'</span><span style="max-width:58%;text-align:right">'+(r.edges?.[k]||'–')+'</span></div>';}).join('')
+    +'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+(r.edges?.notes||'')+'</div>';
+
+  const surBody=(r.surface?.defects?.length
+    ?r.surface.defects.map(d2=>'<div style="display:flex;gap:7px;align-items:flex-start;margin-bottom:7px"><span style="color:var(--am)">⚠️</span><span style="font-size:12px">'+d2+'</span></div>').join('')
+    :'<div style="font-size:12px;color:var(--mu);margin-bottom:6px;display:flex;gap:5px"><span style="color:#4ade80">✓</span>Keine Defekte erkannt</div>')
+    +'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+(r.surface?.notes||'')+'</div>';
+
+  const html=cardHTML
+    +'<div class="card" style="margin-bottom:10px">'
+    +'<div style="display:flex;align-items:stretch;gap:14px;margin-bottom:14px">'
+    +'<div class="psa-slab"><div class="psa-top">PSA</div><div class="psa-body"><div class="psa-num" style="color:'+gclr.c+'">'+g+'</div><div class="psa-sub">'+gLbl(g)+'</div></div></div>'
+    +'<div style="flex:1"><div style="font-family:var(--fh);font-size:20px;font-weight:700;margin-bottom:5px;color:'+gclr.c+'">'+(r.grade_label||gLbl(g))+'</div>'
+    +'<div style="display:inline-block;background:'+gclr.bg+';border:1px solid '+gclr.bd+';color:'+gclr.c+';font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;font-family:var(--fh);letter-spacing:.04em">LOWEST: '+lo+'/10</div>'
+    +(r.summary?'<div style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.5">'+r.summary+'</div>':'')
+    +'</div></div>'
+    +sbar(cen.score||0,'Zentrierung')+sbar(r.corners?.score||0,'Ecken')+sbar(r.edges?.score||0,'Ränder')+sbar(r.surface?.score||0,'Oberfläche')
+    +(r.recommendation?'<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+r.recommendation+'</div></div>':'')
+    +'</div>'
+    +'<div id="pw-indicator" style="margin-bottom:6px"></div>'
+    +'<div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>'
+    +'<div class="card" style="padding:14px;margin-bottom:10px"><div class="st" style="margin-bottom:10px">📌 Kartenbeschriftung</div>'
+    +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Vorderseite</div>'
+    +(af?'<div class="aw" id="aw-f"><img src="'+af+'" class="ai" onclick="tapM(event,\'f\')" style="cursor:crosshair"><div class="mtt" id="tt-f"></div></div>'+mleg(_fm):'')
+    +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin:14px 0 6px">Rückseite</div>'
+    +(ab?'<div class="aw" id="aw-b"><img src="'+ab+'" class="ai" onclick="tapM(event,\'b\')" style="cursor:crosshair"><div class="mtt" id="tt-b"></div></div>'+mleg(_bm):'')
+    +'</div>'
+    +'<div class="card" style="padding:0;overflow:hidden;margin-bottom:10px">'
+    +'<div style="padding:12px 16px;border-bottom:1px solid var(--b0)" class="st">Detailbewertung</div>'
+    +accv('ac','⚖️','Zentrierung',cen.score||0,cenBody)
+    +accv('ae','🔍','Ecken & Whitening',r.corners?.score||0,corBody)
+    +accv('ar','📐','Ränder',r.edges?.score||0,edgBody)
+    +accv('as','✨','Oberfläche',r.surface?.score||0,surBody)
+    +'</div>'
+    +'<div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">ℹ️ KI-Einschätzung · kein offizielles PSA-Ergebnis</div>'
+    +(fromHist?'<button class="btn btn-s" onclick="safeNav(A.fromScreen||\'pg-collection\')" style="margin-top:10px">← Zurück</button>':'<button class="btn btn-s" onclick="safeNav(\'pg-home\')" style="margin-top:10px">🏠 Startseite</button>')
+    +'<div class="cr">© <a href="https://netpixel.at" target="_blank">netpixel.at</a></div>';
+
+  $(fromHist?'det-page':'res-page').innerHTML=html;
+}
+
+function tapM(e,s) {
+  try {
+    const img=e.target, rect=img.getBoundingClientRect();
+    const xr=((e.clientX-rect.left)/rect.width)*100, yr=((e.clientY-rect.top)/rect.height)*100;
+    const markers=s==='f'?_fm:_bm;
+    const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);
+    const tt=$('tt-'+s);
+    if(!tt) return;
+    if(hit) {
+      tt.textContent=(hit.label||'')+': '+(hit.description||ml(hit.type));
+      tt.style.display='block';
+      tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';
+      tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';
+      setTimeout(()=>tt.style.display='none',2800);
+    } else { tt.style.display='none'; }
+  } catch(e2) {}
+}
+
+// ── INDEXEDDB ──────────────────────────────────
+let _db=null;
+const openDB=()=>new Promise((res,rej)=>{
+  if(_db){res(_db);return;}
+  const r=indexedDB.open('pgDB8',1);
+  r.onupgradeneeded=e=>{if(!e.target.result.objectStoreNames.contains('g'))e.target.result.createObjectStore('g',{keyPath:'id'});};
+  r.onsuccess=e=>{_db=e.target.result;res(_db);};
+  r.onerror=()=>rej(new Error('DB Fehler'));
+});
+const dbPut=async e=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').put(e);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Schreiben fehlgeschlagen'));});};
+const dbAll=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readonly'),q=tx.objectStore('g').getAll();q.onsuccess=()=>res(q.result||[]);q.onerror=()=>rej(new Error('Lesen fehlgeschlagen'));});};
+const dbDel=async id=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').delete(id);tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Löschen fehlgeschlagen'));});};
+const dbClear=async()=>{const db=await openDB();return new Promise((res,rej)=>{const tx=db.transaction('g','readwrite');tx.objectStore('g').clear();tx.oncomplete=()=>res();tx.onerror=()=>rej(new Error('Fehler'));});};
+
+// ── SAVE ──────────────────────────────────────
+async function saveGrade() {
+  const btn=$('save-btn');
+  if(!A.result||A.saved) return;
+  btn.textContent='⏳ Speichern…'; btn.disabled=true;
+  try {
+    const d=A.detected||{};
+    const entry={
+      id:Date.now().toString(), timestamp:Date.now(),
+      cardName:d.card_name||'Unbekannte Karte',
+      cardLang:d.language, cardSet:d.set_name, cardNumber:d.card_number,
+      cardHP:d.hp, cardRarity:d.rarity, cardHolo:d.holo_type, cardCat:d.category,
+      grade:A.result.final_grade, label:A.result.grade_label,
+      summary:A.result.summary, recommendation:A.result.recommendation,
+      centering:A.result.centering, corners:A.result.corners,
+      edges:A.result.edges, surface:A.result.surface,
+      markers:A.result.markers||[], annF:A.annF, annB:A.annB, cenImg:A.cenImg
+    };
+    await dbPut(entry);
+    A.saved=true; btn.textContent='✓ Gespeichert';
+    toast('✅ In Sammlung gespeichert');
+  } catch(e) { btn.textContent='💾 SPEICHERN'; btn.disabled=false; toast('❌ '+e.message); }
+}
+
+// ── EDIT CARD ──────────────────────────────────
 let _editId=null;
-function openEditModal(){
-  if(!A.detailId)return;
-  // Pre-fill from current detail
-  const fill=async()=>{
-    const all=await dbAll();const e=all.find(x=>x.id===A.detailId);if(!e)return;
+function openEditModal() {
+  if(!A.detailId) return;
+  dbAll().then(all=>{
+    const e=all.find(x=>x.id===A.detailId);
+    if(!e) return;
     _editId=e.id;
-    $('em-name').value=e.cardName||'';$('em-lang').value=e.cardLang||'';
-    $('em-hp').value=e.cardHP||'';$('em-set').value=e.cardSet||'';
-    $('em-num').value=e.cardNumber||'';$('em-rar').value=e.cardRarity||'';
+    $('em-name').value=e.cardName||'';
+    $('em-lang').value=e.cardLang||'';
+    $('em-hp').value=e.cardHP||'';
+    $('em-set').value=e.cardSet||'';
+    $('em-num').value=e.cardNumber||'';
+    $('em-rar').value=e.cardRarity||'';
     $('em-cat').value=e.cardCat||'';
     $('em-watch').value=e.watchPrice||'';
     $('em-holo').value=e.cardHolo||'';
     $('edit-modal').classList.add('open');
+  }).catch(e=>toast('❌ '+e.message));
+}
+function openEditForResult() {
+  // Before saving, allow editing detected data
+  $('em-name').value=$('cd-name')?.value||A.detected?.card_name||'';
+  $('em-lang').value=$('cd-lang')?.value||A.detected?.language||'';
+  $('em-hp').value=$('cd-hp')?.value||A.detected?.hp||'';
+  $('em-set').value=$('cd-set')?.value||A.detected?.set_name||'';
+  $('em-num').value=$('cd-num')?.value||A.detected?.card_number||'';
+  $('em-rar').value=$('cd-rar')?.value||A.detected?.rarity||'';
+  $('em-cat').value=$('cd-cat')?.value||A.detected?.category||'';
+  $('em-holo').value=A.detected?.holo_type||'';
+  $('em-watch').value='';
+  _editId=null;
+  $('edit-modal').classList.add('open');
+}
+function closeEdit() { $('edit-modal').classList.remove('open'); }
+async function saveEdit() {
+  if(_editId) {
+    // Save to existing DB entry
+    try {
+      const all=await dbAll();
+      const e=all.find(x=>x.id===_editId);
+      if(!e) return;
+      e.cardName=$('em-name').value.trim()||e.cardName;
+      e.cardLang=$('em-lang').value.trim(); e.cardHP=$('em-hp').value.trim();
+      e.cardSet=$('em-set').value.trim(); e.cardNumber=$('em-num').value.trim();
+      e.cardRarity=$('em-rar').value.trim(); e.cardCat=$('em-cat').value.trim();
+      e.cardHolo=$('em-holo').value.trim();
+      const wp=$('em-watch').value.trim();
+      e.watchPrice=wp?parseFloat(wp):null;
+      await dbPut(e); closeEdit(); toast('✅ Gespeichert');
+      showDetail(_editId, A.fromScreen);
+    } catch(err) { toast('❌ '+err.message); }
+  } else {
+    // Update A.detected before results are rendered
+    if(A.detected) {
+      A.detected.card_name=$('em-name').value.trim()||A.detected.card_name;
+      A.detected.language=$('em-lang').value.trim();
+      A.detected.hp=$('em-hp').value.trim();
+      A.detected.set_name=$('em-set').value.trim();
+      A.detected.card_number=$('em-num').value.trim();
+      A.detected.rarity=$('em-rar').value.trim();
+      A.detected.category=$('em-cat').value.trim();
+      A.detected.holo_type=$('em-holo').value.trim();
+      renderResults(A.result, A.annF, A.annB, A.cenImg, false, A.detected);
+    }
+    closeEdit();
+    toast('✅ Kartendetails aktualisiert');
+  }
+}
+$('edit-modal').addEventListener('click', e=>{ if(e.target===$('edit-modal')) closeEdit(); });
+
+// ── PNG EXPORT ──────────────────────────────────
+async function triggerExport() {
+  const id=A.detailId||null;
+  const entry=id?(await dbAll()).find(x=>x.id===id):null;
+  const src=entry||{
+    cardName:A.detected?.card_name, cardSet:A.detected?.set_name,
+    cardNumber:A.detected?.card_number, cardLang:A.detected?.language,
+    grade:A.result?.final_grade, label:A.result?.grade_label,
+    centering:A.result?.centering, corners:A.result?.corners,
+    edges:A.result?.edges, surface:A.result?.surface,
+    annF:A.annF, timestamp:Date.now()
   };
-  fill().catch(e=>toast('❌ '+e.message));
-}
-function closeEdit(){$('edit-modal').classList.remove('open');}
-async function saveEdit(){
-  if(!_editId)return;
-  try{
-    const all=await dbAll();const e=all.find(x=>x.id===_editId);if(!e)return;
-    e.cardName=$('em-name').value.trim()||e.cardName;
-    e.cardLang=$('em-lang').value.trim();e.cardHP=$('em-hp').value.trim();
-    e.cardSet=$('em-set').value.trim();e.cardNumber=$('em-num').value.trim();
-    e.cardRarity=$('em-rar').value.trim();e.cardCat=$('em-cat').value.trim();
-    e.cardHolo=$('em-holo').value.trim();
-    const wp=$('em-watch').value.trim();
-    e.watchPrice=wp?parseFloat(wp):null;
-    await dbPut(e);closeEdit();toast('✅ Gespeichert');
-    // Reload detail
-    showDetail(_editId,A.fromScreen);
-  }catch(err){toast('❌ '+err.message);}
-}
-// Close on backdrop tap
-$('edit-modal').addEventListener('click',e=>{if(e.target===$('edit-modal'))closeEdit();});
-
-/* ══════════ EXPORT PNG SLAB ══════════ */
-async function triggerExport(){
-  if(!A.detailId)return;
-  toast('⏳ Export wird erstellt…',5000);
-  try{
-    const all=await dbAll();const e=all.find(x=>x.id===A.detailId);if(!e)return;
-    const dataUrl=await buildSlabImage(e);
+  toast('⏳ Export wird erstellt…', 5000);
+  try {
+    const dataUrl=await buildSlabImage(src);
     const a=document.createElement('a');
-    a.download=(e.cardName||'PokéGrader').replace(/[^a-z0-9äöü]/gi,'_')+'_PSA'+e.grade+'.png';
-    a.href=dataUrl;a.click();
-    toast('✅ Export gespeichert');
-  }catch(err){toast('❌ Export fehlgeschlagen: '+err.message);}
+    a.download=(src.cardName||'PokéGrader').replace(/[^a-z0-9äöüÄÖÜ]/gi,'_')+'_PSA'+(src.grade||'')+'.png';
+    a.href=dataUrl; a.click();
+    toast('✅ PNG gespeichert');
+  } catch(e) { toast('❌ Export: '+e.message); }
 }
-
-function buildSlabImage(entry){
+function buildSlabImage(e) {
   return new Promise(res=>{
-    const W=480,H=680;
-    const c=document.createElement('canvas');c.width=W;c.height=H;
+    const W=420, H=600;
+    const c=document.createElement('canvas'); c.width=W; c.height=H;
     const ctx=c.getContext('2d');
-    // White slab background
-    ctx.fillStyle='#f5f5f0';ctx.fillRect(0,0,W,H);
-    // Top red band
-    ctx.fillStyle='#e63946';ctx.fillRect(0,0,W,72);
-    // PSA text
-    ctx.fillStyle='#fff';ctx.font='bold 20px Arial,sans-serif';ctx.textAlign='center';
-    ctx.fillText('PSA PRE-GRADING',W/2,28);
-    ctx.font='11px Arial,sans-serif';ctx.fillText('PokéGrader by netpixel.at',W/2,50);
-    ctx.font='9px Arial,sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
-    ctx.fillText('Kein offizielles PSA-Ergebnis',W/2,66);
-    // Grade big number
+    ctx.fillStyle='#f5f5f0'; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#e63946'; ctx.fillRect(0,0,W,72);
+    ctx.fillStyle='#fff'; ctx.font='bold 20px Arial,sans-serif'; ctx.textAlign='center';
+    ctx.fillText('PSA PRE-GRADING', W/2, 28);
+    ctx.font='11px Arial,sans-serif'; ctx.fillText('PokéGrader by netpixel.at', W/2, 50);
+    ctx.font='9px Arial,sans-serif'; ctx.fillStyle='rgba(255,255,255,.65)';
+    ctx.fillText('Kein offizielles PSA-Ergebnis', W/2, 66);
     const gMap={10:'#f5c842',9:'#60a5fa',8:'#a78bfa',7:'#c084fc',6:'#4ade80',5:'#fb923c'};
-    const gCol=gMap[entry.grade]||'#f87171';
-    ctx.font='bold 88px Arial,sans-serif';ctx.fillStyle=gCol;ctx.textAlign='center';
-    ctx.fillText(String(entry.grade),W/2,178);
-    ctx.font='bold 22px Arial,sans-serif';ctx.fillStyle='#333';
-    ctx.fillText(gradeLabels(entry.grade),W/2,210);
-    // Score bars
-    const bars=[['Zentrierung',entry.centering?.score||0],['Ecken',entry.corners?.score||0],['Ränder',entry.edges?.score||0],['Oberfläche',entry.surface?.score||0]];
+    const gCol=gMap[e.grade]||'#f87171';
+    ctx.font='bold 80px Arial,sans-serif'; ctx.fillStyle=gCol; ctx.textAlign='center';
+    ctx.fillText(String(e.grade||'?'), W/2, 174);
+    ctx.font='bold 22px Arial,sans-serif'; ctx.fillStyle='#333';
+    ctx.fillText(gLbl(e.grade||0), W/2, 206);
+    const bars=[['Zentrierung',e.centering?.score||0],['Ecken',e.corners?.score||0],['Ränder',e.edges?.score||0],['Oberfläche',e.surface?.score||0]];
     bars.forEach(([lbl,s],i)=>{
-      const bx=32,by=228+i*22,bw=W-64,bh=12,val=s/10;
-      ctx.fillStyle='#e0e0e0';ctx.fillRect(bx,by,bw,bh);
+      const bx=28, by=222+i*22, bw=W-56, bh=12, val=s/10;
+      ctx.fillStyle='#e0e0e0'; ctx.fillRect(bx,by,bw,bh);
       const bc=s>=9?'#22c55e':s>=7?'#3b82f6':s>=5?'#f59e0b':'#ef4444';
-      ctx.fillStyle=bc;ctx.fillRect(bx,by,Math.round(bw*val),bh);
-      ctx.fillStyle='#555';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText(lbl,bx,by-2);
-      ctx.textAlign='right';ctx.fillText(s+'/10',bx+bw,by-2);
+      ctx.fillStyle=bc; ctx.fillRect(bx,by,Math.round(bw*val),bh);
+      ctx.fillStyle='#555'; ctx.font='10px Arial'; ctx.textAlign='left'; ctx.fillText(lbl,bx,by-2);
+      ctx.textAlign='right'; ctx.fillText(s+'/10',bx+bw,by-2);
     });
-    // Card image
     const drawRest=()=>{
-      const iw=220,ih=Math.round(220*88/63);
-      const ix=(W-iw)/2,iy=320;
-      ctx.strokeStyle='rgba(0,0,0,.15)';ctx.lineWidth=1;
-      ctx.strokeRect(ix,iy,iw,ih);
-      // Card info
-      ctx.fillStyle='#111';ctx.font='bold 15px Arial';ctx.textAlign='center';
-      ctx.fillText((entry.cardName||'Unbekannte Karte').substring(0,30),W/2,iy+ih+22);
-      ctx.font='12px Arial';ctx.fillStyle='#555';
-      ctx.fillText([entry.cardSet,entry.cardNumber].filter(Boolean).join(' · ').substring(0,40)||'',W/2,iy+ih+40);
-      ctx.font='10px Arial';ctx.fillStyle='#888';
-      if(entry.cardLang)ctx.fillText('Sprache: '+entry.cardLang,W/2,iy+ih+57);
-      // Date
-      ctx.font='9px Arial';ctx.fillStyle='#aaa';
-      ctx.fillText(new Date(entry.timestamp).toLocaleDateString('de-AT'),W/2,H-24);
-      ctx.fillText('© netpixel.at PokéGrader',W/2,H-12);
+      const iw=210, ih=Math.round(210*88/63), ix=(W-iw)/2, iy=316;
+      ctx.strokeStyle='rgba(0,0,0,.15)'; ctx.lineWidth=1; ctx.strokeRect(ix,iy,iw,ih);
+      ctx.fillStyle='#111'; ctx.font='bold 14px Arial'; ctx.textAlign='center';
+      ctx.fillText((e.cardName||'Unbekannte Karte').substring(0,30), W/2, iy+ih+20);
+      ctx.font='11px Arial'; ctx.fillStyle='#666';
+      ctx.fillText([e.cardSet,e.cardNumber].filter(Boolean).join(' · ').substring(0,36)||'', W/2, iy+ih+38);
+      if(e.cardLang){ctx.font='10px Arial';ctx.fillStyle='#888';ctx.fillText('Sprache: '+e.cardLang, W/2, iy+ih+54);}
+      ctx.font='9px Arial'; ctx.fillStyle='#aaa';
+      ctx.fillText(new Date(e.timestamp||Date.now()).toLocaleDateString('de-AT'), W/2, H-24);
+      ctx.fillText('© netpixel.at PokéGrader', W/2, H-12);
       res(c.toDataURL('image/png'));
     };
-    if(entry.annF){
+    if(e.annF) {
       const img=new Image();
       img.onload=()=>{
-        const iw=220,ih=Math.round(220*88/63),ix=(W-iw)/2,iy=320;
-        ctx.save();ctx.beginPath();ctx.rect(ix,iy,iw,ih);ctx.clip();
-        ctx.drawImage(img,ix,iy,iw,ih);ctx.restore();
+        const iw=210,ih=Math.round(210*88/63),ix=(W-iw)/2,iy=316;
+        ctx.save(); ctx.beginPath(); ctx.rect(ix,iy,iw,ih); ctx.clip();
+        ctx.drawImage(img,ix,iy,iw,ih); ctx.restore();
         drawRest();
       };
-      img.onerror=drawRest;img.src=entry.annF;
-    }else{drawRest();}
+      img.onerror=drawRest; img.src=e.annF;
+    } else { drawRest(); }
   });
 }
-function gradeLabels(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
 
-/* ══════════ CSV EXPORT ══════════ */
-async function exportCSV(){
-  try{
-    const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);
-    if(!all.length){toast('Keine Karten vorhanden');return;}
-    const headers=['Datum','Kartenname','Sprache','Edition','Nummer','Seltenheit','Holo-Typ','Bezeichnung','Grade','Label','Zentrierung','Ecken','Ränder','Oberfläche'];
+// ── CSV EXPORT ──────────────────────────────────
+async function exportCSV() {
+  try {
+    const all=await dbAll();
+    all.sort((a,b)=>b.timestamp-a.timestamp);
+    if(!all.length) { toast('Keine Karten vorhanden'); return; }
+    const heads=['Datum','Kartenname','Sprache','Edition','Nummer','Seltenheit','Holo-Typ','Bezeichnung','Grade','Label','Zentrierung','Ecken','Ränder','Oberfläche'];
     const rows=all.map(e=>[
       new Date(e.timestamp).toLocaleDateString('de-AT'),
       e.cardName||'',e.cardLang||'',e.cardSet||'',e.cardNumber||'',
@@ -1292,146 +1476,194 @@ async function exportCSV(){
       e.grade,e.label||'',
       e.centering?.score||0,e.corners?.score||0,e.edges?.score||0,e.surface?.score||0
     ].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
-    const csv=[headers.map(h=>'"'+h+'"').join(','),...rows.map(r=>r.join(','))].join('
-');
-    const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+    const csv=[heads.map(h=>'"'+h+'"').join(','),...rows.map(r=>r.join(','))].join('\n');
+    const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8'});
     const url=URL.createObjectURL(blob);
-    const a=document.createElement('a');a.href=url;
+    const a=document.createElement('a');
+    a.href=url;
     a.download='PokéGrader_Sammlung_'+new Date().toISOString().substring(0,10)+'.csv';
-    a.click();URL.revokeObjectURL(url);
+    a.click(); URL.revokeObjectURL(url);
     toast('✅ CSV exportiert ('+all.length+' Karten)');
-  }catch(e){toast('❌ '+e.message);}
+  } catch(e) { toast('❌ '+e.message); }
 }
 
-/* ══════════ CARD COMPARISON ══════════ */
-let _compareSlots=[];
-function addToCompare(){
-  if(!A.detailId)return;
-  if(_compareSlots.includes(A.detailId)){toast('⚠️ Karte bereits ausgewählt');return;}
-  _compareSlots.push(A.detailId);
-  if(_compareSlots.length>=2){
-    toast('✅ 2 Karten ausgewählt — Vergleich wird geladen');
+// ── COMPARE ──────────────────────────────────────
+let _cmpSlots=[];
+function addToCompare() {
+  const id=A.detailId;
+  if(!id) return;
+  if(_cmpSlots.includes(id)) { toast('⚠️ Bereits ausgewählt'); return; }
+  _cmpSlots.push(id);
+  if(_cmpSlots.length>=2) {
     renderCompare();
     navTo('pg-compare');
-  }else{
-    toast(`✅ Karte 1 ausgewählt — wähle eine zweite Karte in der Sammlung`);
+  } else {
+    toast('✅ Karte 1 ausgewählt — wähle eine zweite in der Sammlung');
     navTo('pg-collection');
   }
 }
-function clearCompare(){_compareSlots=[];navTo('pg-collection');}
-async function renderCompare(){
-  const el=$('cmp-page');if(!el)return;
-  if(_compareSlots.length<2){el.innerHTML='<div class="al al-b">Bitte 2 Karten auswählen.</div>';return;}
-  try{
+function clearCompare() { _cmpSlots=[]; navTo('pg-collection'); }
+async function renderCompare() {
+  const el=$('cmp-content');
+  const info=$('cmp-info');
+  if(!el) return;
+  if(_cmpSlots.length<2) { el.innerHTML=''; if(info)info.style.display='block'; return; }
+  if(info)info.style.display='none';
+  try {
     const all=await dbAll();
-    const cards=_compareSlots.map(id=>all.find(e=>e.id===id)).filter(Boolean);
-    if(cards.length<2)return;
+    const cards=_cmpSlots.map(id=>all.find(e=>e.id===id)).filter(Boolean);
+    if(cards.length<2) return;
+    const bars=['Zentrierung','Ecken','Ränder','Oberfläche'];
+    const scoreKeys=[['centering','score'],['corners','score'],['edges','score'],['surface','score']];
     const cols=cards.map(e=>{
       const gclr=gc(e.grade);
-      const bars=[['Zentrier.',e.centering?.score||0],['Ecken',e.corners?.score||0],['Ränder',e.edges?.score||0],['Oberfläche',e.surface?.score||0]];
-      return`<div class="cmp-col">
-        ${e.annF?`<img src="${e.annF}" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">`:''}
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-          <div class="cmp-mini-slab"><div class="cmp-slab-top">PSA</div><div class="cmp-slab-body"><div class="cmp-slab-num" style="color:${gclr.c}">${e.grade}</div></div></div>
-          <div><div style="font-size:13px;font-weight:700;font-family:var(--fh)">${e.cardName||'–'}</div><div style="font-size:10px;color:var(--mu)">${e.cardSet||'–'}</div></div>
-        </div>
-        ${bars.map(([l,s])=>`<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--mu)">${l}</span><span style="color:${scoreClr(s)};font-weight:600">${s}</span></div><div style="height:4px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:${s*10}%;background:${scoreClr(s)}"></div></div></div>`).join('')}
-        <button onclick="showDetail('${e.id}','pg-compare')" class="btn btn-o" style="font-size:12px;padding:8px">Details →</button>
-      </div>`;
+      return '<div class="cmp-col">'
+        +(e.annF?'<img src="'+e.annF+'" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">':'')
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+        +'<div style="width:40px;height:40px;border-radius:8px;background:'+gclr.bg+';border:1px solid '+gclr.bd+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:18px;font-weight:800;color:'+gclr.c+';font-family:var(--fh)">'+e.grade+'</span></div>'
+        +'<div><div style="font-size:13px;font-weight:700;font-family:var(--fh)">'+(e.cardName||'–')+'</div>'
+        +'<div style="font-size:10px;color:var(--mu)">'+(e.cardSet||'–')+'</div></div></div>'
+        +bars.map((l,i)=>{
+          const [obj,key]=scoreKeys[i]; const s=e[obj]?.[key]||0;
+          const col=sc(s);
+          return '<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--mu)">'+l+'</span><span style="color:'+col+';font-weight:600">'+s+'</span></div><div style="height:4px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:'+(s*10)+'%;background:'+col+'"></div></div></div>';
+        }).join('')
+        +'<button onclick="showDetail(\''+e.id+'\',\'pg-compare\')" class="btn btn-o" style="font-size:11px;padding:7px;margin-top:6px">Details →</button>'
+        +'</div>';
     });
-    el.innerHTML=`<div style="width:100%;display:flex;gap:0">${cols.join('<div style="width:1px;background:var(--b1);margin:0 4px;flex-shrink:0"></div>')}</div>`;
-  }catch(e){el.innerHTML='<div class="empty">Fehler beim Laden</div>';}
-}
-function scoreClr(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
-
-/* ══════════ PRICE WATCH ══════════ */
-function updatePriceWatchUI(entry,ebayItems){
-  const wp=entry?.watchPrice;
-  const el=$('pw-indicator');
-  if(!el||!wp)return;
-  if(!ebayItems||!ebayItems.length){el.innerHTML=`<div class="pw-badge pw-set">⏰ Zielpreis: €${wp.toFixed(2)}</div>`;return;}
-  // Try to extract a price to compare
-  const prices=ebayItems.map(i=>{
-    const m=String(i.price||'').replace(',','.').match(/[\d.]+/);
-    return m?parseFloat(m[0]):null;
-  }).filter(Boolean);
-  if(!prices.length)return;
-  const avgPrice=prices.reduce((a,b)=>a+b,0)/prices.length;
-  const hit=avgPrice<=wp;
-  el.innerHTML=`<div class="pw-badge ${hit?'pw-hit':'pw-miss'}">
-    ${hit?'🟢':'🔴'} Zielpreis €${wp.toFixed(2)} · Ø eBay €${avgPrice.toFixed(2)} ${hit?'✓ Im Zielbereich':'↑ Über Zielpreis'}
-  </div>`;
+    el.innerHTML='<div style="width:100%;display:flex;gap:0">'+cols.join('<div style="width:1px;background:var(--b1);margin:0 4px;flex-shrink:0"></div>')+'</div>';
+  } catch(e) { el.innerHTML='<div class="empty">Fehler: '+e.message+'</div>'; }
 }
 
-/* ══════════ QR / BARCODE SCANNER ══════════ */
-let _scanStream=null,_scanInterval=null;
-function openScanner(){
-  const modal=$('scan-modal');modal.classList.add('open');
-  const vid=$('scan-video');
-  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
-  .then(s=>{_scanStream=s;vid.srcObject=s;vid.play();startBarcodeDetect(vid);})
-  .catch(()=>{closeScanner();toast('📱 Kamera nicht verfügbar');});
-}
-function closeScanner(){
-  try{
-    if(_scanInterval){clearInterval(_scanInterval);_scanInterval=null;}
-    if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}
-    $('scan-modal').classList.remove('open');
-  }catch(e){}
-}
-function startBarcodeDetect(vid){
-  if(!('BarcodeDetector' in window)){
-    $('scan-status').textContent='QR-Scanner nicht unterstützt – manuell eingeben';
-    return;
-  }
-  const det=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128']});
-  _scanInterval=setInterval(async()=>{
-    if(!vid.videoWidth)return;
-    try{
-      const codes=await det.detect(vid);
-      if(codes&&codes.length>0){
-        clearInterval(_scanInterval);_scanInterval=null;
-        const val=codes[0].rawValue;
-        closeScanner();
-        handleBarcodeResult(val);
-      }
-    }catch(e){}
-  },400);
-}
-function handleBarcodeResult(val){
-  toast('✅ Code erkannt: '+val.substring(0,30));
-  // Pre-fill card name from barcode if possible
-  if(val.startsWith('http')){
-    // QR with URL - open it
-    if(confirm('QR-Link öffnen?
-'+val.substring(0,60))){window.open(val,'_blank');}
-  }else{
-    // Use as search hint
-    resetState();navTo('pg-capture');setTimeout(setupCapture,50);
-    setTimeout(()=>{
-      $('cd-name')&&($('cd-name').value=val.substring(0,40));
-      toast('Code als Kartenname eingetragen');
-    },200);
-  }
+// ── COLLECTION ──────────────────────────────────
+let _fg='all', _sm=0;
+const SORTS=[
+  {l:'Neueste',fn:(a,b)=>b.timestamp-a.timestamp},
+  {l:'Beste Note',fn:(a,b)=>b.grade-a.grade},
+  {l:'Schwächste',fn:(a,b)=>a.grade-b.grade},
+  {l:'Name A–Z',fn:(a,b)=>(a.cardName||'').localeCompare(b.cardName||'')}
+];
+function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
+function cycleSort(){_sm=(_sm+1)%SORTS.length;$('sort-lbl').textContent=SORTS[_sm].l;renderColl();}
+async function renderColl() {
+  const grid=$('coll-grid'), empty=$('coll-empty'), cnt=$('coll-count');
+  try {
+    let all=await dbAll();
+    const q=($('coll-search').value||'').toLowerCase().trim();
+    if(q) all=all.filter(e=>(e.cardName||'').toLowerCase().includes(q)||(e.cardSet||'').toLowerCase().includes(q)||(e.cardNumber||'').toLowerCase().includes(q));
+    if(_fg==='10') all=all.filter(e=>e.grade>=10);
+    else if(_fg==='9') all=all.filter(e=>e.grade===9);
+    else if(_fg==='8') all=all.filter(e=>e.grade===8);
+    else if(_fg==='7') all=all.filter(e=>e.grade===7);
+    else if(_fg==='low') all=all.filter(e=>e.grade<=6);
+    all.sort(SORTS[_sm].fn);
+    cnt.textContent=all.length+' Karten';
+    if(!all.length) { grid.innerHTML=''; sh(empty); return; }
+    hi(empty);
+    grid.innerHTML=all.map(e=>{
+      const gclr=gc(e.grade);
+      return '<div class="coll-card" onclick="showDetail(\''+e.id+'\')">'
+        +'<div class="coll-tw">'+(e.annF?'<img class="coll-thumb" src="'+e.annF+'" alt="" loading="lazy">':'<div class="coll-ph">🃏</div>')
+        +'<div class="cgs"><div class="cgs-top"></div><div class="cgs-num" style="color:'+gclr.c+'">'+e.grade+'</div></div></div>'
+        +'<div class="coll-info">'
+        +'<div class="coll-name">'+(e.cardName||'Unbekannt')+'</div>'
+        +'<div class="coll-sub">'+[e.cardSet,e.cardNumber].filter(Boolean).join(' · ')+'</div>'
+        +(e.cardLang?'<div style="font-size:10px;color:var(--hi);margin-top:1px">'+e.cardLang+'</div>':'')
+        +'<div class="coll-tag" style="background:'+gclr.bg+';color:'+gclr.c+';border:1px solid '+gclr.bd+'">PSA '+e.grade+' '+gLbl(e.grade)+'</div>'
+        +'</div></div>';
+    }).join('');
+  } catch(e) { grid.innerHTML='<div class="empty">Fehler: '+e.message+'</div>'; }
 }
 
-/* ══════════ HOLO TYPE (added to detected card info) ══════════ */
-// holo_type is now detected by AI - saved in cardHolo field
-
-/* ══════════ OFFLINE CHECK ══════════ */
-function checkOnline(){
-  if(!navigator.onLine){
-    toast('⚠️ Keine Internetverbindung — Analyse nicht möglich',4000);
-    return false;
-  }
-  return true;
+// ── DETAIL ──────────────────────────────────────
+async function showDetail(id, fromScreen) {
+  try {
+    A.fromScreen=fromScreen||'pg-collection';
+    A.detailId=id;
+    const all=await dbAll();
+    const e=all.find(x=>x.id===id);
+    if(!e) { toast('❌ Eintrag nicht gefunden'); return; }
+    $('det-title').textContent=e.cardName||(e.label+' PSA '+e.grade);
+    $('det-back').onclick=()=>safeNav(A.fromScreen);
+    navTo('pg-detail');
+    _fm=(e.markers||[]).filter(m=>m.side==='front');
+    _bm=(e.markers||[]).filter(m=>m.side==='back');
+    const det={card_name:e.cardName,language:e.cardLang,hp:e.cardHP,set_name:e.cardSet,card_number:e.cardNumber,rarity:e.cardRarity,holo_type:e.cardHolo,category:e.cardCat};
+    renderResults({...e,final_grade:e.grade,grade_label:e.label,markers:e.markers||[]},e.annF,e.annB,e.cenImg,true,det);
+    setTimeout(()=>fetchEbayPrices(det,e.grade),200);
+  } catch(e) { toast('❌ '+e.message); }
+}
+async function delEntry() {
+  if(!A.detailId) return;
+  try { await dbDel(A.detailId); A.detailId=null; toast('🗑 Gelöscht'); safeNav(A.fromScreen||'pg-collection'); }
+  catch(e) { toast('❌ '+e.message); }
+}
+async function confirmClear() {
+  if(!confirm('Gesamte Sammlung unwiderruflich löschen?')) return;
+  try { await dbClear(); toast('🗑 Geleert'); navTo('pg-home'); }
+  catch(e) {}
 }
 
-/* SW + INIT */
-if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
-initPinch();
+// ── HOME DATA ──────────────────────────────────
+async function loadStats() {
+  try {
+    const all=await dbAll();
+    const cnt=$('home-stats');
+    if(!all.length) { cnt.innerHTML=''; return; }
+    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
+    const gem=all.filter(e=>e.grade>=10).length;
+    cnt.innerHTML=[{ico:'🃏',v:all.length,l:'Karten'},{ico:'⭐',v:avg,l:'Ø Note'},{ico:'💎',v:gem,l:'Gem Mint'}]
+      .map(({ico,v,l})=>'<div style="background:var(--s1);border:1px solid var(--b0);border-radius:var(--r);padding:10px;text-align:center"><div style="font-size:20px">'+ico+'</div><div style="font-family:var(--fh);font-size:20px;font-weight:700">'+v+'</div><div style="font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.06em">'+l+'</div></div>').join('');
+  } catch(e) {}
+}
+async function loadRecent() {
+  const el=$('recent-list');
+  try {
+    const all=await dbAll();
+    all.sort((a,b)=>b.timestamp-a.timestamp);
+    if(!all.length) { el.innerHTML=''; return; }
+    el.innerHTML='<div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:8px">Zuletzt bewertet</div>'
+      +all.slice(0,3).map(e=>{
+        const gclr=gc(e.grade);
+        const d=new Date(e.timestamp).toLocaleDateString('de-AT',{day:'2-digit',month:'short',year:'2-digit'});
+        return '<div class="hi" onclick="showDetail(\''+e.id+'\',\'pg-home\')">'
+          +(e.annF?'<img class="hth" src="'+e.annF+'" alt="">':'<div class="hth" style="display:flex;align-items:center;justify-content:center;font-size:20px">🃏</div>')
+          +'<div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:600;margin-bottom:1px">'+(e.cardName||'Unbekannte Karte')+'</div>'
+          +'<div style="font-size:11px;color:var(--mu)">'+(e.cardSet?e.cardSet+' · ':'')+d+'</div></div>'
+          +'<div style="width:38px;height:38px;border-radius:8px;background:'+gclr.bg+';border:1px solid '+gclr.bd+';display:flex;align-items:center;justify-content:center;flex-shrink:0"><span style="font-size:16px;font-weight:800;color:'+gclr.c+';font-family:var(--fh)">'+e.grade+'</span></div>'
+          +'</div>';
+      }).join('')
+      +'<button class="btn btn-s" onclick="navTo(\'pg-collection\')" style="margin-top:4px;font-size:13px">Alle anzeigen →</button>';
+  } catch(e) { el.innerHTML=''; }
+}
+async function loadSettingsStats() {
+  try {
+    const all=await dbAll();
+    const el=$('settings-stats');
+    if(!el) return;
+    if(!all.length) { el.textContent='Noch keine Karten bewertet'; return; }
+    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
+    el.innerHTML='Gesamt: <b>'+all.length+' Karten</b><br>Durchschnittsnote: <b>'+avg+'</b><br>Gem Mint (PSA 10): <b>'+all.filter(e=>e.grade>=10).length+'</b><br>Mint (PSA 9): <b>'+all.filter(e=>e.grade===9).length+'</b>';
+  } catch(e) {}
+}
+
+// ── SERVICE WORKER ──────────────────────────────
+if('serviceWorker' in navigator) {
+  window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+}
+
+// ── INIT ──────────────────────────────────────
 (function init(){
-  try{applyTheme();if(getKey())navTo('pg-home');else navTo('pg-setup');}catch(e){navTo('pg-home');}
+  try {
+    buildGradeScale();
+    initPinch();
+    applyTheme();
+    if(getKey()) navTo('pg-home');
+    else navTo('pg-setup');
+  } catch(e) {
+    console.error('Init error:', e);
+    navTo('pg-home');
+  }
 })();
 </script>
 </body>
