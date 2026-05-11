@@ -184,6 +184,48 @@ input::placeholder{color:var(--hi)}
 #legal-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:150;background:var(--bg);display:none;flex-direction:column;overflow:hidden}
 #legal-modal.open{display:flex}
 .empty{text-align:center;padding:48px 20px;color:var(--mu)}
+
+/* ── LIGHT MODE ── */
+[data-theme="light"]{
+  --bg:#f4f5f8;--s1:#ffffff;--s2:#eef0f5;--s3:#e2e6ed;
+  --b0:rgba(0,0,0,.07);--b1:rgba(0,0,0,.13);
+  --tx:#16172a;--mu:#5a6478;--hi:#9fa8b8;
+  --redb:rgba(230,57,70,.1);--redd:rgba(230,57,70,.25);
+  --goldb:rgba(245,200,66,.12);--goldd:rgba(245,200,66,.3);
+  --blb:rgba(59,130,246,.1);--bld:rgba(59,130,246,.25);
+}
+[data-theme="light"] .bnav{background:rgba(244,245,248,.95)}
+[data-theme="light"] .card{box-shadow:0 1px 4px rgba(0,0,0,.08)}
+[data-theme="light"] input[type=text],[data-theme="light"] input[type=password],[data-theme="light"] input[type=search]{background:#fff;border-color:rgba(0,0,0,.15)}
+[data-theme="light"] .hero{background:linear-gradient(160deg,#3a0a14 0%,#1a2060 50%,#f4f5f8 100%)}
+[data-theme="light"] .cs-card{border-color:rgba(0,0,0,.15)}
+/* ── COMPARE SCREEN ── */
+.cmp-col{flex:1;min-width:0;padding:8px}
+.cmp-mini-slab{display:inline-flex;flex-direction:column;align-items:center;border-radius:6px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.4)}
+.cmp-slab-top{background:var(--red);color:#fff;font-size:7px;font-weight:800;letter-spacing:.1em;padding:2px 0;width:100%;text-align:center;font-family:var(--fh)}
+.cmp-slab-body{background:#fff;padding:2px 6px 4px;text-align:center}
+.cmp-slab-num{font-size:18px;font-weight:800;line-height:1;font-family:var(--fh)}
+/* ── PRICE WATCH ── */
+.pw-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:8px;font-size:12px;font-weight:600;margin-bottom:8px}
+.pw-hit{background:rgba(74,222,128,.15);color:#4ade80;border:1px solid rgba(74,222,128,.3)}
+.pw-miss{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(239,68,68,.3)}
+.pw-set{background:var(--s2);color:var(--mu);border:1px solid var(--b1)}
+/* ── SCANNER ── */
+#scan-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:200;background:#000;display:none;flex-direction:column}
+#scan-modal.open{display:flex}
+#scan-video{width:100%;flex:1;object-fit:cover;min-height:0}
+.scan-frame{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:65vw;height:65vw;border:2px solid #f5c842;border-radius:8px;box-shadow:0 0 0 9999px rgba(0,0,0,.5)}
+.scan-frame::before,.scan-frame::after{content:'';position:absolute;width:20px;height:20px;border-color:#f5c842;border-style:solid}
+.scan-frame::before{top:-2px;left:-2px;border-width:3px 0 0 3px;border-radius:4px 0 0 0}
+.scan-frame::after{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-radius:0 0 4px 0}
+/* ── EDIT MODAL ── */
+#edit-modal{position:fixed;top:0;left:0;right:0;bottom:0;z-index:180;background:rgba(0,0,0,.7);display:none;align-items:flex-end}
+#edit-modal.open{display:flex}
+.edit-sheet{background:var(--bg);border-radius:20px 20px 0 0;padding:20px 16px calc(20px + env(safe-area-inset-bottom));width:100%;max-width:500px;margin:0 auto;max-height:85vh;overflow-y:auto}
+.edit-handle{width:36px;height:4px;background:var(--s3);border-radius:2px;margin:0 auto 16px}
+/* ── EXPORT BADGE ── */
+.export-strip{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+
 </style>
 </head>
 <body>
@@ -414,7 +456,13 @@ input::placeholder{color:var(--hi)}
 <div class="hdr">
   <button class="ib" id="det-back" onclick="safeNav('pg-collection')">‹</button>
   <h1 id="det-title" style="font-size:15px">Details</h1>
-  <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">🗑 Löschen</button>
+  <button onclick="openEditModal()" style="background:none;border:none;color:var(--bl);font-size:12px;cursor:pointer;font-weight:600;margin-right:4px">✏️</button>
+  <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">🗑</button>
+</div>
+<div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
+  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">📤 Export PNG</button>
+  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">⚖️ Vergleichen</button>
+  <button onclick="openEditModal()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">⏰ Zielpreis</button>
 </div>
 <div class="page" id="det-page"></div>
 </section>
@@ -435,6 +483,12 @@ input::placeholder{color:var(--hi)}
   <div class="card">
     <div class="st" style="margin-bottom:10px">📊 Statistiken</div>
     <div id="settings-stats" style="font-size:13px;color:var(--mu);line-height:2"></div>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">Darstellung &amp; Tools</div>
+    <button class="btn btn-s" onclick="toggleTheme()" id="theme-btn" style="margin-bottom:8px">☀️ Light Mode aktivieren</button>
+    <button class="btn btn-s" onclick="openScanner()" style="margin-bottom:8px">📷 QR-Code / Barcode scannen</button>
+    <button class="btn btn-s" onclick="exportCSV()">📊 Sammlung als CSV exportieren</button>
   </div>
   <div class="card">
     <div class="st" style="margin-bottom:10px">Rechtliches</div>
@@ -471,6 +525,58 @@ input::placeholder{color:var(--hi)}
     <div class="st" style="margin-bottom:8px">Key erstellen</div>
     <div style="font-size:12px;color:var(--mu);line-height:1.9">1. <a href="https://console.anthropic.com" style="color:var(--red)">console.anthropic.com</a> öffnen<br>2. Registrieren → „API Keys" → „Create Key"<br>3. Key kopieren und oben einfügen<br><span style="color:var(--hi)">~$5 Startguthaben · ≈ $0.01 pro Analyse</span></div>
   </div>
+</div>
+</section>
+
+<!-- QR SCANNER MODAL -->
+<div id="scan-modal">
+  <video id="scan-video" autoplay playsinline muted></video>
+  <div class="scan-frame" id="scan-frame"></div>
+  <div style="position:absolute;top:calc(16px + env(safe-area-inset-top));left:0;right:0;display:flex;justify-content:space-between;padding:0 16px">
+    <button class="cpill" onclick="closeScanner()">✕ Abbrechen</button>
+    <div style="background:rgba(0,0,0,.5);border:1px solid rgba(255,215,0,.4);color:#f5c842;padding:9px 16px;border-radius:24px;font-size:12px;font-weight:600">🔍 QR-Code scannen</div>
+    <div style="width:80px"></div>
+  </div>
+  <div id="scan-status" style="position:absolute;bottom:calc(32px + env(safe-area-inset-bottom));left:0;right:0;text-align:center;font-size:13px;color:rgba(255,255,255,.7)">QR-Code in den Rahmen halten</div>
+</div>
+
+<!-- EDIT CARD MODAL -->
+<div id="edit-modal">
+<div class="edit-sheet">
+  <div class="edit-handle"></div>
+  <div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:14px">✏️ Karte bearbeiten</div>
+  <div style="margin-bottom:10px"><label class="ilabel">Kartenname</label><input type="text" id="em-name"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    <div><label class="ilabel">Sprache</label><input type="text" id="em-lang"></div>
+    <div><label class="ilabel">HP</label><input type="text" id="em-hp"></div>
+  </div>
+  <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="em-set"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    <div><label class="ilabel">Kartennummer</label><input type="text" id="em-num"></div>
+    <div><label class="ilabel">Seltenheit</label><input type="text" id="em-rar"></div>
+  </div>
+  <div style="margin-bottom:14px"><label class="ilabel">Bezeichnung</label><input type="text" id="em-cat"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+    <div><label class="ilabel">Zielpreis (€)</label><input type="text" id="em-watch" placeholder="z.B. 45.00"></div>
+    <div><label class="ilabel">Holo-Typ</label><input type="text" id="em-holo" placeholder="z.B. Holo Rare"></div>
+  </div>
+  <div class="row">
+    <button class="btn btn-o" onclick="closeEdit()" style="flex:1">Abbrechen</button>
+    <button class="btn btn-r" onclick="saveEdit()" style="flex:2">💾 Speichern</button>
+  </div>
+</div>
+</div>
+
+<!-- COMPARE SCREEN -->
+<section id="pg-compare">
+<div class="hdr">
+  <button class="ib" onclick="safeNav('pg-collection')">‹</button>
+  <h1>Kartenvergleich</h1>
+  <button onclick="clearCompare()" style="background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer">Neue Auswahl</button>
+</div>
+<div class="page" id="cmp-page" style="padding-top:12px">
+  <div class="al al-b" style="margin-bottom:12px">Tippe in der Sammlung auf <b>Vergleichen</b>, um Karten auszuwählen.</div>
+  <div style="display:flex;gap:0" id="cmp-content"></div>
 </div>
 </section>
 
@@ -636,7 +742,7 @@ function openCam(){
   navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:_facing},width:{ideal:1920},height:{ideal:1080}},audio:false})
   .then(s=>{_str=s;vid.srcObject=s;return vid.play();})
   .then(()=>{vid.style.opacity=1;$('shutter').disabled=false;startOvl();
-    if(A.step==='back'&&A.front.url){if(!_ghost)_ghost=new Image();_ghost.src=A.front.url;}
+    if(_camTarget==='back'&&A.front.url){if(!_ghost)_ghost=new Image();_ghost.src=A.front.url;}
   })
   .catch(()=>{closeCam();sh($('no-cam'));sh($('uz-gal'));hi($('btn-cam'));});
 }
@@ -693,12 +799,13 @@ function takeShot(){
 function openGallery(){try{const f=$('file-in');f.removeAttribute('capture');f.click();setTimeout(()=>f.setAttribute('capture','environment'),500);}catch(e){}}
 function onFile(e){try{const f=e.target.files&&e.target.files[0];if(f)readBlob(f,f.type||'image/jpeg');e.target.value='';}catch(e){}}
 function readBlob(b,t){const u=URL.createObjectURL(b);const r=new FileReader();r.onload=()=>storePhoto(u,r.result.split(',')[1],t);r.onerror=()=>toast('❌ Bild fehler');r.readAsDataURL(b);}
-function storePhoto(u,b,t){const s=A.step==='front'?A.front:A.back;s.url=u;s.b64=b;s.type=t;$('preview-img').src=u;sh($('preview-box'));hi($('btn-cam'));hi($('uz-gal'));$('btn-next').disabled=false;}
-function retakePhoto(){const s=A.step==='front'?A.front:A.back;s.url=s.b64=s.type=null;hi($('preview-box'));sh($('btn-cam'));$('btn-next').disabled=true;}
+function storePhoto(u,b,t){const side=_camTarget||'front';const s=side==='front'?A.front:A.back;s.url=u;s.b64=b;s.type=t;setupCapture();}
+function retakePhoto(){/* legacy - use retakeSide() */}
 
 /* ANALYSIS */
 const MSGS=['Bild wird verarbeitet…','Karte wird erkannt…','Zentrierung wird gemessen…','Ecken werden analysiert…','Oberfläche wird bewertet…','eBay-Preise werden gesucht…','Ergebnis wird erstellt…'];
 async function runAnalysis(){
+  if(!checkOnline())return;
   navTo('pg-analyzing');let mi=0;$('ana-msg').textContent=MSGS[0];
   const iv=setInterval(()=>{mi=Math.min(mi+1,MSGS.length-1);$('ana-msg').textContent=MSGS[mi];},1800);
   try{
@@ -752,21 +859,22 @@ function confirmCardData(){
     card_number:$('cd-num').value.trim(),
     rarity:$('cd-rar').value.trim(),
     category:$('cd-cat').value.trim(),
+    holo_type:A.result?.card_info?.holo_type||'',
   };
   renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
   navTo('pg-results');
-  // Trigger eBay search in background
-  fetchEbayPrices(A.detected,A.result.final_grade);
+  // Trigger eBay AFTER renderResults created the div
+  setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),100);
 }
 
 const PSA_BOTH=`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
 PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
 Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`;
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`;
 
 const PSA_FRONT=`Analyze this Pokémon card front for PSA pre-grading (back not provided, estimate where needed).
 Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`;
+Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`;
 
 /* EBAY SEARCH */
 async function fetchEbayPrices(cardInfo,grade){
@@ -811,6 +919,8 @@ async function fetchEbayPrices(cardInfo,grade){
         <div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle Ergebnisse auf eBay anzeigen →</div>
       </a>
       <div style="font-size:10px;color:var(--hi);padding:4px 0 8px">Preise aus KI-gestützter Web-Suche · können variieren</div>`;
+    // Update price watch
+    if(A.detailId){const all2=await dbAll();const ew=all2.find(x=>x.id===A.detailId);if(ew)updatePriceWatchUI(ew,items);}
   }catch(e){
     const ebayUrl=`https://www.ebay.de/sch/i.html?_nkw=${encodeURIComponent([cardInfo.card_name,cardInfo.set_name,'PSA '+grade].filter(Boolean).join(' '))}&LH_Complete=1&LH_Sold=1`;
     el.innerHTML=`<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div>
@@ -879,6 +989,8 @@ function renderResults(r,af,ab,ci,fromHist,det){
       ${sbar(cen.score||0,'Zentrierung')}${sbar(r.corners?.score||0,'Ecken')}${sbar(r.edges?.score||0,'Ränder')}${sbar(r.surface?.score||0,'Oberfläche')}
       ${r.recommendation?`<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">${r.recommendation}</div></div>`:''}
     </div>
+    <!-- Price watch indicator -->
+    <div id="pw-indicator" style="margin-bottom:6px"></div>
     <!-- eBay section (loaded async) -->
     <div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>
     <div class="card" style="padding:14px;margin-bottom:10px">
@@ -917,7 +1029,7 @@ async function saveGrade(){
   try{
     const d=A.detected||{};
     const entry={id:Date.now().toString(),timestamp:Date.now(),
-      cardName:d.card_name||'Unbekannte Karte',cardLang:d.language,cardSet:d.set_name,
+      cardName:d.card_name||'Unbekannte Karte',cardLang:d.language,cardSet:d.set_name,cardHolo:d.holo_type||'',
       cardNumber:d.card_number,cardHP:d.hp,cardRarity:d.rarity,cardCat:d.category,
       grade:A.result.final_grade,label:A.result.grade_label,
       summary:A.result.summary,recommendation:A.result.recommendation,
@@ -1034,11 +1146,292 @@ function initPinch(){
   modal.addEventListener('touchend',()=>{_ptDist=null;},{passive:true});
 }
 
+
+/* ══════════ THEME TOGGLE ══════════ */
+function toggleTheme(){
+  const isDark=document.body.getAttribute('data-theme')!=='light';
+  document.body.setAttribute('data-theme',isDark?'light':'dark');
+  localStorage.setItem('pg_theme',isDark?'light':'dark');
+  const btn=$('theme-btn');
+  if(btn)btn.textContent=isDark?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+}
+function applyTheme(){
+  const t=localStorage.getItem('pg_theme')||'dark';
+  document.body.setAttribute('data-theme',t);
+  const btn=$('theme-btn');
+  if(btn)btn.textContent=t==='light'?'🌙 Dark Mode aktivieren':'☀️ Light Mode aktivieren';
+}
+
+/* ══════════ EDIT CARD MODAL ══════════ */
+let _editId=null;
+function openEditModal(){
+  if(!A.detailId)return;
+  // Pre-fill from current detail
+  const fill=async()=>{
+    const all=await dbAll();const e=all.find(x=>x.id===A.detailId);if(!e)return;
+    _editId=e.id;
+    $('em-name').value=e.cardName||'';$('em-lang').value=e.cardLang||'';
+    $('em-hp').value=e.cardHP||'';$('em-set').value=e.cardSet||'';
+    $('em-num').value=e.cardNumber||'';$('em-rar').value=e.cardRarity||'';
+    $('em-cat').value=e.cardCat||'';
+    $('em-watch').value=e.watchPrice||'';
+    $('em-holo').value=e.cardHolo||'';
+    $('edit-modal').classList.add('open');
+  };
+  fill().catch(e=>toast('❌ '+e.message));
+}
+function closeEdit(){$('edit-modal').classList.remove('open');}
+async function saveEdit(){
+  if(!_editId)return;
+  try{
+    const all=await dbAll();const e=all.find(x=>x.id===_editId);if(!e)return;
+    e.cardName=$('em-name').value.trim()||e.cardName;
+    e.cardLang=$('em-lang').value.trim();e.cardHP=$('em-hp').value.trim();
+    e.cardSet=$('em-set').value.trim();e.cardNumber=$('em-num').value.trim();
+    e.cardRarity=$('em-rar').value.trim();e.cardCat=$('em-cat').value.trim();
+    e.cardHolo=$('em-holo').value.trim();
+    const wp=$('em-watch').value.trim();
+    e.watchPrice=wp?parseFloat(wp):null;
+    await dbPut(e);closeEdit();toast('✅ Gespeichert');
+    // Reload detail
+    showDetail(_editId,A.fromScreen);
+  }catch(err){toast('❌ '+err.message);}
+}
+// Close on backdrop tap
+$('edit-modal').addEventListener('click',e=>{if(e.target===$('edit-modal'))closeEdit();});
+
+/* ══════════ EXPORT PNG SLAB ══════════ */
+async function triggerExport(){
+  if(!A.detailId)return;
+  toast('⏳ Export wird erstellt…',5000);
+  try{
+    const all=await dbAll();const e=all.find(x=>x.id===A.detailId);if(!e)return;
+    const dataUrl=await buildSlabImage(e);
+    const a=document.createElement('a');
+    a.download=(e.cardName||'PokéGrader').replace(/[^a-z0-9äöü]/gi,'_')+'_PSA'+e.grade+'.png';
+    a.href=dataUrl;a.click();
+    toast('✅ Export gespeichert');
+  }catch(err){toast('❌ Export fehlgeschlagen: '+err.message);}
+}
+
+function buildSlabImage(entry){
+  return new Promise(res=>{
+    const W=480,H=680;
+    const c=document.createElement('canvas');c.width=W;c.height=H;
+    const ctx=c.getContext('2d');
+    // White slab background
+    ctx.fillStyle='#f5f5f0';ctx.fillRect(0,0,W,H);
+    // Top red band
+    ctx.fillStyle='#e63946';ctx.fillRect(0,0,W,72);
+    // PSA text
+    ctx.fillStyle='#fff';ctx.font='bold 20px Arial,sans-serif';ctx.textAlign='center';
+    ctx.fillText('PSA PRE-GRADING',W/2,28);
+    ctx.font='11px Arial,sans-serif';ctx.fillText('PokéGrader by netpixel.at',W/2,50);
+    ctx.font='9px Arial,sans-serif';ctx.fillStyle='rgba(255,255,255,.7)';
+    ctx.fillText('Kein offizielles PSA-Ergebnis',W/2,66);
+    // Grade big number
+    const gMap={10:'#f5c842',9:'#60a5fa',8:'#a78bfa',7:'#c084fc',6:'#4ade80',5:'#fb923c'};
+    const gCol=gMap[entry.grade]||'#f87171';
+    ctx.font='bold 88px Arial,sans-serif';ctx.fillStyle=gCol;ctx.textAlign='center';
+    ctx.fillText(String(entry.grade),W/2,178);
+    ctx.font='bold 22px Arial,sans-serif';ctx.fillStyle='#333';
+    ctx.fillText(gradeLabels(entry.grade),W/2,210);
+    // Score bars
+    const bars=[['Zentrierung',entry.centering?.score||0],['Ecken',entry.corners?.score||0],['Ränder',entry.edges?.score||0],['Oberfläche',entry.surface?.score||0]];
+    bars.forEach(([lbl,s],i)=>{
+      const bx=32,by=228+i*22,bw=W-64,bh=12,val=s/10;
+      ctx.fillStyle='#e0e0e0';ctx.fillRect(bx,by,bw,bh);
+      const bc=s>=9?'#22c55e':s>=7?'#3b82f6':s>=5?'#f59e0b':'#ef4444';
+      ctx.fillStyle=bc;ctx.fillRect(bx,by,Math.round(bw*val),bh);
+      ctx.fillStyle='#555';ctx.font='10px Arial';ctx.textAlign='left';ctx.fillText(lbl,bx,by-2);
+      ctx.textAlign='right';ctx.fillText(s+'/10',bx+bw,by-2);
+    });
+    // Card image
+    const drawRest=()=>{
+      const iw=220,ih=Math.round(220*88/63);
+      const ix=(W-iw)/2,iy=320;
+      ctx.strokeStyle='rgba(0,0,0,.15)';ctx.lineWidth=1;
+      ctx.strokeRect(ix,iy,iw,ih);
+      // Card info
+      ctx.fillStyle='#111';ctx.font='bold 15px Arial';ctx.textAlign='center';
+      ctx.fillText((entry.cardName||'Unbekannte Karte').substring(0,30),W/2,iy+ih+22);
+      ctx.font='12px Arial';ctx.fillStyle='#555';
+      ctx.fillText([entry.cardSet,entry.cardNumber].filter(Boolean).join(' · ').substring(0,40)||'',W/2,iy+ih+40);
+      ctx.font='10px Arial';ctx.fillStyle='#888';
+      if(entry.cardLang)ctx.fillText('Sprache: '+entry.cardLang,W/2,iy+ih+57);
+      // Date
+      ctx.font='9px Arial';ctx.fillStyle='#aaa';
+      ctx.fillText(new Date(entry.timestamp).toLocaleDateString('de-AT'),W/2,H-24);
+      ctx.fillText('© netpixel.at PokéGrader',W/2,H-12);
+      res(c.toDataURL('image/png'));
+    };
+    if(entry.annF){
+      const img=new Image();
+      img.onload=()=>{
+        const iw=220,ih=Math.round(220*88/63),ix=(W-iw)/2,iy=320;
+        ctx.save();ctx.beginPath();ctx.rect(ix,iy,iw,ih);ctx.clip();
+        ctx.drawImage(img,ix,iy,iw,ih);ctx.restore();
+        drawRest();
+      };
+      img.onerror=drawRest;img.src=entry.annF;
+    }else{drawRest();}
+  });
+}
+function gradeLabels(g){return g>=10?'GEM MINT':g>=9?'MINT':g>=8?'NM-MT':g>=7?'NEAR MINT':g>=6?'EX-MT':g>=5?'EXCELLENT':g>=4?'VG-EX':g>=3?'VERY GOOD':g>=2?'GOOD':'POOR';}
+
+/* ══════════ CSV EXPORT ══════════ */
+async function exportCSV(){
+  try{
+    const all=await dbAll();all.sort((a,b)=>b.timestamp-a.timestamp);
+    if(!all.length){toast('Keine Karten vorhanden');return;}
+    const headers=['Datum','Kartenname','Sprache','Edition','Nummer','Seltenheit','Holo-Typ','Bezeichnung','Grade','Label','Zentrierung','Ecken','Ränder','Oberfläche'];
+    const rows=all.map(e=>[
+      new Date(e.timestamp).toLocaleDateString('de-AT'),
+      e.cardName||'',e.cardLang||'',e.cardSet||'',e.cardNumber||'',
+      e.cardRarity||'',e.cardHolo||'',e.cardCat||'',
+      e.grade,e.label||'',
+      e.centering?.score||0,e.corners?.score||0,e.edges?.score||0,e.surface?.score||0
+    ].map(v=>'"'+String(v).replace(/"/g,'""')+'"'));
+    const csv=[headers.map(h=>'"'+h+'"').join(','),...rows.map(r=>r.join(','))].join('
+');
+    const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');a.href=url;
+    a.download='PokéGrader_Sammlung_'+new Date().toISOString().substring(0,10)+'.csv';
+    a.click();URL.revokeObjectURL(url);
+    toast('✅ CSV exportiert ('+all.length+' Karten)');
+  }catch(e){toast('❌ '+e.message);}
+}
+
+/* ══════════ CARD COMPARISON ══════════ */
+let _compareSlots=[];
+function addToCompare(){
+  if(!A.detailId)return;
+  if(_compareSlots.includes(A.detailId)){toast('⚠️ Karte bereits ausgewählt');return;}
+  _compareSlots.push(A.detailId);
+  if(_compareSlots.length>=2){
+    toast('✅ 2 Karten ausgewählt — Vergleich wird geladen');
+    renderCompare();
+    navTo('pg-compare');
+  }else{
+    toast(`✅ Karte 1 ausgewählt — wähle eine zweite Karte in der Sammlung`);
+    navTo('pg-collection');
+  }
+}
+function clearCompare(){_compareSlots=[];navTo('pg-collection');}
+async function renderCompare(){
+  const el=$('cmp-page');if(!el)return;
+  if(_compareSlots.length<2){el.innerHTML='<div class="al al-b">Bitte 2 Karten auswählen.</div>';return;}
+  try{
+    const all=await dbAll();
+    const cards=_compareSlots.map(id=>all.find(e=>e.id===id)).filter(Boolean);
+    if(cards.length<2)return;
+    const cols=cards.map(e=>{
+      const gclr=gc(e.grade);
+      const bars=[['Zentrier.',e.centering?.score||0],['Ecken',e.corners?.score||0],['Ränder',e.edges?.score||0],['Oberfläche',e.surface?.score||0]];
+      return`<div class="cmp-col">
+        ${e.annF?`<img src="${e.annF}" style="width:100%;border-radius:8px;margin-bottom:8px;display:block">`:''}
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+          <div class="cmp-mini-slab"><div class="cmp-slab-top">PSA</div><div class="cmp-slab-body"><div class="cmp-slab-num" style="color:${gclr.c}">${e.grade}</div></div></div>
+          <div><div style="font-size:13px;font-weight:700;font-family:var(--fh)">${e.cardName||'–'}</div><div style="font-size:10px;color:var(--mu)">${e.cardSet||'–'}</div></div>
+        </div>
+        ${bars.map(([l,s])=>`<div style="margin-bottom:5px"><div style="display:flex;justify-content:space-between;font-size:10px;margin-bottom:2px"><span style="color:var(--mu)">${l}</span><span style="color:${scoreClr(s)};font-weight:600">${s}</span></div><div style="height:4px;background:var(--s3);border-radius:2px;overflow:hidden"><div style="height:100%;width:${s*10}%;background:${scoreClr(s)}"></div></div></div>`).join('')}
+        <button onclick="showDetail('${e.id}','pg-compare')" class="btn btn-o" style="font-size:12px;padding:8px">Details →</button>
+      </div>`;
+    });
+    el.innerHTML=`<div style="width:100%;display:flex;gap:0">${cols.join('<div style="width:1px;background:var(--b1);margin:0 4px;flex-shrink:0"></div>')}</div>`;
+  }catch(e){el.innerHTML='<div class="empty">Fehler beim Laden</div>';}
+}
+function scoreClr(s){return s>=9?'#f5c842':s>=7?'#94e0ff':s>=5?'#fb923c':'#f87171';}
+
+/* ══════════ PRICE WATCH ══════════ */
+function updatePriceWatchUI(entry,ebayItems){
+  const wp=entry?.watchPrice;
+  const el=$('pw-indicator');
+  if(!el||!wp)return;
+  if(!ebayItems||!ebayItems.length){el.innerHTML=`<div class="pw-badge pw-set">⏰ Zielpreis: €${wp.toFixed(2)}</div>`;return;}
+  // Try to extract a price to compare
+  const prices=ebayItems.map(i=>{
+    const m=String(i.price||'').replace(',','.').match(/[\d.]+/);
+    return m?parseFloat(m[0]):null;
+  }).filter(Boolean);
+  if(!prices.length)return;
+  const avgPrice=prices.reduce((a,b)=>a+b,0)/prices.length;
+  const hit=avgPrice<=wp;
+  el.innerHTML=`<div class="pw-badge ${hit?'pw-hit':'pw-miss'}">
+    ${hit?'🟢':'🔴'} Zielpreis €${wp.toFixed(2)} · Ø eBay €${avgPrice.toFixed(2)} ${hit?'✓ Im Zielbereich':'↑ Über Zielpreis'}
+  </div>`;
+}
+
+/* ══════════ QR / BARCODE SCANNER ══════════ */
+let _scanStream=null,_scanInterval=null;
+function openScanner(){
+  const modal=$('scan-modal');modal.classList.add('open');
+  const vid=$('scan-video');
+  navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false})
+  .then(s=>{_scanStream=s;vid.srcObject=s;vid.play();startBarcodeDetect(vid);})
+  .catch(()=>{closeScanner();toast('📱 Kamera nicht verfügbar');});
+}
+function closeScanner(){
+  try{
+    if(_scanInterval){clearInterval(_scanInterval);_scanInterval=null;}
+    if(_scanStream){_scanStream.getTracks().forEach(t=>t.stop());_scanStream=null;}
+    $('scan-modal').classList.remove('open');
+  }catch(e){}
+}
+function startBarcodeDetect(vid){
+  if(!('BarcodeDetector' in window)){
+    $('scan-status').textContent='QR-Scanner nicht unterstützt – manuell eingeben';
+    return;
+  }
+  const det=new BarcodeDetector({formats:['qr_code','ean_13','ean_8','code_128']});
+  _scanInterval=setInterval(async()=>{
+    if(!vid.videoWidth)return;
+    try{
+      const codes=await det.detect(vid);
+      if(codes&&codes.length>0){
+        clearInterval(_scanInterval);_scanInterval=null;
+        const val=codes[0].rawValue;
+        closeScanner();
+        handleBarcodeResult(val);
+      }
+    }catch(e){}
+  },400);
+}
+function handleBarcodeResult(val){
+  toast('✅ Code erkannt: '+val.substring(0,30));
+  // Pre-fill card name from barcode if possible
+  if(val.startsWith('http')){
+    // QR with URL - open it
+    if(confirm('QR-Link öffnen?
+'+val.substring(0,60))){window.open(val,'_blank');}
+  }else{
+    // Use as search hint
+    resetState();navTo('pg-capture');setTimeout(setupCapture,50);
+    setTimeout(()=>{
+      $('cd-name')&&($('cd-name').value=val.substring(0,40));
+      toast('Code als Kartenname eingetragen');
+    },200);
+  }
+}
+
+/* ══════════ HOLO TYPE (added to detected card info) ══════════ */
+// holo_type is now detected by AI - saved in cardHolo field
+
+/* ══════════ OFFLINE CHECK ══════════ */
+function checkOnline(){
+  if(!navigator.onLine){
+    toast('⚠️ Keine Internetverbindung — Analyse nicht möglich',4000);
+    return false;
+  }
+  return true;
+}
+
 /* SW + INIT */
 if('serviceWorker'in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
 initPinch();
 (function init(){
-  try{if(getKey())navTo('pg-home');else navTo('pg-setup');}catch(e){navTo('pg-home');}
+  try{applyTheme();if(getKey())navTo('pg-home');else navTo('pg-setup');}catch(e){navTo('pg-home');}
 })();
 </script>
 </body>
