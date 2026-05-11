@@ -178,6 +178,56 @@ input::placeholder{color:var(--hi)}
 .cs-c2{background:linear-gradient(135deg,#1a2a3e,#0a1a2e);transform:rotate(-3deg) translate(-3px,3px);top:4px;left:4px}
 .cs-c3{background:linear-gradient(135deg,#1e1e32,#261826);top:2px;left:1px;display:flex;flex-direction:column;padding:4px}
 .cmp-col{flex:1;min-width:0;padding:8px}
+.ebay-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.ebay-card{background:var(--s2);border-radius:var(--rs);border:1px solid var(--b1);overflow:hidden;cursor:pointer;text-decoration:none;color:inherit;display:block;transition:border-color .15s}
+.ebay-card:active{border-color:var(--b1);opacity:.85}
+.ebay-img-wrap{aspect-ratio:1/1;background:var(--s3);overflow:hidden;position:relative}
+.ebay-img-wrap img{width:100%;height:100%;object-fit:contain;display:block;padding:4px;background:#fff}
+.ebay-img-wrap .ebay-badge{position:absolute;top:4px;left:4px;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--fh);letter-spacing:.04em}
+.ebay-card-info{padding:7px 8px 8px}
+.ebay-card-title{font-size:11px;line-height:1.35;margin-bottom:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;color:var(--tx)}
+.ebay-card-price{font-family:var(--fh);font-size:15px;font-weight:700;color:#4ade80}
+.ebay-card-meta{font-size:10px;color:var(--mu);margin-top:2px}
+
+/* ── TORCH BUTTON ── */
+.torch-btn{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.25);color:#fff;padding:9px 14px;border-radius:24px;font-size:20px;cursor:pointer;line-height:1;transition:background .2s}
+.torch-btn.on{background:rgba(245,200,66,.3);border-color:rgba(245,200,66,.6)}
+/* ── BULK DELETE ── */
+.coll-select-bar{position:sticky;top:0;z-index:20;background:var(--bg);padding:8px 0;border-bottom:1px solid var(--b1);margin-bottom:8px;display:none}
+.coll-select-bar.on{display:flex;gap:8px;align-items:center}
+.card-cb{position:absolute;top:6px;left:6px;width:22px;height:22px;border-radius:6px;border:2px solid var(--b1);background:var(--s2);display:none;align-items:center;justify-content:center;cursor:pointer;z-index:2;font-size:14px}
+.select-mode .card-cb{display:flex}
+.card-cb.checked{background:var(--red);border-color:var(--red)}
+/* ── PSA CHECKLIST ── */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--b0);cursor:pointer}
+.check-item:last-child{border-bottom:none}
+.check-box{width:22px;height:22px;border-radius:6px;border:2px solid var(--b1);background:var(--s2);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:14px;transition:all .15s}
+.check-box.done{background:var(--red);border-color:var(--red);color:#fff}
+.check-text{font-size:13px;line-height:1.5;flex:1}
+/* ── GRADE DONUT ── */
+.donut-wrap{display:flex;align-items:center;gap:16px;padding:8px 0}
+.donut-legend{display:flex;flex-direction:column;gap:6px;font-size:12px}
+.dl-item{display:flex;align-items:center;gap:6px}
+.dl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+/* ── SHARE / REFRESH STRIP ── */
+.action-strip{display:flex;gap:6px;flex-wrap:wrap;padding:6px 0 2px}
+/* ── PSA CALC ── */
+.calc-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--b0);font-size:13px}
+.calc-row:last-child{border-bottom:none}
+.calc-fee{font-weight:600;color:var(--tx)}
+/* ── COLLECTION VALUE ── */
+.val-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(74,222,128,.12);border:1px solid rgba(74,222,128,.3);color:#4ade80;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;font-family:var(--fh)}
+/* ── QUICK MODE TOGGLE ── */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--b0)}
+.toggle-row:last-child{border-bottom:none}
+.toggle-lbl{font-size:13px;flex:1;margin-right:10px}
+.toggle-sw{position:relative;width:44px;height:24px;flex-shrink:0}
+.toggle-sw input{opacity:0;width:0;height:0}
+.toggle-track{position:absolute;inset:0;background:var(--s3);border-radius:12px;cursor:pointer;transition:background .2s}
+.toggle-sw input:checked+.toggle-track{background:var(--red)}
+.toggle-track::after{content:'';position:absolute;width:18px;height:18px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.toggle-sw input:checked+.toggle-track::after{transform:translateX(20px)}
+
 </style>
 </head>
 <body>
@@ -193,6 +243,7 @@ input::placeholder{color:var(--hi)}
   </div>
   <div class="cam-top">
     <button class="cpill" onclick="closeCam()">✕ Abbrechen</button>
+    <button id="torch-btn" class="torch-btn" onclick="toggleTorch()" title="Taschenlampe">🔦</button>
     <button class="cpill" onclick="flipCam()">🔄 Flip</button>
   </div>
   <div class="cam-bot">
@@ -200,6 +251,16 @@ input::placeholder{color:var(--hi)}
     <button class="shutter" id="shutter" onclick="takeShot()">📸</button>
     <div style="width:80px"></div>
   </div>
+</div>
+
+<!-- PSA CHECKLIST MODAL -->
+<div id="psa-modal" style="position:fixed;top:0;left:0;right:0;bottom:0;z-index:180;background:rgba(0,0,0,.7);display:none;align-items:flex-end">
+<div class="edit-sheet" style="max-height:90vh">
+  <div class="edit-handle"></div>
+  <div style="font-family:var(--fh);font-size:18px;font-weight:700;margin-bottom:14px">📋 PSA Einreichungs-Checkliste</div>
+  <div id="psa-checklist"></div>
+  <button class="btn btn-r" onclick="closePsaModal()" style="margin-top:14px">✓ Fertig</button>
+</div>
 </div>
 
 <!-- QR SCANNER MODAL -->
@@ -230,7 +291,7 @@ input::placeholder{color:var(--hi)}
     <div><label class="ilabel">Sprache</label><input type="text" id="em-lang"></div>
     <div><label class="ilabel">HP</label><input type="text" id="em-hp"></div>
   </div>
-  <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="em-set"></div>
+  <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="em-set" list="set-list"></div>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
     <div><label class="ilabel">Kartennummer</label><input type="text" id="em-num"></div>
     <div><label class="ilabel">Seltenheit</label><input type="text" id="em-rar"></div>
@@ -349,7 +410,7 @@ input::placeholder{color:var(--hi)}
       <div><label class="ilabel">Sprache</label><input type="text" id="cd-lang" placeholder="Deutsch / EN / JP"></div>
       <div><label class="ilabel">HP</label><input type="text" id="cd-hp" placeholder="z.B. 120 HP"></div>
     </div>
-    <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="cd-set" placeholder="z.B. Basisedition (1999)"></div>
+    <div style="margin-bottom:10px"><label class="ilabel">Edition / Set</label><input type="text" id="cd-set" placeholder="z.B. Basisedition (1999)" list="set-list"></div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
       <div><label class="ilabel">Kartennummer</label><input type="text" id="cd-num" placeholder="z.B. 4/102"></div>
       <div><label class="ilabel">Seltenheit</label><input type="text" id="cd-rar" placeholder="z.B. Holo Rare"></div>
@@ -367,9 +428,10 @@ input::placeholder{color:var(--hi)}
   <button id="save-btn" onclick="saveGrade()" style="background:var(--goldb);border:1.5px solid var(--goldd);color:var(--gold);padding:7px 14px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;font-family:var(--fh);letter-spacing:.04em">&#128190; SPEICHERN</button>
 </div>
 <div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
-  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG Export</button>
-  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergleichen</button>
-  <button onclick="openEditForResult()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Bearbeiten</button>
+  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG</button>
+  <button onclick="shareResult()" class="pill" style="background:var(--gnb);border:1px solid rgba(74,222,128,.3);color:#4ade80;font-family:var(--fh)">&#8679; Teilen</button>
+  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergl.</button>
+  <button onclick="openEditForResult()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Edit</button>
 </div>
 <div class="page" id="res-page"></div>
 </section>
@@ -377,9 +439,15 @@ input::placeholder{color:var(--hi)}
 <section id="pg-collection" class="with-nav">
 <div class="hdr">
   <h1>Meine Sammlung</h1>
+  <button onclick="toggleSelectMode()" id="btn-select-mode" style="background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;font-weight:600;margin-right:4px">☑ Auswahl</button>
   <div id="coll-count" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);padding:4px 10px;border-radius:12px;font-size:12px;font-weight:600"></div>
 </div>
 <div class="page" style="padding-top:10px">
+  <div id="coll-select-bar" class="coll-select-bar">
+    <button onclick="selectAll()" class="btn btn-s" style="flex:1;padding:8px;font-size:12px">Alle wählen</button>
+    <button onclick="deleteSelected()" id="btn-del-sel" class="btn btn-r" style="flex:2;padding:8px;font-size:12px" disabled>🗑 Löschen (0)</button>
+    <button onclick="cancelSelect()" class="btn btn-o" style="flex:1;padding:8px;font-size:12px">✕</button>
+  </div>
   <div style="position:relative;margin-bottom:10px">
     <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:16px;pointer-events:none">&#128269;</span>
     <input type="search" id="coll-search" placeholder="Name, Set, Nummer…" style="padding-left:38px" oninput="renderColl()">
@@ -407,9 +475,10 @@ input::placeholder{color:var(--hi)}
   <button onclick="delEntry()" style="background:none;border:none;color:var(--red);font-size:12px;cursor:pointer;font-weight:600">&#128465;</button>
 </div>
 <div style="display:flex;gap:6px;padding:8px 16px;border-bottom:1px solid var(--b0);background:var(--bg);flex-wrap:wrap">
-  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG Export</button>
-  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergleichen</button>
-  <button onclick="openEditModal()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Bearbeiten</button>
+  <button onclick="triggerExport()" class="pill" style="background:var(--goldb);border:1px solid var(--goldd);color:var(--gold);font-family:var(--fh)">&#128228; PNG</button>
+  <button onclick="shareResult()" class="pill" style="background:var(--gnb);border:1px solid rgba(74,222,128,.3);color:#4ade80;font-family:var(--fh)">&#8679; Teilen</button>
+  <button onclick="addToCompare()" class="pill" style="background:var(--blb);border:1px solid var(--bld);color:var(--bl);font-family:var(--fh)">&#9878; Vergl.</button>
+  <button onclick="openEditModal()" class="pill" style="background:var(--s2);border:1px solid var(--b1);color:var(--mu);font-family:var(--fh)">&#9998; Edit</button>
 </div>
 <div class="page" id="det-page"></div>
 </section>
@@ -439,14 +508,33 @@ input::placeholder{color:var(--hi)}
     <button class="btn btn-r" onclick="saveSettingsKey()" style="margin-top:12px">Key speichern</button>
   </div>
   <div class="card">
-    <div class="st" style="margin-bottom:10px">&#128307; Statistiken</div>
+    <div class="st" style="margin-bottom:6px">&#128722; eBay AppID <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;color:var(--hi)">(optional, für Artikel-Bilder)</span></div>
+    <input type="text" id="set-ebay" placeholder="z.B. MaxMuste-MyApp-PRD-xxxxxxxxx-xxxxxxxx" autocomplete="off" spellcheck="false">
+    <div id="set-ebay-status" style="font-size:11px;color:var(--mu);margin-top:6px"></div>
+    <button class="btn btn-s" onclick="saveEbayId()" style="margin-top:10px">eBay AppID speichern</button>
+    <div style="font-size:11px;color:var(--hi);margin-top:8px;line-height:1.7">Kostenlos auf <a href="https://developer.ebay.com" target="_blank" style="color:var(--bl)">developer.ebay.com</a> &#8594; Account &#8594; Application Keys &#8594; Production AppID</div>
+  </div>
+  <div class="card">
+    <div class="st" style="margin-bottom:10px">&#128307; Statistiken &amp; Sammlungswert</div>
     <div id="settings-stats" style="font-size:13px;color:var(--mu);line-height:2"></div>
+    <div id="grade-chart-wrap" class="donut-wrap" style="margin-top:12px;display:none"></div>
   </div>
   <div class="card">
     <div class="st" style="margin-bottom:10px">Darstellung &amp; Tools</div>
+    <div class="toggle-row">
+      <div class="toggle-lbl"><b>Schnell-Grading</b><br><span style="font-size:11px;color:var(--mu)">Kartendetails-Seite überspringen</span></div>
+      <label class="toggle-sw"><input type="checkbox" id="quick-mode-toggle" onchange="setQuickMode(this.checked)"><div class="toggle-track"></div></label>
+    </div>
+    <div style="height:10px"></div>
     <button class="btn btn-s" onclick="toggleTheme()" id="theme-btn" style="margin-bottom:8px">&#9728; Light Mode aktivieren</button>
     <button class="btn btn-s" onclick="openScanner()" style="margin-bottom:8px">&#128247; QR-Code / Barcode scannen</button>
-    <button class="btn btn-s" onclick="exportCSV()">&#128202; Sammlung als CSV exportieren</button>
+    <button class="btn btn-s" onclick="openPsaModal()" style="margin-bottom:8px">&#128203; PSA Einreichungs-Checkliste</button>
+    <button class="btn btn-s" onclick="exportCSV()" style="margin-bottom:8px">&#128202; Sammlung als CSV exportieren</button>
+    <div class="row">
+      <button class="btn btn-s" onclick="backupCollection()" style="flex:1">&#128229; Backup</button>
+      <button class="btn btn-s" onclick="$('restore-file').click()" style="flex:1">&#128228; Restore</button>
+    </div>
+    <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreCollection(event)">
   </div>
   <div class="card">
     <div class="st" style="margin-bottom:10px">Rechtliches</div>
@@ -574,6 +662,18 @@ function initSettings() {
   const k=getKey();
   $('set-key').value=k;
   $('set-status').textContent=k?'✓ Aktiv: '+k.substring(0,18)+'…':'Kein Key gespeichert';
+  const eid=getEbayId();
+  $('set-ebay').value=eid;
+  $('set-ebay-status').textContent=eid?'✓ AppID gespeichert':'Kein eBay AppID — Bilder nicht verfügbar';
+}
+const EBAY_ID_KEY='pg_ebay_appid';
+const getEbayId=()=>{try{return localStorage.getItem(EBAY_ID_KEY)||'';}catch(e){return '';}};
+const putEbayId=v=>{try{localStorage.setItem(EBAY_ID_KEY,v);}catch(e){}};
+function saveEbayId(){
+  const v=($('set-ebay').value||'').trim();
+  putEbayId(v);
+  $('set-ebay-status').textContent=v?'✓ AppID gespeichert':'AppID gelöscht';
+  toast(v?'✅ eBay AppID gespeichert':'🗑 eBay AppID entfernt');
 }
 function saveSettingsKey() {
   const k=($('set-key').value||'').trim();
@@ -660,10 +760,17 @@ const A = {
   saved:false, detailId:null, fromScreen:'pg-collection'
 };
 function resetState() {
+  try{if(A.front.url)URL.revokeObjectURL(A.front.url);}catch(e){}
+  try{if(A.back.url)URL.revokeObjectURL(A.back.url);}catch(e){}
   A.front={url:null,b64:null,type:null};
   A.back ={url:null,b64:null,type:null};
   A.result=null; A.detected=null;
   A.annF=null; A.annB=null; A.cenImg=null; A.saved=false;
+  // Always re-enable save button for the next card
+  const sbtn=$('save-btn');
+  if(sbtn){ sbtn.textContent='💾 SPEICHERN'; sbtn.disabled=false; }
+  const abtn=$('btn-analyze');
+  if(abtn){ abtn.textContent='📷 Erst Foto aufnehmen'; abtn.disabled=true; }
 }
 
 function startAnalysis() {
@@ -674,7 +781,11 @@ function startAnalysis() {
 }
 
 function setupCapture() {
-  $('btn-analyze').disabled = !A.front.url;
+  const _ab=$('btn-analyze');
+  if(_ab){
+    _ab.disabled=!A.front.url;
+    _ab.textContent=A.front.url?'🔬 Analyse starten':'📷 Erst Foto aufnehmen';
+  }
   if(A.front.url) {
     $('prev-img-f').src=A.front.url;
     sh($('prev-front')); hi($('btn-cam-f'));
@@ -696,8 +807,13 @@ function setupCapture() {
 function capBack() { stopCam(); navTo('pg-home'); }
 function openCamFor(side) { _camTarget=side; openCam(); }
 function retakeSide(side) {
-  if(side==='front') { A.front={url:null,b64:null,type:null}; }
-  else               { A.back ={url:null,b64:null,type:null}; }
+  if(side==='front') {
+    if(A.front.url) { try{URL.revokeObjectURL(A.front.url);}catch(e){} }
+    A.front={url:null,b64:null,type:null};
+  } else {
+    if(A.back.url) { try{URL.revokeObjectURL(A.back.url);}catch(e){} }
+    A.back={url:null,b64:null,type:null};
+  }
   setupCapture();
 }
 
@@ -782,7 +898,12 @@ function startOvl() {
       ctx.clearRect(fx,fy,fw,fh);
       if(_camTarget==='back' && _ghost && _ghost.complete && _ghost.naturalWidth>0) {
         ctx.globalAlpha=.2;
-        ctx.drawImage(_ghost,fx,fy,fw,fh);
+        // Draw ghost with contain (no distortion) - Pokémon card ratio 63:88
+        const gw=_ghost.naturalWidth, gh=_ghost.naturalHeight;
+        const scale=Math.min(fw/gw, fh/gh);
+        const dw=gw*scale, dh=gh*scale;
+        const dx=fx+(fw-dw)/2, dy=fy+(fh-dh)/2;
+        ctx.drawImage(_ghost, dx, dy, dw, dh);
         ctx.globalAlpha=1;
       }
       const CL=Math.min(fw,fh)*.09;
@@ -927,6 +1048,8 @@ function checkOnline() {
 
 async function runAnalysis() {
   if(!checkOnline()) return;
+  const abtn=$('btn-analyze');
+  if(abtn){ abtn.disabled=true; abtn.textContent='⏳ Läuft…'; }
   navTo('pg-analyzing');
   let mi=0;
   $('ana-msg').textContent=MSGS[0];
@@ -984,15 +1107,33 @@ Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 H
     $('cd-num').value=d.card_number||'';
     $('cd-rar').value=d.rarity||'';
     $('cd-cat').value=d.category||'';
-    navTo('pg-carddata');
+    // Reset analyze button before leaving capture flow
+    const _finBtn=$('btn-analyze');
+    if(_finBtn){_finBtn.disabled=true;_finBtn.textContent='📷 Erst Foto aufnehmen';}
+    if(getQuickMode()){
+      // Quick mode: auto-confirm, skip card data review screen
+      A.detected={
+        card_name:d.card_name||'Unbekannte Karte',language:d.language||'',
+        hp:d.hp||'',set_name:d.set_name||'',card_number:d.card_number||'',
+        rarity:d.rarity||'',category:d.category||'',holo_type:d.holo_type||'',
+      };
+      renderResults(A.result,A.annF,A.annB,A.cenImg,false,A.detected);
+      navTo('pg-results');
+      setTimeout(()=>fetchEbayPrices(A.detected,A.result.final_grade),150);
+    } else {
+      navTo('pg-carddata');
+    }
   } catch(err) {
     clearInterval(iv);
     if(err.message==='no-key') { toast('⚠️ Kein API-Key'); navTo('pg-settings'); }
-    else { toast('❌ '+(err.message||'Analyse fehlgeschlagen')); navTo('pg-capture'); setTimeout(setupCapture,50); }
+    else { toast('❌ '+(err.message||'Analyse fehlgeschlagen')); navTo('pg-capture'); setTimeout(()=>{ setupCapture(); const ab=$('btn-analyze'); if(ab){ab.disabled=false;ab.textContent='🔬 Analyse starten';} },50); }
   }
 }
 
 function confirmCardData() {
+  // Reset save button — it stays disabled from the previous card otherwise
+  const sbtn=$('save-btn');
+  if(sbtn){ sbtn.textContent='💾 SPEICHERN'; sbtn.disabled=false; }
   A.detected={
     card_name:    $('cd-name').value.trim()||'Unbekannte Karte',
     language:     $('cd-lang').value.trim(),
@@ -1009,70 +1150,221 @@ function confirmCardData() {
 }
 
 // ── EBAY ──────────────────────────────────────
-async function fetchEbayPrices(cardInfo, grade) {
-  const key=getKey();
-  if(!key) return;
-  const el=$('ebay-section');
-  if(!el) return;
-  el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise <span class="spin-sm"></span></div><div style="font-size:12px;color:var(--mu)">Suche läuft…</div>';
+// JSONP helper — bypasses CORS for eBay Finding API
+function ebayJSONP(url) {
+  return new Promise((res) => {
+    const cb = '_eb' + Date.now();
+    const to = setTimeout(() => { cleanup(); res(null); }, 9000);
+    function cleanup() {
+      clearTimeout(to);
+      delete window[cb];
+      const s = document.getElementById(cb);
+      if(s) s.parentNode.removeChild(s);
+    }
+    window[cb] = (data) => { cleanup(); res(data); };
+    const s = document.createElement('script');
+    s.id = cb;
+    s.src = url + '&callback=' + cb;
+    s.onerror = () => { cleanup(); res(null); };
+    document.head.appendChild(s);
+  });
+}
+
+// Parse eBay Finding API response → [{title, price, currency, image, url, sold}]
+function parseEbayItems(data, operation) {
   try {
-    const q=[cardInfo.card_name,cardInfo.set_name,cardInfo.card_number,'PSA '+grade].filter(Boolean).join(' ');
-    const resp=await fetch('https://api.anthropic.com/v1/messages', {
-      method:'POST',
-      headers:{
-        'Content-Type':'application/json',
-        'x-api-key':key,
-        'anthropic-version':'2023-06-01',
-        'anthropic-dangerous-direct-browser-access':'true'
+    const key = operation + 'Response';
+    const items = data[key]?.[0]?.searchResult?.[0]?.item || [];
+    return items.slice(0, 4).map(it => ({
+      title:    (it.title?.[0] || '').trim(),
+      price:    it.sellingStatus?.[0]?.currentPrice?.[0]?.['__value__'] || '–',
+      currency: it.sellingStatus?.[0]?.currentPrice?.[0]?.['@currencyId'] || 'EUR',
+      image:    (it.galleryURL?.[0] || '').replace('l140', 'l400'), // bigger thumb
+      url:      it.viewItemURL?.[0] || '#',
+      sold:     operation === 'findCompletedItems',
+      condition:it.condition?.[0]?.conditionDisplayName?.[0] || ''
+    }));
+  } catch(e) { return []; }
+}
+
+// Build eBay Finding API JSONP URL
+function ebayApiUrl(operation, keywords, appId, extraFilters) {
+  let url = 'https://svcs.ebay.de/services/search/FindingService/v1'
+    + '?OPERATION-NAME=' + operation
+    + '&SERVICE-VERSION=1.0.0'
+    + '&SECURITY-APPNAME=' + encodeURIComponent(appId)
+    + '&RESPONSE-DATA-FORMAT=JSON'
+    + '&REST-PAYLOAD'
+    + '&keywords=' + encodeURIComponent(keywords)
+    + '&paginationInput.entriesPerPage=4'
+    + '&outputSelector=GalleryInfo'
+    + '&sortOrder=BestMatch';
+  if(extraFilters) url += extraFilters;
+  return url;
+}
+
+async function fetchEbayPrices(cardInfo, grade) {
+  const el = $('ebay-section');
+  if(!el) return;
+  el.innerHTML = '<div class="st" style="margin-bottom:8px">&#128722; eBay Marktpreise <span class="spin-sm"></span></div>'
+    + '<div style="font-size:12px;color:var(--mu)">Suche läuft…</div>';
+
+  const ebayId  = getEbayId();
+  const q = [cardInfo.card_name, cardInfo.set_name, cardInfo.card_number, 'PSA ' + grade]
+    .filter(Boolean).join(' ');
+  const searchUrl = 'https://www.ebay.de/sch/i.html?_nkw=' + encodeURIComponent(q)
+    + '&LH_Complete=1&LH_Sold=1';
+
+  // ── PATH A: real eBay API with images ──────────────────────
+  if(ebayId) {
+    try {
+      // 1. Try sold/completed first
+      let items = [];
+      const soldData = await ebayJSONP(ebayApiUrl(
+        'findCompletedItems', q, ebayId,
+        '&itemFilter(0).name=SoldItemsOnly&itemFilter(0).value=true'
+      ));
+      if(soldData) items = parseEbayItems(soldData, 'findCompletedItems');
+
+      // 2. If fewer than 2 sold, add active listings
+      if(items.length < 2) {
+        const activeData = await ebayJSONP(ebayApiUrl('findItemsByKeywords', q, ebayId, ''));
+        if(activeData) {
+          const active = parseEbayItems(activeData, 'findItemsByKeywords');
+          // merge, avoid duplicates by url
+          const seen = new Set(items.map(i=>i.url));
+          active.forEach(a=>{ if(!seen.has(a.url)) items.push(a); });
+        }
+        items = items.slice(0, 4);
+      }
+
+      if(items.length > 0) {
+        renderEbayCards(el, items, searchUrl, q);
+        // price watch
+        if(A.detailId) {
+          dbAll().then(all => {
+            const ew = all.find(x => x.id === A.detailId);
+            if(ew) updatePriceWatchUI(ew, items);
+          }).catch(()=>{});
+        }
+        return;
+      }
+    } catch(e) { console.warn('eBay API error', e); }
+  }
+
+  // ── PATH B: Claude web search fallback (no images) ─────────
+  const key = getKey();
+  if(!key) {
+    el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
+    return;
+  }
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
-      body:JSON.stringify({
-        model:'claude-sonnet-4-6', max_tokens:800,
-        tools:[{type:'web_search_20250305',name:'web_search'}],
-        system:'Search eBay for sold Pokémon cards. Respond ONLY with a JSON array.',
-        messages:[{role:'user',content:'Search eBay.de for recently sold: "'+q+'". Return JSON array of 4 results: [{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/...","condition":"PSA '+grade+'"}]. Only JSON.'}]
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6', max_tokens: 600,
+        tools: [{type:'web_search_20250305',name:'web_search'}],
+        system: 'Search eBay for Pokémon card listings. Return ONLY a JSON array, no other text.',
+        messages: [{role:'user',content:
+          'Search eBay.de for "' + q + '". Return JSON array of 3-4 results: '
+          + '[{"title":"...","price":"€12.50","sold_date":"Mai 2025","url":"https://www.ebay.de/itm/..."}]. Only JSON.'
+        }]
       })
     });
-    if(!resp.ok) throw new Error('eBay HTTP '+resp.status);
-    const data=await resp.json();
-    const text=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
-    let items=[];
-    try { items=JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e) {}
-    const ebayUrl='https://www.ebay.de/sch/i.html?_nkw='+encodeURIComponent(q)+'&LH_Complete=1&LH_Sold=1';
-    if(!items||!items.length) {
-      el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div><div class="al al-a">Keine Ergebnisse. <a href="'+ebayUrl+'" target="_blank" style="color:var(--am)">Auf eBay suchen →</a></div>';
-      return;
-    }
-    el.innerHTML='<div class="st" style="margin-bottom:8px">💰 Aktuelle eBay Verkaufspreise</div>'
-      +items.map(it=>'<a href="'+(it.url||ebayUrl)+'" target="_blank" class="ebay-item"><div style="flex:1;min-width:0"><div class="ebay-title">'+it.title+'</div><div class="ebay-date">'+(it.sold_date||'')+' · '+(it.condition||'')+'</div></div><div class="ebay-price">'+(it.price||'–')+'</div><div style="color:var(--mu);font-size:16px">›</div></a>').join('')
-      +'<a href="'+ebayUrl+'" target="_blank" style="text-decoration:none"><div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle auf eBay anzeigen →</div></a>'
-      +'<div style="font-size:10px;color:var(--hi);padding:4px 0 8px">KI-gestützte Websuche · Preise können variieren</div>';
-    // Price watch
-    if(A.detailId) {
-      const all2=await dbAll();
-      const ew=all2.find(x=>x.id===A.detailId);
-      if(ew) updatePriceWatchUI(ew, items);
+    if(!resp.ok) throw new Error('HTTP ' + resp.status);
+    const data = await resp.json();
+    const text = (data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
+    let items = [];
+    try { items = JSON.parse(text.replace(/```json|```/g,'').trim()); } catch(e) {}
+    if(items && items.length) {
+      el.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">&#128722; eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">&#8635;</button></div>'
+        + '<div class="al al-b" style="margin-bottom:8px;font-size:11px">&#128247; Für Artikel-Bilder: eBay AppID in Einstellungen eintragen</div>'
+        + items.map(it =>
+          '<a href="' + (it.url||searchUrl) + '" target="_blank" class="ebay-item">'
+          + '<div style="flex:1;min-width:0"><div class="ebay-title">' + (it.title||q) + '</div>'
+          + '<div class="ebay-date">' + (it.sold_date||'') + '</div></div>'
+          + '<div class="ebay-price">' + (it.price||'–') + '</div>'
+          + '<div style="color:var(--mu);font-size:16px">›</div></a>'
+        ).join('')
+        + '<a href="' + searchUrl + '" target="_blank" style="text-decoration:none">'
+        + '<div style="text-align:center;padding:10px;font-size:13px;color:var(--bl);font-weight:600">Alle auf eBay →</div></a>'
+        + '<div style="font-size:10px;color:var(--hi);padding:4px 0 8px">KI-gestützte Suche · Preise können variieren</div>';
+    } else {
+      el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
     }
   } catch(e) {
-    const fallback='https://www.ebay.de/sch/i.html?_nkw='+encodeURIComponent((cardInfo.card_name||'')+' PSA '+grade);
-    el.innerHTML='<div class="st" style="margin-bottom:8px">💰 eBay Marktpreise</div><a href="'+fallback+'" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">🔍 Auf eBay suchen</a>';
+    el.innerHTML = noEbayHtml(searchUrl, q, ebayId);
   }
 }
 
+function noEbayHtml(searchUrl, q, hasId) {
+  return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">&#128722; eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">&#8635;</button></div>'
+    + (hasId ? '' : '<div class="al al-b" style="font-size:11px;margin-bottom:8px">&#128247; Für Artikel-Bilder: eBay AppID in Einstellungen eintragen (kostenlos)</div>')
+    + '<a href="' + searchUrl + '" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex">&#128269; Auf eBay suchen</a>';
+}
+
+function renderEbayCards(el, items, searchUrl, q) {
+  const currSymbol = c => c === 'USD' ? '$' : c === 'GBP' ? '£' : '€';
+  el.innerHTML = '<div class="st" style="margin-bottom:8px">&#128722; eBay Marktpreise</div>'
+    + '<div class="ebay-grid">'
+    + items.map(it => {
+      const price = parseFloat(it.price) > 0
+        ? currSymbol(it.currency) + parseFloat(it.price).toFixed(2)
+        : it.price || '–';
+      const badge = it.sold ? 'Verkauft' : 'Aktiv';
+      const badgeColor = it.sold ? 'rgba(74,222,128,.9)' : 'rgba(96,165,250,.9)';
+      const img = it.image
+        ? '<img src="' + it.image + '" alt="" loading="lazy" onerror="this.parentNode.innerHTML='&#127183;'">'
+        : '<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">&#127183;</div>';
+      return '<a href="' + it.url + '" target="_blank" class="ebay-card">'
+        + '<div class="ebay-img-wrap">' + img
+        + '<div class="ebay-badge" style="background:' + badgeColor + ';color:#fff">' + badge + '</div>'
+        + '</div>'
+        + '<div class="ebay-card-info">'
+        + '<div class="ebay-card-title">' + it.title + '</div>'
+        + '<div class="ebay-card-price">' + price + '</div>'
+        + (it.condition ? '<div class="ebay-card-meta">' + it.condition + '</div>' : '')
+        + '</div></a>';
+    }).join('')
+    + '</div>'
+    + '<a href="' + searchUrl + '" target="_blank" style="text-decoration:none">'
+    + '<div style="text-align:center;padding:8px;font-size:12px;color:var(--bl);font-weight:600">Alle Ergebnisse auf eBay →</div></a>'
+    + '<div style="font-size:10px;color:var(--hi);padding:2px 0 6px">eBay Finding API · Preise ohne Garantie</div>';
+  // Save avg price to DB entry
+  saveEbayPriceToDB(items);
+}
+
 function updatePriceWatchUI(entry, ebayItems) {
-  const wp=entry?.watchPrice;
-  const el=$('pw-indicator');
+  const wp = entry?.watchPrice;
+  const el = $('pw-indicator');
   if(!el) return;
+  // Also populate PSA calculator
+  const calcEl=$('psa-calc-section');
+  if(calcEl&&ebayItems&&ebayItems.length){
+    const prices=ebayItems.map(i=>{const v=parseFloat(String(i.price).replace(/[^0-9.]/g,''));return isNaN(v)?null:v;}).filter(Boolean);
+    if(prices.length){const avg=prices.reduce((a,b)=>a+b,0)/prices.length;calcEl.innerHTML=buildPsaCalcSection(avg);}
+  }
   if(!wp) { el.innerHTML=''; return; }
-  if(!ebayItems||!ebayItems.length) {
-    el.innerHTML='<div class="pw-badge pw-set">⏰ Zielpreis: €'+wp.toFixed(2)+'</div>';
+  const prices = ebayItems.map(i => {
+    const v = parseFloat(i.price);
+    return isNaN(v) ? null : v;
+  }).filter(Boolean);
+  if(!prices.length) {
+    el.innerHTML = '<div class="pw-badge pw-set">⏰ Zielpreis: €' + wp.toFixed(2) + '</div>';
     return;
   }
-  const prices=ebayItems.map(i=>{ const m=String(i.price||'').replace(',','.').match(/[\d.]+/); return m?parseFloat(m[0]):null; }).filter(Boolean);
-  if(!prices.length) return;
-  const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
-  const hit=avg<=wp;
-  el.innerHTML='<div class="pw-badge '+(hit?'pw-hit':'pw-miss')+'">'+
-    (hit?'🟢':'🔴')+' Zielpreis €'+wp.toFixed(2)+' · Ø eBay €'+avg.toFixed(2)+' '+(hit?'✓ Im Zielbereich':'↑ Über Zielpreis')+'</div>';
+  const avg = prices.reduce((a,b)=>a+b,0) / prices.length;
+  const hit = avg <= wp;
+  el.innerHTML = '<div class="pw-badge ' + (hit?'pw-hit':'pw-miss') + '">'
+    + (hit?'🟢':'🔴') + ' Zielpreis €' + wp.toFixed(2)
+    + ' · Ø eBay €' + avg.toFixed(2)
+    + ' ' + (hit ? '✓ Im Zielbereich' : '↑ Über Zielpreis') + '</div>';
 }
 
 // ── CANVAS ANNOTATION ──────────────────────────
@@ -1240,6 +1532,7 @@ function renderResults(r, af, ab, ci, fromHist, det) {
     +(r.recommendation?'<div style="background:var(--redb);border:1px solid var(--redd);border-radius:var(--rs);padding:12px;margin-top:10px"><div style="font-size:10px;font-weight:700;color:var(--red);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em;font-family:var(--fh)">💡 Empfehlung</div><div style="font-size:12px;color:var(--mu);line-height:1.5">'+r.recommendation+'</div></div>':'')
     +'</div>'
     +'<div id="pw-indicator" style="margin-bottom:6px"></div>'
+    +'<div id="psa-calc-section"></div>'
     +'<div id="ebay-section" class="card" style="margin-bottom:10px"><div class="st">💰 eBay Marktpreise</div><div style="font-size:12px;color:var(--mu)">Lädt…</div></div>'
     +'<div class="card" style="padding:14px;margin-bottom:10px"><div class="st" style="margin-bottom:10px">📌 Kartenbeschriftung</div>'
     +'<div style="font-size:12px;font-weight:500;color:var(--mu);margin-bottom:6px">Vorderseite</div>'
@@ -1297,11 +1590,15 @@ const dbClear=async()=>{const db=await openDB();return new Promise((res,rej)=>{c
 async function saveGrade() {
   const btn=$('save-btn');
   if(!A.result||A.saved) return;
+  // Duplicate check
+  const d0=A.detected||{};
+  const isDup=await checkDuplicate(d0.card_name,d0.set_name,d0.card_number);
+  if(isDup && !confirm('⚠️ Diese Karte existiert bereits in deiner Sammlung. Trotzdem speichern?'))return;
   btn.textContent='⏳ Speichern…'; btn.disabled=true;
   try {
     const d=A.detected||{};
     const entry={
-      id:Date.now().toString(), timestamp:Date.now(),
+      id:Date.now().toString(36)+Math.random().toString(36).slice(2,6), timestamp:Date.now(),
       cardName:d.card_name||'Unbekannte Karte',
       cardLang:d.language, cardSet:d.set_name, cardNumber:d.card_number,
       cardHP:d.hp, cardRarity:d.rarity, cardHolo:d.holo_type, cardCat:d.category,
@@ -1545,6 +1842,18 @@ const SORTS=[
 ];
 function setF(el,g){document.querySelectorAll('.fc').forEach(c=>c.classList.remove('active'));el.classList.add('active');_fg=g;renderColl();}
 function cycleSort(){_sm=(_sm+1)%SORTS.length;$('sort-lbl').textContent=SORTS[_sm].l;renderColl();}
+function _collClick(e){
+  const card=e.currentTarget;
+  const id=card.dataset.id;
+  if(!id)return;
+  if(_selectMode){
+    const cb=card.querySelector('.card-cb');
+    if(_selected.has(id)){_selected.delete(id);card.style.outline='';if(cb){cb.classList.remove('checked');cb.textContent='';}}
+    else{_selected.add(id);card.style.outline='2px solid var(--red)';if(cb){cb.classList.add('checked');cb.textContent='✓';}}
+    updateDeleteBtn();
+  }else{showDetail(id);}
+}
+
 async function renderColl() {
   const grid=$('coll-grid'), empty=$('coll-empty'), cnt=$('coll-count');
   try {
@@ -1562,8 +1871,8 @@ async function renderColl() {
     hi(empty);
     grid.innerHTML=all.map(e=>{
       const gclr=gc(e.grade);
-      return '<div class="coll-card" onclick="showDetail(\''+e.id+'\')">'
-        +'<div class="coll-tw">'+(e.annF?'<img class="coll-thumb" src="'+e.annF+'" alt="" loading="lazy">':'<div class="coll-ph">🃏</div>')
+      return '<div class="coll-card" data-id="'+e.id+'" onclick="_collClick(event)">'
+        +'<div class="coll-tw">'+(_selectMode?'<div class="card-cb" data-id="'+e.id+'"></div>':'')+(e.annF?'<img class="coll-thumb" src="'+e.annF+'" alt="" loading="lazy">':'<div class="coll-ph">🃏</div>')
         +'<div class="cgs"><div class="cgs-top"></div><div class="cgs-num" style="color:'+gclr.c+'">'+e.grade+'</div></div></div>'
         +'<div class="coll-info">'
         +'<div class="coll-name">'+(e.cardName||'Unbekannt')+'</div>'
@@ -1647,6 +1956,303 @@ async function loadSettingsStats() {
   } catch(e) {}
 }
 
+
+// ── TORCH ──────────────────────────────────────────────────
+let _torchOn=false;
+async function toggleTorch(){
+  if(!_str){toast('📱 Kamera nicht aktiv');return;}
+  const track=_str.getVideoTracks()[0];
+  if(!track){return;}
+  const caps=track.getCapabilities&&track.getCapabilities();
+  if(!caps||!caps.torch){toast('🔦 Taschenlampe nicht verfügbar');return;}
+  _torchOn=!_torchOn;
+  try{
+    await track.applyConstraints({advanced:[{torch:_torchOn}]});
+    const btn=$('torch-btn');
+    if(btn){btn.textContent=_torchOn?'🔆':'🔦';btn.classList.toggle('on',_torchOn);}
+  }catch(e){toast('❌ Taschenlampe: '+e.message);}
+}
+// Reset torch when camera closes
+const _origCloseCam=closeCam;
+
+// ── QUICK GRADE MODE ────────────────────────────────────────
+const QM_KEY='pg_quick_mode';
+function getQuickMode(){try{return localStorage.getItem(QM_KEY)==='1';}catch(e){return false;}}
+function setQuickMode(on){
+  try{localStorage.setItem(QM_KEY,on?'1':'0');}catch(e){}
+  toast(on?'⚡ Schnell-Grading aktiviert':'Schnell-Grading deaktiviert');
+}
+function initQuickModeToggle(){
+  const el=$('quick-mode-toggle');
+  if(el)el.checked=getQuickMode();
+}
+
+// ── PSA CHECKLIST ───────────────────────────────────────────
+const PSA_STEPS=[
+  ['Karte aus Hülle/Sleeve entnehmen','Verwende Baumwollhandschuhe um Fingerabdrücke zu vermeiden'],
+  ['Oberfläche prüfen','Kratzer, Whitening, Schmutz unter guter Beleuchtung prüfen'],
+  ['Zentrierung messen','Lineal oder PSA-Zentrierungstool: VS 55/45, RS 75/25 für PSA 10'],
+  ['Karte in Semi-Rigid Sleeve stecken','Kein Sleeve knittern oder biegen'],
+  ['In Toploader einlegen','66x91mm Standard Toploader für normale Karten'],
+  ['Online-Formular ausfüllen','PSA-Account → Submit Cards → Service Level wählen'],
+  ['Versandkosten kalkulieren','Economy (~$25/Karte), Regular (~$50), Express (~$150)'],
+  ['Versicherung & Tracking','Sendung mit Einschreiben und Versicherungswert'],
+  ['Auf Eingangsbestätigung warten','PSA sendet E-Mail wenn Sendung eingegangen ist'],
+  ['Ergebnis abwarten','Bearbeitungszeit je nach Service Level 5–65 Werktage'],
+];
+let _psaChecked=new Set();
+function openPsaModal(){
+  const list=$('psa-checklist');
+  if(!list)return;
+  list.innerHTML=PSA_STEPS.map((s,i)=>
+    '<div class="check-item" onclick="toggleCheck('+i+')">'
+    +'<div class="check-box'+((_psaChecked.has(i))?' done':'')+'\" id="cb'+i+'">'+((_psaChecked.has(i))?'✓':'')+'</div>'
+    +'<div class="check-text"><b>'+s[0]+'</b><br><span style="font-size:11px;color:var(--mu)">'+s[1]+'</span></div>'
+    +'</div>'
+  ).join('');
+  $('psa-modal').style.display='flex';
+}
+function closePsaModal(){$('psa-modal').style.display='none';}
+function toggleCheck(i){
+  if(_psaChecked.has(i))_psaChecked.delete(i);else _psaChecked.add(i);
+  const cb=$('cb'+i);
+  if(cb){cb.classList.toggle('done',_psaChecked.has(i));cb.textContent=_psaChecked.has(i)?'✓':'';}
+}
+$('psa-modal').addEventListener('click',e=>{if(e.target===$('psa-modal'))closePsaModal();});
+
+// ── WEB SHARE ────────────────────────────────────────────────
+async function shareResult(){
+  const id=A.detailId;
+  let entry=null;
+  if(id){const all=await dbAll().catch(()=>[]);entry=all.find(x=>x.id===id);}
+  const src=entry||{cardName:A.detected?.card_name,grade:A.result?.final_grade,
+    label:A.result?.grade_label,centering:A.result?.centering,corners:A.result?.corners,
+    edges:A.result?.edges,surface:A.result?.surface,annF:A.annF};
+  if(!navigator.share){toast('Teilen nicht unterstützt auf diesem Gerät');return;}
+  const text='🃏 '+( src.cardName||'Pokémon Karte')+'\n'
+    +'PSA Pre-Grade: '+src.grade+' ('+( src.label||gLbl(src.grade||0))+')\n'
+    +'Zentrierung: '+(src.centering?.score||'?')+'/10 · Ecken: '+(src.corners?.score||'?')+'/10\n'
+    +'Ränder: '+(src.edges?.score||'?')+'/10 · Oberfläche: '+(src.surface?.score||'?')+'/10\n'
+    +'Bewertet mit PokéGrader by netpixel.at';
+  try{
+    if(src.annF && navigator.canShare){
+      const blob=await(await fetch(src.annF)).blob();
+      const file=new File([blob],'PokéGrader_PSA'+(src.grade||'')+'.jpg',{type:'image/jpeg'});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({title:'PokéGrader PSA',text,files:[file]});
+        return;
+      }
+    }
+    await navigator.share({title:'PokéGrader PSA',text});
+  }catch(e){if(e.name!=='AbortError')toast('❌ Teilen: '+e.message);}
+}
+
+// ── eBay PRICE REFRESH ──────────────────────────────────────
+async function refreshEbay(){
+  const id=A.detailId;
+  if(!id){
+    // Results view - use current detected data
+    if(A.detected)setTimeout(()=>fetchEbayPrices(A.detected,A.result?.final_grade),50);
+    return;
+  }
+  const all=await dbAll().catch(()=>[]);
+  const e=all.find(x=>x.id===id);
+  if(e){
+    const det={card_name:e.cardName,set_name:e.cardSet,card_number:e.cardNumber};
+    setTimeout(()=>fetchEbayPrices(det,e.grade),50);
+  }
+}
+
+// ── SAVE eBay PRICE TO DB ───────────────────────────────────
+function saveEbayPriceToDB(items){
+  if(!items||!items.length)return;
+  const prices=items.map(i=>{
+    const v=parseFloat(String(i.price).replace(',','.').replace(/[^0-9.]/g,''));
+    return isNaN(v)?null:v;
+  }).filter(Boolean);
+  if(!prices.length)return;
+  const avg=prices.reduce((a,b)=>a+b,0)/prices.length;
+  // Save to DB if viewing a detail
+  if(!A.detailId)return;
+  dbAll().then(all=>{
+    const e=all.find(x=>x.id===A.detailId);
+    if(e){e.lastEbayPrice=avg;e.lastEbayDate=Date.now();dbPut(e).catch(()=>{});}
+  }).catch(()=>{});
+}
+
+// ── COLLECTION VALUE & GRADE CHART ──────────────────────────
+async function loadSettingsStats(){
+  try{
+    const all=await dbAll();
+    const el=$('settings-stats');
+    if(!el)return;
+    if(!all.length){el.textContent='Noch keine Karten bewertet';return;}
+    const avg=(all.reduce((s,e)=>s+e.grade,0)/all.length).toFixed(1);
+    const totalVal=all.reduce((s,e)=>s+(e.lastEbayPrice||0),0);
+    const priced=all.filter(e=>e.lastEbayPrice>0).length;
+    el.innerHTML='Gesamt: <b>'+all.length+' Karten</b><br>'
+      +'Durchschnittsnote: <b>'+avg+'</b><br>'
+      +'Gem Mint (PSA 10): <b>'+all.filter(e=>e.grade>=10).length+'</b><br>'
+      +'Mint (PSA 9): <b>'+all.filter(e=>e.grade===9).length+'</b><br>'
+      +(priced?'<br><span class="val-chip">💰 Gesamtwert ~€'+totalVal.toFixed(2)+'</span>'
+        +'<div style="font-size:10px;color:var(--hi);margin-top:4px">Basierend auf '+priced+'/'+all.length+' eBay-Preisen</div>':'');
+    // Grade distribution chart
+    buildGradeChart(all);
+  }catch(e){}
+}
+
+function buildGradeChart(all){
+  const wrap=$('grade-chart-wrap');
+  if(!wrap||!all.length)return;
+  const groups=[
+    {label:'PSA 10',color:'#f5c842',filter:e=>e.grade>=10},
+    {label:'PSA 9', color:'#94e0ff',filter:e=>e.grade===9},
+    {label:'PSA 8', color:'#a78bfa',filter:e=>e.grade===8},
+    {label:'PSA 7', color:'#4ade80',filter:e=>e.grade===7},
+    {label:'≤ PSA 6',color:'#fb923c',filter:e=>e.grade<=6},
+  ];
+  const counts=groups.map(g=>({...g,n:all.filter(g.filter).length}));
+  const total=all.length;
+  // SVG donut
+  const R=42,r=24,cx=54,cy=54,W=108,H=108;
+  let angle=-Math.PI/2;
+  let paths='';
+  counts.forEach(({color,n})=>{
+    if(!n)return;
+    const slice=(n/total)*Math.PI*2;
+    const x1=cx+R*Math.cos(angle),y1=cy+R*Math.sin(angle);
+    const x2=cx+R*Math.cos(angle+slice),y2=cy+R*Math.sin(angle+slice);
+    const xi1=cx+r*Math.cos(angle),yi1=cy+r*Math.sin(angle);
+    const xi2=cx+r*Math.cos(angle+slice),yi2=cy+r*Math.sin(angle+slice);
+    const large=slice>Math.PI?1:0;
+    paths+=`<path d="M${x1},${y1} A${R},${R} 0 ${large},1 ${x2},${y2} L${xi2},${yi2} A${r},${r} 0 ${large},0 ${xi1},${yi1} Z" fill="${color}" opacity=".85"/>`;
+    angle+=slice;
+  });
+  const svg=`<svg width="${W}" height="${H}" viewBox="0 0 ${W} ${H}" style="flex-shrink:0">${paths}<text x="${cx}" y="${cy+5}" text-anchor="middle" font-size="14" font-weight="700" fill="var(--tx)" font-family="var(--fh)">${total}</text></svg>`;
+  const legend=counts.filter(g=>g.n>0).map(g=>
+    '<div class="dl-item"><div class="dl-dot" style="background:'+g.color+'"></div>'
+    +'<span style="color:var(--mu)">'+g.label+': </span><b> '+g.n+'</b></div>'
+  ).join('');
+  wrap.style.display='flex';
+  wrap.innerHTML=svg+'<div class="donut-legend">'+legend+'</div>';
+}
+
+// ── PSA FEE CALCULATOR ──────────────────────────────────────
+function buildPsaCalcSection(avgPrice){
+  if(!avgPrice||avgPrice<=0)return'';
+  const fees=[
+    {name:'Economy',usd:25,days:'65 WT',min:avgPrice*1.1>25},
+    {name:'Regular', usd:50,days:'20 WT',min:avgPrice*1.2>50},
+    {name:'Express', usd:150,days:'5 WT', min:avgPrice*1.4>150},
+  ];
+  const eur=avgPrice;
+  const worthIt=eur>30;
+  return '<div class="card" style="margin-bottom:10px">'
+    +'<div class="st" style="margin-bottom:8px">🧮 PSA-Kalkulator</div>'
+    +'<div class="al '+(worthIt?'al-g':'al-a')+'" style="margin-bottom:10px;font-size:12px">'
+    +(worthIt?'✓ Einreichung könnte sich lohnen':'⚠ Preis niedrig — Einreichung prüfen')
+    +' (Ø eBay €'+eur.toFixed(2)+')</div>'
+    +'<div style="font-size:11px;color:var(--mu);margin-bottom:6px">PSA-Gebühren (USD, bis $499 Kartenwert):</div>'
+    +fees.map(f=>'<div class="calc-row">'
+      +'<span>'+f.name+' · '+f.days+'</span>'
+      +'<span class="calc-fee" style="color:'+(f.min?'#4ade80':'var(--am)')+'">~$'+f.usd+'</span>'
+      +'</div>').join('')
+    +'<div style="font-size:10px;color:var(--hi);margin-top:6px">Preise ohne Gewähr · psa.com</div>'
+    +'</div>';
+}
+
+// ── BACKUP & RESTORE ────────────────────────────────────────
+async function backupCollection(){
+  try{
+    const all=await dbAll();
+    if(!all.length){toast('Keine Karten zum Exportieren');return;}
+    const blob=new Blob([JSON.stringify({version:1,date:new Date().toISOString(),entries:all},null,2)],
+      {type:'application/json'});
+    const url=URL.createObjectURL(blob);
+    const a=document.createElement('a');
+    a.href=url;a.download='PokéGrader_Backup_'+new Date().toISOString().substring(0,10)+'.json';
+    a.click();URL.revokeObjectURL(url);
+    toast('✅ Backup erstellt ('+all.length+' Karten)');
+  }catch(e){toast('❌ '+e.message);}
+}
+async function restoreCollection(event){
+  const file=event.target.files&&event.target.files[0];
+  event.target.value='';
+  if(!file)return;
+  try{
+    const text=await file.text();
+    const data=JSON.parse(text);
+    const entries=data.entries||data;
+    if(!Array.isArray(entries)||!entries.length){toast('❌ Ungültige Backup-Datei');return;}
+    if(!confirm(''+entries.length+' Karten importieren? Vorhandene Karten bleiben erhalten.'))return;
+    let ok=0;
+    for(const e of entries){if(e.id&&e.grade){await dbPut(e);ok++;}}
+    toast('✅ '+ok+' Karten importiert');
+    if(ok)renderColl();
+  }catch(e){toast('❌ Import: '+e.message);}
+}
+
+// ── DUPLICATE DETECTION ─────────────────────────────────────
+async function checkDuplicate(name,set,num){
+  if(!name)return false;
+  try{
+    const all=await dbAll();
+    return all.some(e=>
+      (e.cardName||'').toLowerCase()===name.toLowerCase()&&
+      (!set||(e.cardSet||'').toLowerCase()===set.toLowerCase())&&
+      (!num||(e.cardNumber||'')===(num||''))
+    );
+  }catch(e){return false;}
+}
+
+// ── BULK DELETE ─────────────────────────────────────────────
+let _selectMode=false;
+let _selected=new Set();
+function toggleSelectMode(){
+  _selectMode=!_selectMode;
+  _selected.clear();
+  const bar=$('coll-select-bar');
+  const grid=$('coll-grid');
+  if(bar)bar.classList.toggle('on',_selectMode);
+  if(grid)grid.classList.toggle('select-mode',_selectMode);
+  const btn=$('btn-select-mode');
+  if(btn)btn.style.color=_selectMode?'var(--red)':'var(--mu)';
+  updateDeleteBtn();
+  renderColl();
+}
+function cancelSelect(){_selectMode=false;_selected.clear();toggleSelectMode();}
+function toggleCardSelect(id,el){
+  if(!_selectMode)return;
+  if(_selected.has(id)){_selected.delete(id);el.classList.remove('checked');el.textContent='';}
+  else{_selected.add(id);el.classList.add('checked');el.textContent='✓';}
+  updateDeleteBtn();
+}
+function selectAll(){
+  document.querySelectorAll('.card-cb').forEach(cb=>{
+    const id=cb.dataset.id;
+    if(id){_selected.add(id);cb.classList.add('checked');cb.textContent='✓';}
+  });
+  updateDeleteBtn();
+}
+function updateDeleteBtn(){
+  const btn=$('btn-del-sel');
+  if(btn){btn.textContent='🗑 Löschen ('+_selected.size+')';btn.disabled=_selected.size===0;}
+}
+async function deleteSelected(){
+  if(!_selected.size)return;
+  if(!confirm(_selected.size+' Karten löschen?'))return;
+  try{
+    for(const id of _selected)await dbDel(id);
+    toast('🗑 '+_selected.size+' Karten gelöscht');
+    _selected.clear();cancelSelect();
+  }catch(e){toast('❌ '+e.message);}
+}
+
+// ── INIT ADDITIONS ──────────────────────────────────────────
+function initAppExtras(){
+  initQuickModeToggle();
+}
+
 // ── SERVICE WORKER ──────────────────────────────
 if('serviceWorker' in navigator) {
   window.addEventListener('load', ()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
@@ -1658,6 +2264,7 @@ if('serviceWorker' in navigator) {
     buildGradeScale();
     initPinch();
     applyTheme();
+    initAppExtras();
     if(getKey()) navTo('pg-home');
     else navTo('pg-setup');
   } catch(e) {
@@ -1666,5 +2273,44 @@ if('serviceWorker' in navigator) {
   }
 })();
 </script>
+
+<!-- SET AUTOCOMPLETE -->
+<datalist id="set-list">
+  <option value="Basisedition (1999)"><option value="Dschungel (1999)"><option value="Team Rocket (2000)">
+  <option value="Base Set (1998)"><option value="Jungle (1999)"><option value="Fossil (1999)">
+  <option value="Team Rocket (2000)"><option value="Gym Heroes (2000)"><option value="Gym Challenge (2000)">
+  <option value="Neo Genesis (2000)"><option value="Neo Discovery (2001)"><option value="Neo Revelation (2001)">
+  <option value="Neo Destiny (2002)"><option value="Legendary Collection (2002)">
+  <option value="EX Ruby &amp; Sapphire (2003)"><option value="EX Sandstorm (2003)"><option value="EX Dragon (2003)">
+  <option value="EX FireRed &amp; LeafGreen (2004)"><option value="EX Hidden Legends (2004)">
+  <option value="EX Unseen Forces (2005)"><option value="EX Delta Species (2005)">
+  <option value="Diamond &amp; Pearl (2007)"><option value="Platinum (2009)">
+  <option value="HeartGold &amp; SoulSilver (2010)"><option value="Call of Legends (2011)">
+  <option value="Black &amp; White (2011)"><option value="Boundaries Crossed (2012)">
+  <option value="Plasma Storm (2013)"><option value="Legendary Treasures (2013)">
+  <option value="XY (2014)"><option value="Flashfire (2014)"><option value="Phantom Forces (2014)">
+  <option value="Roaring Skies (2015)"><option value="Ancient Origins (2015)">
+  <option value="BREAKthrough (2015)"><option value="Fates Collide (2016)">
+  <option value="Evolutions (2016)"><option value="Sun &amp; Moon (2017)">
+  <option value="Guardians Rising (2017)"><option value="Burning Shadows (2017)">
+  <option value="Ultra Prism (2018)"><option value="Forbidden Light (2018)">
+  <option value="Celestial Storm (2018)"><option value="Lost Thunder (2018)">
+  <option value="Team Up (2019)"><option value="Unbroken Bonds (2019)">
+  <option value="Unified Minds (2019)"><option value="Cosmic Eclipse (2019)">
+  <option value="Sword &amp; Shield (2020)"><option value="Rebel Clash (2020)">
+  <option value="Darkness Ablaze (2020)"><option value="Champion's Path (2020)">
+  <option value="Vivid Voltage (2020)"><option value="Battle Styles (2021)">
+  <option value="Chilling Reign (2021)"><option value="Evolving Skies (2021)">
+  <option value="Fusion Strike (2021)"><option value="Brilliant Stars (2022)">
+  <option value="Astral Radiance (2022)"><option value="Pokemon GO (2022)">
+  <option value="Lost Origin (2022)"><option value="Silver Tempest (2022)">
+  <option value="Crown Zenith (2023)"><option value="Scarlet &amp; Violet (2023)">
+  <option value="Paldea Evolved (2023)"><option value="Obsidian Flames (2023)">
+  <option value="Paradox Rift (2023)"><option value="Paldean Fates (2024)">
+  <option value="Temporal Forces (2024)"><option value="Twilight Masquerade (2024)">
+  <option value="Shrouded Fable (2024)"><option value="Stellar Crown (2024)">
+  <option value="Surging Sparks (2024)"><option value="Prismatic Evolutions (2025)">
+</datalist>
+
 </body>
 </html>
