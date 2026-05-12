@@ -715,7 +715,9 @@ function selectLang(l){
   if(en)en.style.borderColor=l==='en'?'var(--red)':'';
 }
 
-const PSA_DE_BOTH = `WICHTIG: ALLE Text-Felder (notes, description, summary, recommendation, top_left, top_right, bottom_left, bottom_right, top, right, bottom, left, defects) MÜSSEN auf DEUTSCH sein. KEIN ENGLISCH!
+const PSA_DE_BOTH = `WICHTIG: BESCHREIBUNGS-Felder (notes, description, summary, recommendation, top_left, top_right, bottom_left, bottom_right, top, right, bottom, left, defects) MÜSSEN auf DEUTSCH sein. KEIN ENGLISCH!
+IDENTIFIKATIONS-Felder (card_name, set_name, language, rarity, holo_type, category) zeigen den ORIGINAL-Wert wie auf der Karte gedruckt - bei japanischen Karten also japanisch, bei englischen Karten englisch. Setze language auf "Japanisch", "Englisch", "Deutsch" etc.
+WICHTIG: Antworte AUSSCHLIESSLICH mit dem JSON-Objekt - kein einleitender Text, keine Erklärung davor oder danach.
 
 Analysiere diese Pokémon-Karte für PSA Pre-Grading. Bild 1=Vorderseite, Bild 2=Rückseite.
 PSA 2025 Zentrierung: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
@@ -728,13 +730,17 @@ Analysiere diese Pokémon-Karten-Vorderseite für PSA Pre-Grading (Rückseite ni
 Identifiziere die Karte. Typen: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease.
 Antworte NUR mit JSON: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"Zentrierung gut (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"Saubere Ecke","top_right":"Saubere Ecke","bottom_left":"Saubere Ecke","bottom_right":"Leichtes Whitening","notes":"Ecken in gutem Zustand"},"edges":{"score":9,"top":"Glatter Rand","right":"Sauber","bottom":"Sauber","left":"Sauber","notes":"Ränder in Ordnung"},"surface":{"score":10,"defects":[],"notes":"Oberfläche sauber und ohne Defekte"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"Leichtes Whitening"}],"final_grade":9,"grade_label":"Mint","summary":"Karte in sehr gutem Zustand (nur Vorderseite analysiert). Empfehlung basiert auf sichtbaren Merkmalen.","recommendation":"Vor PSA-Einreichung Rückseite separat prüfen lassen."}
 ALLE notes, summary, description, recommendation auf DEUTSCH!`;
-const PSA_EN_BOTH = `IMPORTANT: ALL text fields must be in ENGLISH.
+const PSA_EN_BOTH = `IMPORTANT: DESCRIPTION fields (notes, description, summary, recommendation, corner positions, edge positions, defects) must be in ENGLISH.
+IDENTIFICATION fields (card_name, set_name, language, rarity, holo_type, category) keep ORIGINAL value as printed on the card.
+IMPORTANT: Reply with ONLY the JSON object - no intro text, no explanation before or after.
 
 Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
 PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
 Identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
 Return ONLY JSON: {"card_info":{"card_name":"Charizard","language":"English","hp":"120 HP","set_name":"Base Set","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stage 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"English notes"},"corners":{"score":9,"top_left":"English","top_right":"English","bottom_left":"English","bottom_right":"English","notes":"English"},"edges":{"score":9,"top":"English","right":"English","bottom":"English","left":"English","notes":"English"},"surface":{"score":10,"defects":[],"notes":"English"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"English"}],"final_grade":9,"grade_label":"Mint","summary":"English 2-3 sentences","recommendation":"English"}`;
-const PSA_EN_FRONT = `IMPORTANT: ALL text fields must be in ENGLISH.
+const PSA_EN_FRONT = `IMPORTANT: DESCRIPTION fields (notes, description, summary, recommendation, corner positions, edge positions, defects) must be in ENGLISH.
+IDENTIFICATION fields (card_name, set_name, language, rarity, holo_type, category) keep ORIGINAL value as printed on the card.
+IMPORTANT: Reply with ONLY the JSON object - no intro text, no explanation before or after.
 
 Analyze this Pokémon card front for PSA pre-grading (back not provided).
 Identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease.
@@ -754,11 +760,17 @@ async function runAnalysis(){
     if(A.back.b64)content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
     content.push({type:'text',text:getPsaPrompt(!!A.back.b64)});
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:getLang()==='de'?'Du bist PSA-Karten-Grading-Experte. Antworte NUR mit gültigem JSON. Kein Markdown. ALLE Texte (notes, summary, description, recommendation, defects) auf DEUTSCH!':'You are a PSA card grading expert. Return ONLY valid JSON. No markdown.',messages:[{role:'user',content}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:2500,system:getLang()==='de'?'Du bist PSA-Karten-Grading-Experte. Antworte NUR mit gültigem JSON. Kein Markdown. ALLE Texte (notes, summary, description, recommendation, defects) auf DEUTSCH!':'You are a PSA card grading expert. Return ONLY valid JSON. No markdown.',messages:[{role:'user',content}]})});
     if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(((eb&&eb.error)?eb.error.message:undefined)||'HTTP '+resp.status);}
     const data=await resp.json();
     const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
-    A.result=JSON.parse(raw.replace(/```json|```/g,'').trim());
+    var cleanRaw=raw.replace(/```json|```/g,'').trim();
+    var firstBrace=cleanRaw.indexOf('{'),lastBrace=cleanRaw.lastIndexOf('}');
+    if(firstBrace>=0 && lastBrace>firstBrace) cleanRaw=cleanRaw.substring(firstBrace,lastBrace+1);
+    try{A.result=JSON.parse(cleanRaw);}catch(parseErr){
+      console.error('JSON parse failed:',parseErr.message);console.error('Raw response:',raw.substring(0,500));
+      throw new Error('Antwort konnte nicht gelesen werden (möglicherweise zu komplex). Versuche es nochmal oder fotografiere die Karte besser.');
+    }
     clearInterval(iv);
     const d=A.result.card_info||{};
     const fm=(A.result.markers||[]).filter(m=>m.side==='front');
