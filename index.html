@@ -534,7 +534,15 @@ input::placeholder{color:var(--hi)}
     <div class="row">
       <button class="btn btn-s" onclick="backupCollection()" style="flex:1">&#128229; Backup</button>
       <button class="btn btn-s" onclick="$('restore-file').click()" style="flex:1">&#128228; Restore</button>
+    
+  </div>
+  <div class="card" style="margin-bottom:14px">
+    <div class="st" style="margin-bottom:10px">Sprache der KI-Analyse</div>
+    <div style="display:flex;gap:8px;margin-bottom:8px">
+      <button class="btn btn-o" id="lang-de-btn" onclick="selectLang('de')" style="flex:1">Deutsch</button>
+      <button class="btn btn-o" id="lang-en-btn" onclick="selectLang('en')" style="flex:1">English</button>
     </div>
+    <div style="font-size:11px;color:var(--mu);line-height:1.5">Beeinflusst die Sprache der Analyseausgabe (Notes, Beschreibungen, Empfehlungen).</div></div>
     <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreCollection(event)">
   </div>
   <div class="card">
@@ -602,7 +610,7 @@ const putEbayId=v=>{try{localStorage.setItem(EBAY_ID_KEY,v);}catch(e){}};
 const QM_KEY='pg_quick_mode';
 const getQuickMode=()=>{try{return localStorage.getItem(QM_KEY)==='1';}catch(e){return false;}};
 function saveSetupKey(){const k=($('setup-key').value||'').trim();const err=$('setup-err');if(!k){if(err){err.textContent='API-Key eingeben.';sh(err);}return;}if(!k.startsWith('sk-ant')){if(err){err.textContent='Ungültiger Key.';sh(err);}return;}if(err)hi(err);putKey(k);toast('API-Key gespeichert');navTo('pg-home');}
-function initSettings(){const k=getKey();const se=$('set-key');if(se)se.value=k;const ss=$('set-status');if(ss)ss.textContent=k?'Aktiv: '+k.substring(0,18)+'...':'Kein Key';const eid=getEbayId();const se2=$('set-ebay');if(se2)se2.value=eid;const ss2=$('set-ebay-status');if(ss2)ss2.textContent=eid?'eBay AppID gespeichert':'Kein eBay AppID - bitte eintragen';const qmt=$('quick-mode-toggle');if(qmt)qmt.checked=getQuickMode();const tb=$('theme-btn');if(tb)tb.textContent=localStorage.getItem('pg_theme')==='light'?'&#9728; Light':'&#127769; Dark';}
+function initSettings(){const k=getKey();const se=$('set-key');if(se)se.value=k;const ss=$('set-status');if(ss)ss.textContent=k?'Aktiv: '+k.substring(0,18)+'...':'Kein Key';const eid=getEbayId();const se2=$('set-ebay');if(se2)se2.value=eid;const ss2=$('set-ebay-status');if(ss2)ss2.textContent=eid?'eBay AppID gespeichert':'Kein eBay AppID - bitte eintragen';const qmt=$('quick-mode-toggle');if(qmt)qmt.checked=getQuickMode();selectLang(getLang());const tb=$('theme-btn');if(tb)tb.textContent=localStorage.getItem('pg_theme')==='light'?'&#9728; Light':'&#127769; Dark';}
 function saveSettingsKey(){const k=($('set-key').value||'').trim();if(!k.startsWith('sk-ant')){toast('Ungültiger Key');return;}putKey(k);toast('Key gespeichert');const ss=$('set-status');if(ss)ss.textContent='Aktiv: '+k.substring(0,18)+'...';}
 function saveEbayId(){const v=($('set-ebay').value||'').trim();putEbayId(v);const ss=$('set-ebay-status');if(ss)ss.textContent=v?'eBay AppID gespeichert':'AppID gelöscht';toast(v?'eBay AppID gespeichert':'eBay AppID entfernt');}
 function setQuickMode(on){try{localStorage.setItem(QM_KEY,on?'1':'0');}catch(e){}toast(on?'Schnell-Grading aktiviert':'Deaktiviert');}
@@ -691,6 +699,48 @@ function closePsaModal(){const m=$('psa-modal');if(m)m.style.display='none';}
 function toggleCheck(i){if(_psaChecked.has(i))_psaChecked.delete(i);else _psaChecked.add(i);const cb=$('cb'+i);if(cb){cb.classList.toggle('done',_psaChecked.has(i));cb.textContent=_psaChecked.has(i)?'&#10003;':'';}}
 function checkOnline(){if(!navigator.onLine){toast('Keine Internetverbindung',4000);return false;}return true;}
 
+
+/* ── LANGUAGE / PROMPTS ───────────────────── */
+const LANG_KEY='pg_lang';
+function getLang(){try{return localStorage.getItem(LANG_KEY)||'de';}catch(e){return 'de';}}
+function setLang(l){try{localStorage.setItem(LANG_KEY,l);}catch(e){}toast(l==='de'?'Sprache: Deutsch':'Language: English');}
+function selectLang(l){
+  setLang(l);
+  var de=$('lang-de-btn'),en=$('lang-en-btn');
+  if(de)de.style.background=l==='de'?'var(--red)':'';
+  if(de)de.style.color=l==='de'?'#fff':'';
+  if(de)de.style.borderColor=l==='de'?'var(--red)':'';
+  if(en)en.style.background=l==='en'?'var(--red)':'';
+  if(en)en.style.color=l==='en'?'#fff':'';
+  if(en)en.style.borderColor=l==='en'?'var(--red)':'';
+}
+
+const PSA_DE_BOTH = `WICHTIG: ALLE Text-Felder (notes, description, summary, recommendation, top_left, top_right, bottom_left, bottom_right, top, right, bottom, left, defects) MÜSSEN auf DEUTSCH sein. KEIN ENGLISCH!
+
+Analysiere diese Pokémon-Karte für PSA Pre-Grading. Bild 1=Vorderseite, Bild 2=Rückseite.
+PSA 2025 Zentrierung: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
+Identifiziere Karte aus Bild 1. Marker x/y=BILD-Koordinaten 0-100. Typen: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final-Grade=NIEDRIGSTE von 4 Sub-Scores.
+Antworte NUR mit JSON: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"Zentrierung ist sehr gut, leichte Abweichung links"},"corners":{"score":9,"top_left":"Spitze Ecke ohne Whitening","top_right":"Minimales Whitening sichtbar","bottom_left":"Saubere Ecke","bottom_right":"Saubere Ecke","notes":"Alle Ecken in gutem Zustand"},"edges":{"score":9,"top":"Glatter Rand","right":"Sauber","bottom":"Sauber","left":"Minimales Whitening","notes":"Ränder ohne sichtbare Schäden"},"surface":{"score":10,"defects":[],"notes":"Oberfläche makellos ohne Kratzer"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"Leichtes Whitening an der Ecke"}],"final_grade":9,"grade_label":"Mint","summary":"Hochwertige Karte mit sauberer Zentrierung und makelloser Oberfläche. Geringe Abweichungen an einer Ecke verhindern PSA 10.","recommendation":"Einreichung bei PSA empfohlen, mit guter Chance auf Grade 9 oder höher."}
+ALLE notes, description, summary, recommendation auf DEUTSCH!`;
+const PSA_DE_FRONT = `WICHTIG: ALLE Text-Felder MÜSSEN auf DEUTSCH sein. KEIN ENGLISCH!
+
+Analysiere diese Pokémon-Karten-Vorderseite für PSA Pre-Grading (Rückseite nicht vorhanden, schätze wo nötig).
+Identifiziere die Karte. Typen: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease.
+Antworte NUR mit JSON: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"Zentrierung gut (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"Saubere Ecke","top_right":"Saubere Ecke","bottom_left":"Saubere Ecke","bottom_right":"Leichtes Whitening","notes":"Ecken in gutem Zustand"},"edges":{"score":9,"top":"Glatter Rand","right":"Sauber","bottom":"Sauber","left":"Sauber","notes":"Ränder in Ordnung"},"surface":{"score":10,"defects":[],"notes":"Oberfläche sauber und ohne Defekte"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"Leichtes Whitening"}],"final_grade":9,"grade_label":"Mint","summary":"Karte in sehr gutem Zustand (nur Vorderseite analysiert). Empfehlung basiert auf sichtbaren Merkmalen.","recommendation":"Vor PSA-Einreichung Rückseite separat prüfen lassen."}
+ALLE notes, summary, description, recommendation auf DEUTSCH!`;
+const PSA_EN_BOTH = `IMPORTANT: ALL text fields must be in ENGLISH.
+
+Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
+PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
+Identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
+Return ONLY JSON: {"card_info":{"card_name":"Charizard","language":"English","hp":"120 HP","set_name":"Base Set","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stage 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"English notes"},"corners":{"score":9,"top_left":"English","top_right":"English","bottom_left":"English","bottom_right":"English","notes":"English"},"edges":{"score":9,"top":"English","right":"English","bottom":"English","left":"English","notes":"English"},"surface":{"score":10,"defects":[],"notes":"English"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"English"}],"final_grade":9,"grade_label":"Mint","summary":"English 2-3 sentences","recommendation":"English"}`;
+const PSA_EN_FRONT = `IMPORTANT: ALL text fields must be in ENGLISH.
+
+Analyze this Pokémon card front for PSA pre-grading (back not provided).
+Identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease.
+Return ONLY JSON: {"card_info":{"card_name":"Charizard","language":"English","hp":"120 HP","set_name":"Base Set","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stage 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"English (back not checked)"},"corners":{"score":9,"top_left":"English","top_right":"English","bottom_left":"English","bottom_right":"English","notes":"English"},"edges":{"score":9,"top":"English","right":"English","bottom":"English","left":"English","notes":"English"},"surface":{"score":10,"defects":[],"notes":"English"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"English"}],"final_grade":9,"grade_label":"Mint","summary":"English (only front analyzed)","recommendation":"English"}`;
+function getPsaPrompt(hasBack){var l=getLang();if(l==='en')return hasBack?PSA_EN_BOTH:PSA_EN_FRONT;return hasBack?PSA_DE_BOTH:PSA_DE_FRONT;}
+
 async function runAnalysis(){
   if(!checkOnline())return;
   const ab=$('btn-analyze');if(ab){ab.disabled=true;ab.textContent='Läuft...';}
@@ -702,14 +752,9 @@ async function runAnalysis(){
     if(!A.front.b64)throw new Error('Vorderseitenfoto fehlt');
     const content=[{type:'image',source:{type:'base64',media_type:A.front.type,data:A.front.b64}}];
     if(A.back.b64)content.push({type:'image',source:{type:'base64',media_type:A.back.type,data:A.back.b64}});
-    content.push({type:'text',text:A.back.b64?`Analyze this Pokémon card for PSA pre-grading. Image 1=front, Image 2=back.
-PSA 2025 centering: 10:55/45,75/25|9:60/40,90/10|8:65/35,90/10|7:70/30,90/10|6:80/20,90/10|5:85/15,90/10
-Also identify card from Image 1. Marker x/y=IMAGE coords 0-100. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade=LOWEST of 4 sub-scores.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":46,"back_right_pct":54,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"46/54","back_ratio_tb":"50/50","score":9,"notes":"German"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German 2-3 sentences","recommendation":"German"}`:`Analyze this Pokémon card front for PSA pre-grading (back not provided, estimate where needed).
-Also identify the card. Types: whitening,corner_damage,edge_damage,scratch,print_line,holo_damage,stain,crease. Final grade based on visible conditions.
-Return ONLY: {"card_info":{"card_name":"Glurak","language":"Deutsch","hp":"120 HP","set_name":"Basisedition","card_number":"4/102","rarity":"Holo Rare","holo_type":"Holo Rare","category":"Stufe 2"},"centering":{"front_left_pct":47,"front_right_pct":53,"front_top_pct":49,"front_bottom_pct":51,"back_left_pct":50,"back_right_pct":50,"back_top_pct":50,"back_bottom_pct":50,"front_ratio_lr":"47/53","front_ratio_tb":"49/51","back_ratio_lr":"n/a","back_ratio_tb":"n/a","score":9,"notes":"German (Rückseite nicht geprüft)"},"corners":{"score":9,"top_left":"desc","top_right":"desc","bottom_left":"desc","bottom_right":"desc","notes":"German"},"edges":{"score":9,"top":"desc","right":"desc","bottom":"desc","left":"desc","notes":"German"},"surface":{"score":10,"defects":[],"notes":"German"},"markers":[{"side":"front","x_pct":5,"y_pct":8,"type":"whitening","label":"W1","description":"German"}],"final_grade":9,"grade_label":"Mint","summary":"German (Hinweis: nur Vorderseite analysiert)","recommendation":"German"}`});
+    content.push({type:'text',text:getPsaPrompt(!!A.back.b64)});
 
-    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:'You are a PSA card grading expert. Return ONLY valid JSON. No markdown.',messages:[{role:'user',content}]})});
+    const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':key,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:1500,system:getLang()==='de'?'Du bist PSA-Karten-Grading-Experte. Antworte NUR mit gültigem JSON. Kein Markdown. ALLE Texte (notes, summary, description, recommendation, defects) auf DEUTSCH!':'You are a PSA card grading expert. Return ONLY valid JSON. No markdown.',messages:[{role:'user',content}]})});
     if(!resp.ok){const eb=await resp.json().catch(()=>({}));throw new Error(((eb&&eb.error)?eb.error.message:undefined)||'HTTP '+resp.status);}
     const data=await resp.json();
     const raw=(data.content||[]).filter(c=>c.type==='text').map(c=>c.text).join('');
@@ -808,7 +853,7 @@ function renderResults(r,af,ab,ci,fromHist,det){
     +'<div style="font-size:11px;color:var(--hi);text-align:center;padding:10px 0 4px;line-height:1.6">KI-Einschaetzung - kein offizielles PSA-Ergebnis</div>'
     +(fromHist?'<button class="btn btn-s" onclick="safeNav(A.fromScreen||\'pg-collection\')" style="margin-top:10px">Zurueck</button>':'<button class="btn btn-s" onclick="safeNav(\'pg-home\')" style="margin-top:10px">Startseite</button>')
     +'<div class="cr"><a href="https://netpixel.at" target="_blank">netpixel.at</a></div>';
-  const target=$(fromHist?'det-page':'res-page');if(target)target.innerHTML=html;
+  const target=$(fromHist?'det-page':'res-page');const other=$(fromHist?'res-page':'det-page');if(other)other.innerHTML='';if(target)target.innerHTML=html;
 }
 function tapM(e,s){try{const img=e.target,rect=img.getBoundingClientRect();const xr=((e.clientX-rect.left)/rect.width)*100,yr=((e.clientY-rect.top)/rect.height)*100;const markers=s==='f'?_fm:_bm;const hit=markers.find(m=>Math.hypot(m.x_pct-xr,m.y_pct-yr)<5.5);const tt=$('tt-'+s);if(!tt)return;if(hit){tt.textContent=(hit.label||'')+': '+(hit.description||ml(hit.type));tt.style.display='block';tt.style.left=Math.min(e.clientX-rect.left+10,rect.width-200)+'px';tt.style.top=Math.max(e.clientY-rect.top-44,5)+'px';setTimeout(()=>tt.style.display='none',2800);}else tt.style.display='none';}catch(e){}}
 
