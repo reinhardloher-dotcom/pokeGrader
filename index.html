@@ -232,8 +232,6 @@ input::placeholder{color:var(--hi)}
 </style>
 </head>
 <body>
-<div id="js-test" style="position:fixed;top:0;left:0;right:0;z-index:9999;background:#e63946;color:#fff;text-align:center;padding:8px;font-weight:bold;font-size:14px">JS LADET... wenn dieser Text bleibt = JS Fehler</div>
-
 <!-- CAMERA MODAL -->
 <div id="cam-modal">
   <video id="cam-video" autoplay playsinline muted></video>
@@ -1088,6 +1086,166 @@ async function renderCompare(){
   }catch(e){if(el)el.innerHTML='<div class="empty">Fehler: '+e.message+'</div>';}
 }
 
+/* ── EBAY ─────────────────────────────────────── */
+function ebayJSONP(url){
+  return new Promise(res=>{
+    var cb='_eb'+Date.now();
+    var to=setTimeout(function(){cleanup();res(null);},9000);
+    function cleanup(){clearTimeout(to);try{delete window[cb];}catch(e){window[cb]=undefined;}var s=document.getElementById(cb);if(s&&s.parentNode)s.parentNode.removeChild(s);}
+    window[cb]=function(data){cleanup();res(data);};
+    var s=document.createElement('script');s.id=cb;
+    s.src=url+'&callback='+cb;s.onerror=function(){cleanup();res(null);};
+    document.head.appendChild(s);
+  });
+}
+function parseEbayItems(data,op){
+  try{
+    var k=op+'Response';
+    if(!data[k]||!data[k][0])return [];
+    var sr=data[k][0].searchResult;
+    if(!sr||!sr[0]||!sr[0].item)return [];
+    var items=sr[0].item;
+    var out=[];
+    for(var i=0;i<Math.min(items.length,4);i++){
+      var it=items[i];
+      var price='', cur='EUR';
+      if(it.sellingStatus&&it.sellingStatus[0]&&it.sellingStatus[0].currentPrice&&it.sellingStatus[0].currentPrice[0]){
+        price=it.sellingStatus[0].currentPrice[0]['__value__']||'';
+        cur=it.sellingStatus[0].currentPrice[0]['@currencyId']||'EUR';
+      }
+      var img='';
+      if(it.galleryURL&&it.galleryURL[0])img=String(it.galleryURL[0]).replace('l140','l400');
+      var cond='';
+      if(it.condition&&it.condition[0]&&it.condition[0].conditionDisplayName&&it.condition[0].conditionDisplayName[0])cond=it.condition[0].conditionDisplayName[0];
+      out.push({
+        title:(it.title&&it.title[0]?String(it.title[0]):'').trim(),
+        price:price,
+        currency:cur,
+        image:img,
+        url:it.viewItemURL&&it.viewItemURL[0]?it.viewItemURL[0]:'#',
+        sold:op==='findCompletedItems',
+        condition:cond
+      });
+    }
+    return out;
+  }catch(e){return [];}
+}
+function ebayApiUrl(op,kw,appId,extra){
+  return 'https://svcs.ebay.de/services/search/FindingService/v1?OPERATION-NAME='+op
+    +'&SERVICE-VERSION=1.0.0&SECURITY-APPNAME='+encodeURIComponent(appId)
+    +'&RESPONSE-DATA-FORMAT=JSON&REST-PAYLOAD&keywords='+encodeURIComponent(kw)
+    +'&paginationInput.entriesPerPage=4&outputSelector=GalleryInfo&sortOrder=BestMatch'+(extra||'');
+}
+function saveEbayPriceToDB(items){
+  if(!items||!items.length||!A.detailId)return;
+  var prices=[];
+  for(var i=0;i<items.length;i++){
+    var v=parseFloat(String(items[i].price).replace(',','.'));
+    if(!isNaN(v))prices.push(v);
+  }
+  if(!prices.length)return;
+  var sum=0;for(var j=0;j<prices.length;j++)sum+=prices[j];
+  var avg=sum/prices.length;
+  dbAll().then(function(all){
+    var e=null;for(var k=0;k<all.length;k++)if(all[k].id===A.detailId){e=all[k];break;}
+    if(e){e.lastEbayPrice=avg;e.lastEbayDate=Date.now();dbPut(e).catch(function(){});}
+  }).catch(function(){});
+}
+function updatePriceWatchUI(entry,items){
+  var el=$('pw-indicator');if(!el)return;
+  var wp=entry&&entry.watchPrice;
+  if(!wp){el.innerHTML='';return;}
+  if(!items||!items.length){el.innerHTML='<div class="pw-badge pw-set">Zielpreis EUR '+wp.toFixed(2)+'</div>';return;}
+  var prices=[];
+  for(var i=0;i<items.length;i++){var v=parseFloat(String(items[i].price).replace(',','.'));if(!isNaN(v))prices.push(v);}
+  if(!prices.length)return;
+  var sum=0;for(var j=0;j<prices.length;j++)sum+=prices[j];
+  var avg=sum/prices.length;
+  var hit=avg<=wp;
+  el.innerHTML='<div class="pw-badge '+(hit?'pw-hit':'pw-miss')+'">'+(hit?'OK':'!!')+' Zielpreis EUR '+wp.toFixed(2)+' | Avg eBay EUR '+avg.toFixed(2)+'</div>';
+  var calcEl=$('psa-calc-section');
+  if(calcEl)calcEl.innerHTML=buildPsaCalcSection(avg);
+}
+function buildPsaCalcSection(avg){
+  if(!avg||avg<=0)return '';
+  var worth=avg>30;
+  return '<div class="card" style="margin-bottom:10px"><div class="st" style="margin-bottom:8px">PSA Kalkulator</div>'
+    +'<div class="al '+(worth?'al-g':'al-a')+'" style="margin-bottom:10px;font-size:12px">'+(worth?'Einreichung koennte sich lohnen':'Preis pruefen')+' (Avg eBay EUR '+avg.toFixed(2)+')</div>'
+    +'<div class="calc-row"><span>Economy (65 WT)</span><span class="calc-fee" style="color:'+(avg>28?'#4ade80':'var(--am)')+'">~$25</span></div>'
+    +'<div class="calc-row"><span>Regular (20 WT)</span><span class="calc-fee" style="color:'+(avg>55?'#4ade80':'var(--am)')+'">~$50</span></div>'
+    +'<div class="calc-row"><span>Express (5 WT)</span><span class="calc-fee" style="color:'+(avg>165?'#4ade80':'var(--am)')+'">~$150</span></div>'
+    +'<div style="font-size:10px;color:var(--hi);margin-top:6px">Preise ohne Gewaehr - psa.com</div></div>';
+}
+function renderEbayCards(el,items,searchUrl){
+  function cs(c){return c==='USD'?'$':c==='GBP'?'GBP':'EUR';}
+  var html='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">R</button></div><div class="ebay-grid">';
+  for(var i=0;i<items.length;i++){
+    var it=items[i];
+    var pv=parseFloat(it.price);
+    var price=pv>0?cs(it.currency)+' '+pv.toFixed(2):(it.price||'-');
+    var badge=it.sold?'Verkauft':'Aktiv';
+    var bc=it.sold?'rgba(74,222,128,.9)':'rgba(96,165,250,.9)';
+    var img=it.image?'<img src="'+it.image+'" alt="" loading="lazy" onerror="this.style.display=\'none\'">':'<div style="display:flex;align-items:center;justify-content:center;height:100%;font-size:28px">?</div>';
+    html+='<a href="'+it.url+'" target="_blank" class="ebay-card"><div class="ebay-img-wrap">'+img+'<div class="ebay-badge" style="background:'+bc+';color:#fff">'+badge+'</div></div><div class="ebay-card-info"><div class="ebay-card-title">'+(it.title||'')+'</div><div class="ebay-card-price">'+price+'</div>'+(it.condition?'<div class="ebay-card-meta">'+it.condition+'</div>':'')+'</div></a>';
+  }
+  html+='</div><a href="'+searchUrl+'" target="_blank" style="text-decoration:none"><div style="text-align:center;padding:8px;font-size:12px;color:var(--bl);font-weight:600">Alle auf eBay anzeigen</div></a><div style="font-size:10px;color:var(--hi);padding:2px 0 6px">eBay Finding API</div>';
+  el.innerHTML=html;
+}
+function noEbayHtml(searchUrl,hasId){
+  return '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px"><div class="st" style="margin-bottom:0">eBay Marktpreise</div><button onclick="refreshEbay()" style="background:none;border:none;color:var(--bl);font-size:20px;cursor:pointer;padding:2px 6px">R</button></div>'
+    +(hasId?'':'<div class="al al-b" style="font-size:11px;margin-bottom:8px">Fuer Artikel-Bilder: eBay AppID in Einstellungen</div>')
+    +'<a href="'+searchUrl+'" target="_blank" class="btn btn-o" style="text-decoration:none;display:flex;justify-content:center">Auf eBay suchen</a>';
+}
+async function fetchEbayPrices(cardInfo,grade){
+  var el=$('ebay-section');if(!el)return;
+  el.innerHTML='<div class="st" style="margin-bottom:8px">eBay Marktpreise <span class="spin-sm"></span></div><div style="font-size:12px;color:var(--mu)">Suche laeuft...</div>';
+  var ebayId=getEbayId();
+  var parts=[];
+  if(cardInfo.card_name)parts.push(cardInfo.card_name);
+  if(cardInfo.set_name)parts.push(cardInfo.set_name);
+  if(cardInfo.card_number)parts.push(cardInfo.card_number);
+  parts.push('PSA '+grade);
+  var q=parts.join(' ');
+  var searchUrl='https://www.ebay.de/sch/i.html?_nkw='+encodeURIComponent(q)+'&LH_Complete=1&LH_Sold=1';
+  if(ebayId){
+    try{
+      var items=[];
+      var soldData=await ebayJSONP(ebayApiUrl('findCompletedItems',q,ebayId,'&itemFilter(0).name=SoldItemsOnly&itemFilter(0).value=true'));
+      if(soldData)items=parseEbayItems(soldData,'findCompletedItems');
+      if(items.length<2){
+        var activeData=await ebayJSONP(ebayApiUrl('findItemsByKeywords',q,ebayId,''));
+        if(activeData){
+          var active=parseEbayItems(activeData,'findItemsByKeywords');
+          var seen={};for(var i=0;i<items.length;i++)seen[items[i].url]=true;
+          for(var j=0;j<active.length;j++)if(!seen[active[j].url])items.push(active[j]);
+        }
+        items=items.slice(0,4);
+      }
+      if(items.length>0){
+        renderEbayCards(el,items,searchUrl);
+        saveEbayPriceToDB(items);
+        if(A.detailId){
+          dbAll().then(function(all){
+            var ew=null;for(var k=0;k<all.length;k++)if(all[k].id===A.detailId){ew=all[k];break;}
+            if(ew)updatePriceWatchUI(ew,items);
+          }).catch(function(){});
+        }
+        return;
+      }
+    }catch(e){console.warn('eBay API:',e);}
+  }
+  el.innerHTML=noEbayHtml(searchUrl,!!ebayId);
+}
+async function refreshEbay(){
+  if(A.detailId){
+    var all=await dbAll().catch(function(){return [];});
+    var e=null;for(var i=0;i<all.length;i++)if(all[i].id===A.detailId){e=all[i];break;}
+    if(e)setTimeout(function(){fetchEbayPrices({card_name:e.cardName,set_name:e.cardSet,card_number:e.cardNumber},e.grade);},50);
+  }else if(A.detected&&A.result){
+    setTimeout(function(){fetchEbayPrices(A.detected,A.result.final_grade);},50);
+  }
+}
+
 /* ── SERVICE WORKER ───────────────────────────── */
 if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}
 
@@ -1095,8 +1253,6 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 document.addEventListener('click',e=>{const m=$('edit-modal');if(m&&e.target===m)closeEdit();});
 document.addEventListener('click',e=>{const m=$('psa-modal');if(m&&e.target===m)closePsaModal();});
 (function init(){
-  var dbg=document.getElementById('js-test');
-  if(dbg)dbg.parentNode.removeChild(dbg);
   try{
     buildGradeScale();
     initPinch();
